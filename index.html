@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VIN Research Hub</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css"
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
     <link href="https://fonts.googleapis.com/css?family=Chivo:400,700,900|Signika+Negative:300,400,600,700"
@@ -13,160 +13,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="./master.js" defer></script>
-    <style>
-        body {
-            font-family: 'Signika Negative', sans-serif;
-            background-color: #f4f5f6; /* CarMax-ish light grey background */
-            color: #333;
-        }
-
-        .carmax-blue { color: #00539f; }
-        .carmax-gold { color: #ffc600; }
-        .bg-carmax-blue { background-color: #00539f; }
-        .bg-carmax-gold { background-color: #ffc600; }
-
-        .main-container {
-            background-color: #fff;
-            /* opacity: 0.98; Remove opacity for cleaner look if not strictly needed */
-            border-radius: 8px; /* Softer corners */
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .header-title-vin { color: #00539f; } /* Primary blue for "VIN" */
-        .header-title-research { color: #00539f; } /* Primary blue for "RESEARCH" */
-        .header-title-hub {
-            background-color: #00539f; /* Primary blue background */
-            color: #fff; /* White text */
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-
-        .logo-text {
-            font-size: 2em;
-            color: #ffc600; /* Gold accent */
-            font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif;
-            align-self: flex-end;
-        }
-
-        .vin-input-bar {
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-        }
-        .vin-input-bar:focus-within {
-            border-color: #ffc600; /* Gold focus highlight */
-            box-shadow: 0 0 0 0.2rem rgba(255, 198, 0, 0.25);
-        }
-        .vin-input-bar input {
-            border: none;
-            text-transform: uppercase; /* VINs are typically uppercase */
-        }
-        .vin-input-bar input:focus {
-            box-shadow: none;
-        }
-        .vin-input-bar .input-group-text {
-            background-color: #ffc600; /* Gold button */
-            color: #00539f; /* Blue icon */
-            border: none;
-            cursor: pointer;
-        }
-        .vin-input-bar .input-group-text:hover {
-            background-color: #e0ac00; /* Darker gold on hover */
-        }
-
-
-        .manual-select-btn {
-            background-color: #ffc600; /* Gold */
-            color: #00539f; /* Blue text */
-            border: none;
-            font-weight: 600;
-        }
-        .manual-select-btn:hover, .manual-select-btn:focus {
-            background-color: #e0ac00;
-            color: #00539f;
-        }
-
-        .link-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .link-section .section-title {
-            color: #00539f; /* Blue title */
-            font-family: 'Chivo', sans-serif;
-            font-weight: 700;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ffc600; /* Gold underline */
-            padding-bottom: 5px;
-        }
-        .link-section ul li a {
-            color: #00539f;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .link-section ul li a:hover {
-            color: #ffc600;
-            text-decoration: underline;
-        }
-
-        .card {
-            border: 1px solid #e0e0e0;
-            transition: box-shadow 0.3s ease;
-        }
-        .card:hover {
-             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .card .card-title { color: #00539f; }
-        .card .card-link { color: #00539f; font-weight: 600;}
-        .card .card-link:hover { color: #ffc600; }
-
-        .accordion .btn-primary {
-            background-color: #00539f;
-            border-color: #00539f;
-            width: 100%;
-            text-align: left;
-        }
-        .accordion .btn-primary:hover {
-            background-color: #004080;
-        }
-        .search-form input[type="text"] { margin-bottom: 10px; }
-
-        #outputbox {
-            background-color: #e6f0f7; /* Light blue, CarMax style for info boxes */
-            color: #00539f;
-            border: 1px solid #00539f;
-            border-radius: 8px; /* Softer corners */
-        }
-
-        /* Make specific divs - initially hidden by JS */
-        .make-specific-content {
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 15px;
-        }
-        .make-specific-content p strong { color: #00539f; }
-
-        /* Ensuring your gif and logo have space */
-        .header-logo-area {
-            display: flex;
-            align-items: center; /* Vertically align items */
-            justify-content: flex-end; /* Push to the right */
-        }
-        .header-logo-area img {
-            margin-right: 10px; /* Space between gif and text */
-        }
-
-    </style>
 </head>
 <body>
     <div class="container main-container shadow p-3">
-        <div class="row mb-3 p-3">
-            <div class="col-md-6 d-flex align-items-center">
+        <div class="row mb-3 p-3 align-items-center">
+            <div class="col-md-6">
                 <h1 class="font-weight-bold">
                     <span class="header-title-vin">VIN</span>
                     <span class="header-title-research"> RESEARCH <span class="header-title-hub">Hub</span></span>
@@ -178,7 +29,7 @@
             </div>
         </div>
 
-        <div class="row p-3 align-items-center" style="background-color:#00539f;">
+        <div class="row p-3 align-items-center nav-bar-section">
             <div class="col-md-3 mb-2 mb-md-0">
                 <div class="dropdown">
                     <button class="btn manual-select-btn dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -189,9 +40,9 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('AUDI')">Audi/Volkswagen/Bentley</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('BMW')">BMW/MINI</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('CHRYSLER')">Chrysler/Jeep/Fiat</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('CHRYSLER')">Chrysler/Jeep/Dodge/RAM/Fiat/Alfa</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('FORD')">Ford/Lincoln/Mercury</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('GM')">GM</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('GM')">GM (Chevy/GMC/Cadillac/Buick)</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('HONDA')">Honda/Acura</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('HYUNDAI')">Hyundai/Genesis</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('INFINITI')">Infiniti</a></li>
@@ -201,7 +52,7 @@
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('LEXUS')">Lexus</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('MASERATI')">Maserati</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('MAZDA')">Mazda</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('MERCEDES-BENZ')">Mercedes Benz</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="updateDisplay('MERCEDES-BENZ')">Mercedes-Benz</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('MITSUBISHI')">Mitsubishi</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('NISSAN')">Nissan</a></li>
                         <li><a class="dropdown-item" href="#" onclick="updateDisplay('PORSCHE')">Porsche</a></li>
@@ -216,16 +67,19 @@
                 <div class="input-group md-form form-sm form-2 pl-0 vin-input-bar">
                     <input name="VIN" id="VINbar" class="form-control my-0 py-1" type="text" placeholder="Enter 17-Digit VIN to Auto-Detect Make & See Specific Links" aria-label="VIN Search" oninput="handleVinInput()">
                     <div class="input-group-append">
-                        <button class="input-group-text" id="btn_submit" onclick="processVinAndDisplay()">
-                            <i class="fas fa-search text-grey" aria-hidden="true"></i>
+                        <button class="input-group-text" id="btn_submit">
+                            <i class="fas fa-search" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <p id="identifiedMake" class="text-center my-2 fw-bold" style="min-height: 24px; color: #00539f;"></p> <div class="row p-3">
-            <div class="col-md-3 order-md-1 order-3 order-sm-3">
-                <div id="general_links_div"> <div id="inventory_div" class="link-section">
+        <p id="identifiedMake" class="text-center my-2 fw-bold identified-make-text"></p>
+
+        <div class="row p-3">
+            <div class="col-md-3 order-md-1 order-3 order-sm-3" id="left-sidebar-column">
+                <div id="general_links_div">
+                    <div id="inventory_div" class="link-section">
                         <h2 class="section-title">Inventory Research</h2>
                         <ul class="list-unstyled">
                             <li><a href="http://www.nadaguides.com/Cars/Manufacturers" target="_blank">NADA Guides</a></li>
@@ -250,7 +104,7 @@
                         </ul>
                     </div>
                     <div id="mech_div" class="link-section">
-                        <h2 class="section-title">Mechanical and Structural</h2>
+                        <h2 class="section-title">Mechanical & Structural</h2>
                         <ul class="list-unstyled">
                             <li><a href="https://mic.mymitchell.com/" target="_blank">Mitchell Repair Guide</a></li>
                             <li><a href="http://www.owgonline.com/index.php" target="_blank">Official Warranty Guide</a></li>
@@ -267,14 +121,15 @@
                             <li><a href="https://www.exploreusa.com/tow-guides" target="_blank">Towing Capacity Search</a></li>
                         </ul>
                     </div>
-                </div> </div>
+                </div>
+            </div>
 
-            <div class="col-md-6 order-md-2 order-1 order-sm-1">
-                <div class="accordion" id="accordionsearch">
+            <div class="col-md-6 order-md-2 order-1 order-sm-1" id="main-content-column">
+                <div class="accordion mb-3" id="accordionsearch">
                     <div class="card">
                         <div class="card-header" id="headingOne">
                             <h5 class="mb-0">
-                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="btn accordion-button-style" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     View/Hide CarMax Inventory Search
                                 </button>
                             </h5>
@@ -282,17 +137,17 @@
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordionsearch">
                             <div class="card-body">
                                 <div id="kmxsearch" class="search-form">
-                                    <input name="iyear" id="iyear" class="form-control" type="text" placeholder="Year">
-                                    <input name="imake" id="imake" class="form-control" type="text" placeholder="Make">
-                                    <input name="imodel" id="imodel" class="form-control" type="text" placeholder="Model">
-                                    <input name="itrim" id="itrim" class="form-control" type="text" placeholder="Trim">
-                                    <input name="icyl" id="icyl" class="form-control" type="text" placeholder="Cylinder Count">
+                                    <input name="iyear" id="iyear" class="form-control mb-2" type="text" placeholder="Year">
+                                    <input name="imake" id="imake" class="form-control mb-2" type="text" placeholder="Make">
+                                    <input name="imodel" id="imodel" class="form-control mb-2" type="text" placeholder="Model">
+                                    <input name="itrim" id="itrim" class="form-control mb-2" type="text" placeholder="Trim">
+                                    <input name="icyl" id="icyl" class="form-control mb-2" type="text" placeholder="Cylinder Count">
                                     <form>
-                                        <div class="options">
-                                            <label><input type="checkbox" value="navigation-system" name="options"> Navigation</label>
+                                        <div class="options mb-2">
+                                            <label class="me-2"><input type="checkbox" value="navigation-system" name="options"> Navigation</label>
                                             <label><input type="checkbox" value="no-navigation-system" name="options"> No Navigation</label>
                                             </div>
-                                        <button id="kmxbutton" type="button" class="btn bg-carmax-gold text-white mt-2">CarMax Search</button>
+                                        <button id="kmxbutton" type="button" class="btn carmax-search-button">CarMax Search</button>
                                     </form>
                                 </div>
                             </div>
@@ -300,14 +155,121 @@
                     </div>
                 </div>
 
-                <div id="outputbox" class="shadow p-3 my-4 bg-info text-center rounded-0" style="display:none; width: 100%;">
+                <div id="outputbox" class="shadow p-3 my-4 text-center" style="display:none;">
                     <output name="output" id="output"></output>
                 </div>
 
                 <div id="audi_div" class="make-specific-content d-none">
                     <div class="container">
-                        <div class="pt-3">
-                            <p>Links that are listed here will work for <strong>Audi, Volkswagen, and Bentley vehicles.</strong></p>
-                        </div>
+                        <div class="pt-3"> <p>Links for <strong>Audi, Volkswagen, and Bentley vehicles.</strong></p> </div>
                         <div class="row">
-                            <div class="col-md-6 col
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100" onclick="vwaudilane()">
+                                    <div class="card-body"><h4 class="card-title">Window Sticker</h4><p class="card-text">VW/Audi Group. PDF.</p></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body"><h4 class="card-title">VW Recall/Trim Info</h4> <a href="https://www.vw.com/owners-recalls/" target="_blank" class="card-link">Visit VW Site</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bmw_div" class="make-specific-content d-none">
+                    <div class="container">
+                        <div class="pt-3"><p>Links for <strong>BMW and MINI vehicles.</strong></p></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body"><h4 class="card-title">Datacard (bimmer.work)</h4> <a href="http://bimmer.work" target="_blank" class="card-link">bimmer.work</a> <a href="https://bimmercat.com/bmw/en/vin/decoder" target="_blank" class="card-link">backup</a></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100" onclick="bimmerbtn()">
+                                    <div class="card-body"><h4 class="card-title">Datacard (mdecoder)</h4><p class="card-text">Equipment listing.</p></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100" onclick="bmwlane()">
+                                    <div class="card-body"><h4 class="card-title">Window Sticker (NADE)</h4><p class="card-text">BMW Lane vehicles.</p></div>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+                </div>
+
+                <div id="chrysler_div" class="make-specific-content d-none">
+                    <div class="container">
+                        <div class="pt-3"><p>Links for <strong>Chrysler, Jeep, Dodge, RAM, Fiat, Alfa Romeo vehicles.</strong></p></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="chrysler()"><div class="card-body"><h4 class="card-title">Window Sticker</h4><p class="card-text">2013+ vehicles.</p></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="chryslerlist()"><div class="card-body"><h4 class="card-title">Build Sheet (Jeep)</h4></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="chryslerlist2()"><div class="card-body"><h4 class="card-title">Build Sheet (RAM)</h4></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="chryslerlist3()"><div class="card-body"><h4 class="card-title">Build Sheet (Dodge)</h4></div></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ford_div" class="make-specific-content d-none">
+                    <div class="container">
+                        <div class="pt-3"><p>Links for <strong>Ford, Lincoln, Mercury vehicles.</strong></p></div>
+                         <div class="row">
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="fordwiki()"><div class="card-body"><h4 class="card-title">Window Sticker (FordDirect)</h4></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="ford()"><div class="card-body"><h4 class="card-title">AsBuilt Data (Motorcraft)</h4><p class="card-text">Requires login.</p></div></div></div>
+                             </div>
+                    </div>
+                </div>
+
+                <div id="gm_div" class="make-specific-content d-none">
+                    <div class="container">
+                         <div class="pt-3"><p>Links for <strong>GM (Chevrolet, GMC, Cadillac, Buick) vehicles.</strong></p></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="gmlink2()"><div class="card-body"><h4 class="card-title">Window Sticker (2020+)</h4></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="gmlink()"><div class="card-body"><h4 class="card-title">Window Sticker (Remarketing)</h4></div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="honda_div" class="make-specific-content d-none">
+                    <div class="container">
+                        <div class="pt-3"><p>Links for <strong>Honda and Acura vehicles.</strong></p></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="honda2()"><div class="card-body"><h4 class="card-title">Honda Trim Level (JSON)</h4></div></div></div>
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="acura()"><div class="card-body"><h4 class="card-title">Acura Trim Level (JSON)</h4></div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="hyundai_div" class="make-specific-content d-none">
+                    <div class="container">
+                        <div class="pt-3"><p>Links for <strong>Hyundai and Genesis vehicles.</strong></p></div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><div class="card h-100" onclick="hyunwiki()"><div class="card-body"><h4 class="card-title">Hyundai Details (JSON)</h4></div></div></div>
+                            </div>
+                    </div>
+                </div>
+                
+                <div id="infiniti_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Infiniti</strong> vehicles.</p></div></div></div>
+                <div id="jaguar_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Jaguar</strong> vehicles.</p></div></div></div>
+                <div id="kia_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Kia</strong> vehicles.</p></div></div></div>
+                <div id="landrover_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Land Rover</strong> vehicles.</p></div></div></div>
+                <div id="lexus_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Lexus</strong> vehicles.</p></div></div></div>
+                <div id="maserati_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Maserati</strong> vehicles.</p></div></div></div>
+                <div id="mazda_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Mazda</strong> vehicles.</p></div></div></div>
+                <div id="mercedes_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Mercedes-Benz</strong> vehicles.</p></div></div></div>
+                <div id="mitsubishi_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Mitsubishi</strong> vehicles.</p></div></div></div>
+                <div id="nissan_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Nissan</strong> vehicles.</p></div></div></div>
+                <div id="porsche_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Porsche</strong> vehicles.</p></div></div></div>
+                <div id="subaru_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Subaru</strong> vehicles.</p></div></div></div>
+                <div id="tesla_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Tesla</strong> vehicles.</p></div></div></div>
+                <div id="toyota_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Toyota</strong> vehicles.</p></div></div></div>
+                <div id="volvo_div" class="make-specific-content d-none"><div class="container"><div class="pt-3"><p>Resources for <strong>Volvo</strong> vehicles.</p></div></div></div>
+
+            </div>
+            <div class="col-md-3 order-md-3 order-2 order-sm-2" id="right-sidebar-column">
+                 </div>
+        </div>
+    </div> </body>
+</html>
