@@ -1,261 +1,468 @@
 /* style.css for VIN Research Hub */
+
+/* --- Global Styles & Typography --- */
 body {
-    font-family: 'Signika Negative', sans-serif;
+    font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
     background-color: #f4f5f6; /* CarMax-ish light grey background */
-    color: #333;
-    line-height: 1.6;
+    color: #333; /* Default text color */
+    line-height: 1.6; /* Improved readability */
+    font-size: 16px; /* Base font size */
+    -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
+    -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
 }
 
-/* Color Palette */
-.carmax-blue-text { color: #00539f; }
-.carmax-gold-text { color: #ffc600; }
-.bg-carmax-blue { background-color: #00539f; }
-.bg-carmax-gold { background-color: #ffc600; }
+/* --- Color Palette (CarMax Inspired) --- */
+.carmax-blue-text { color: #00539f; } /* Primary blue text */
+.carmax-gold-text { color: #ffc600; } /* Accent gold text */
+.bg-carmax-blue { background-color: #00539f !important; } /* Primary blue background */
+.bg-carmax-gold { background-color: #ffc600 !important; } /* Accent gold background */
 
-/* Main Container */
+/* --- Main Container --- */
 .main-container {
-    background-color: #fff;
-    border-radius: 8px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding-top: 10px !important; /* Override Bootstrap's p-3 for top only */
-    padding-bottom: 20px !important;
+    background-color: #fff; /* White background for the main content area */
+    border-radius: 10px; /* Slightly more pronounced rounded corners */
+    margin-top: 25px;
+    margin-bottom: 25px;
+    padding-top: 20px !important; /* Custom padding */
+    padding-bottom: 30px !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Softer, more modern shadow */
 }
 
-/* Header */
-.header-title-vin { color: #00539f; }
-.header-title-research { color: #00539f; }
-.header-title-hub {
-    background-color: #00539f;
-    color: #fff;
-    padding: 3px 10px;
-    border-radius: 5px;
+/* --- Header Section --- */
+.header-title-vin {
+    color: #00539f; /* Primary blue */
+    font-weight: 900; /* Bolder "VIN" */
+    font-family: 'Chivo', sans-serif;
+}
+.header-title-research {
+    color: #00539f; /* Primary blue */
     font-weight: 700;
-    font-size: 0.9em; /* Slightly smaller hub text */
-    vertical-align: middle;
+    font-family: 'Chivo', sans-serif;
+}
+.header-title-hub {
+    background-color: #00539f; /* Primary blue background */
+    color: #fff; /* White text */
+    padding: 5px 12px; /* Padding around "Hub" */
+    border-radius: 6px; /* Rounded corners for "Hub" */
+    font-weight: 700;
+    font-size: 0.85em; /* Slightly smaller "Hub" text */
+    vertical-align: middle; /* Align with other text */
+    display: inline-block; /* Allows padding and vertical alignment */
+    margin-left: 5px;
+    text-transform: uppercase;
 }
 .header-logo-area {
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    align-items: center; /* Vertically align items */
+    justify-content: flex-end; /* Push to the right */
 }
 .header-logo-area img {
-    margin-right: 10px;
+    margin-right: 10px; /* Space between gif and text */
 }
 .logo-text {
-    font-size: 2em;
+    font-size: 1.8em; /* Adjusted size */
     color: #ffc600; /* Gold accent */
-    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif;
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif; /* Specific font for logo */
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Navigation Bar (VIN Input and Manual Select) */
+/* --- Navigation Bar (VIN Input & Manual Select) --- */
 .nav-bar-section {
     background-color: #00539f; /* Primary blue background for the nav bar */
-    border-radius: 5px; /* Rounded corners for the nav bar itself */
+    border-radius: 8px; /* Rounded corners for the nav bar itself */
     margin-left: 0; /* Align with container edges */
     margin-right: 0;
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+    padding: 20px !important; /* Increased padding */
 }
 
 .manual-select-btn {
     background-color: #ffc600; /* Gold */
     color: #003366; /* Darker blue text for contrast */
     border: none;
-    font-weight: 600;
+    font-weight: 700; /* Bolder */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    padding: 10px 15px; /* More padding */
+    font-size: 0.95em;
+    border-radius: 6px;
 }
 .manual-select-btn:hover, .manual-select-btn:focus {
-    background-color: #e0ac00; /* Darker gold on hover */
+    background-color: #e6b400; /* Darker gold on hover */
     color: #003366;
+    transform: translateY(-1px); /* Slight lift effect */
 }
 .dropdown-menu {
-    border-radius: 5px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* Slightly more pronounced shadow */
+    border: 1px solid #ddd;
+    padding: 5px 0;
 }
-.dropdown-item:active {
+.dropdown-item {
+    font-weight: 500;
+    color: #333;
+    padding: 8px 15px; /* Adjust padding */
+}
+.dropdown-item:hover {
+    background-color: #f0f8ff; /* Light blue hover */
+    color: #00539f;
+}
+.dropdown-item:active, .dropdown-item.active { /* Style for active/selected item */
     background-color: #00539f;
     color: #fff !important;
 }
 
 .vin-input-bar {
-    border: 1px solid #ced4da; /* Standard Bootstrap border */
-    border-radius: 0.25rem; /* Standard Bootstrap radius */
+    border: 1px solid #ccc; /* Slightly darker border for definition */
+    border-radius: 6px; /* Consistent radius */
     background-color: #fff; /* White background for the input group */
+    display: flex; /* Ensure items are in a row */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar input.form-control {
     border: none; /* Remove border from the input itself */
-    text-transform: uppercase;
-    font-size: 0.95em;
-    height: calc(1.5em + .75rem + 2px); /* Match Bootstrap button height */
+    text-transform: uppercase; /* VINs are typically uppercase */
+    font-size: 1em; /* Slightly larger font */
+    flex-grow: 1; /* Allow input to take available space */
+    height: calc(1.5em + 1rem + 2px); /* Match Bootstrap button height better */
+    padding-left: 15px;
 }
 .vin-input-bar input.form-control:focus {
     box-shadow: none; /* Remove focus shadow from input itself */
 }
 .vin-input-bar:focus-within { /* Style the whole group on focus */
-    border-color: #ffc600;
-    box-shadow: 0 0 0 0.2rem rgba(255, 198, 0, 0.25);
+    border-color: #ffc600; /* Gold focus highlight */
+    box-shadow: 0 0 0 0.2rem rgba(255, 198, 0, 0.25), inset 0 1px 3px rgba(0,0,0,0.06); /* Gold shadow */
 }
-.vin-input-bar .input-group-text {
-    background-color: #ffc600;
+.vin-input-bar .input-group-text { /* Search button styling */
+    background-color: #ffc600; /* Gold button */
     color: #003366; /* Darker blue for icon */
     border: none; /* Remove border from button */
     cursor: pointer;
-    border-top-right-radius: 0.25rem; /* Match group radius */
-    border-bottom-right-radius: 0.25rem; /* Match group radius */
+    border-top-right-radius: 6px; /* Match group radius */
+    border-bottom-right-radius: 6px; /* Match group radius */
+    padding: 0 18px; /* Adjust padding */
+    transition: background-color 0.2s ease;
 }
 .vin-input-bar .input-group-text:hover {
-    background-color: #e0ac00;
+    background-color: #e6b400; /* Darker gold on hover */
 }
 .vin-input-bar .input-group-text i {
     color: #003366; /* Ensure icon color */
-}
-
-.identified-make-text {
-    min-height: 24px;
-    color: #00539f;
-    font-weight: 600;
     font-size: 1.1em;
 }
 
-/* Link Sections (General Links on Left Sidebar) */
-.link-section {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-.link-section .section-title {
-    color: #00539f;
-    font-family: 'Chivo', sans-serif;
-    font-weight: 700;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #ffc600;
-    padding-bottom: 8px;
-    font-size: 1.3em;
-}
-.link-section ul {
-    padding-left: 0;
-}
-.link-section ul li {
-    margin-bottom: 8px;
-}
-.link-section ul li a {
-    color: #00539f;
-    text-decoration: none;
-    transition: color 0.2s ease-in-out;
-    font-weight: 500;
-}
-.link-section ul li a:hover {
-    color: #ffc600;
-    text-decoration: underline;
+.identified-make-text { /* Text displaying the identified make */
+    min-height: 28px; /* Prevent layout shift */
+    color: #00539f; /* Primary blue */
+    font-weight: 700; /* Bolder */
+    font-size: 1.15em;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
 }
 
-/* Accordion for CarMax Search */
-.accordion-button-style {
+/* --- Link Sections (General Links on Left & Right Sidebars) --- */
+.link-section {
+    margin-bottom: 25px; /* More space between sections */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* Subtle shadow */
+    border: 1px solid #e9ecef; /* Light border */
+}
+.link-section .section-title {
+    color: #00539f; /* Primary blue title */
+    font-family: 'Chivo', sans-serif; /* Specific font for titles */
+    font-weight: 700;
+    margin-bottom: 18px; /* More space below title */
+    border-bottom: 3px solid #ffc600; /* Thicker Gold underline */
+    padding-bottom: 12px;
+    font-size: 1.3em; /* Slightly larger title */
+    text-transform: uppercase; /* Uppercase titles for a more formal look */
+    letter-spacing: 0.5px;
+}
+.link-section ul {
+    padding-left: 0; /* Remove default list padding */
+}
+.link-section ul li {
+    margin-bottom: 10px; /* Space between links */
+}
+.link-section ul li a {
+    color: #00539f; /* Primary blue for links */
+    text-decoration: none;
+    font-weight: 600; /* Bolder links */
+    transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+    display: block; /* Make the whole area clickable */
+    padding: 8px 5px; /* Adjust padding */
+    border-radius: 4px;
+}
+.link-section ul li a:hover {
+    color: #ffc600; /* Gold on hover */
+    background-color: #f8f9fa; /* Slight background on hover */
+    padding-left: 10px; /* Slight indent on hover */
+    text-decoration: none;
+}
+
+/* --- Accordion for CarMax Search --- */
+.accordion-button-style { /* Button to toggle accordion */
     background-color: #00539f;
     color: white;
-    border-color: #00539f;
+    border: none; /* Remove border */
     width: 100%;
     text-align: left;
-    font-weight: 600;
+    font-weight: 700; /* Bolder */
+    padding: 15px 20px; /* Adjust padding */
+    font-size: 1.1em;
+    transition: background-color 0.2s ease;
 }
 .accordion-button-style:hover, .accordion-button-style:focus {
     background-color: #004080; /* Darker blue on hover/focus */
     color: white;
 }
 .accordion .card {
-    border: 1px solid #e0e0e0;
+    border: 1px solid #dee2e6; /* Standard Bootstrap border */
     border-radius: 8px; /* Rounded corners for accordion card */
     overflow: hidden; /* Ensures child elements conform to border radius */
 }
 .accordion .card-header {
     padding: 0; /* Remove padding as button takes full space */
+    background-color: #00539f; /* Ensure header matches button */
+    border-bottom: 1px solid #004080; /* Separator line */
+}
+.accordion .card-header button {
+    border-radius: 0; /* Button takes shape of header */
 }
 .accordion .card-body {
-    background-color: #f8f9fa; /* Light grey for accordion content area */
+    background-color: #fdfdff; /* Very light grey for accordion content area */
+    padding: 20px;
 }
-.search-form input[type="text"], .search-form input[type="checkbox"] {
-    margin-bottom: 10px;
+.search-form input[type="text"] {
+    margin-bottom: 12px; /* More space */
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 10px;
 }
-.carmax-search-button {
+.search-form .options label {
+    margin-right: 15px;
+    margin-bottom: 8px; /* Space below labels */
+    font-weight: 500;
+    display: inline-block; /* Better layout for checkboxes */
+}
+.carmax-search-button { /* Specific button for CarMax search form */
     background-color: #ffc600;
     color: #003366;
-    font-weight: 600;
+    font-weight: 700; /* Bolder */
     border: none;
+    padding: 12px 25px; /* More padding */
+    border-radius: 6px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-size: 1.05em;
 }
 .carmax-search-button:hover {
-    background-color: #e0ac00;
+    background-color: #e6b400;
     color: #003366;
+    transform: translateY(-1px);
 }
 
-
-/* Output Box */
+/* --- Output Box --- */
 #outputbox {
-    background-color: #e6f0f7; /* Light blue, CarMax style for info boxes */
-    color: #00539f;
-    border: 1px solid #b8d4ea; /* Softer border */
+    background-color: #e7f3fe; /* Lighter blue for info boxes */
+    color: #004085; /* Darker blue text for contrast */
+    border: 1px solid #b8daff; /* Softer border */
     border-radius: 8px;
     font-weight: 500;
+    padding: 20px; /* More padding */
 }
-#outputbox pre {
+#outputbox pre { /* Styling for preformatted text (e.g., JSON output) */
     text-align: left;
-    white-space: pre-wrap;
-    word-break: break-all;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #d0e0ed;
+    white-space: pre-wrap; /* Wrap long lines */
+    word-break: break-all; /* Break long words */
+    background-color: #fff; /* White background for pre */
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #d1e7fd; /* Border for pre */
     font-size: 0.9em;
+    max-height: 350px; /* Limit height and make scrollable if needed */
+    overflow-y: auto;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
-
-/* Make-Specific Content Sections */
+/* --- Make-Specific Content Sections & Common Div --- */
 .make-specific-content {
-    padding: 20px;
+    padding: 25px;
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-top: 15px; /* Space from accordion or previous element */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    margin-top: 20px;
+    border: 1px solid #e9ecef;
 }
-.make-specific-content p strong {
-    color: #00539f;
+.make-specific-content p:first-child { /* Styling for the introductory paragraph */
+    font-weight: 600; /* Bolder intro */
+    font-size: 1.1em; /* Slightly larger */
+    margin-bottom: 1.5rem;
+    color: #00539f; /* Blue intro text */
+}
+.make-specific-content p strong { /* Keep strong tag distinct if needed, or inherit from parent */
+    color: #004080; /* Darker blue for emphasis within the blue intro */
 }
 .make-specific-content .card { /* Cards within make-specific sections */
     border: 1px solid #e0e0e0;
-    transition: box-shadow 0.2s ease-in-out;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
     background-color: #f8f9fa; /* Light background for cards */
+    border-radius: 8px; /* More rounded cards */
+    height: 100%; /* Ensure cards in a row are same height */
 }
 .make-specific-content .card:hover {
-     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-     cursor: pointer;
+     box-shadow: 0 6px 18px rgba(0,0,0,0.1); /* Enhanced shadow on hover */
+     transform: translateY(-4px); /* Slight lift effect */
+     cursor: pointer; /* Indicate interactivity */
 }
 .make-specific-content .card-body {
-    padding: 1rem; /* Standard Bootstrap card padding */
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column; /* Align content vertically */
 }
 .make-specific-content .card-title {
-    color: #00539f;
-    font-weight: 600;
+    color: #00539f; /* Primary blue title */
+    font-weight: 700; /* Bolder card titles */
     font-size: 1.1em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
+}
+.make-specific-content .card-subtitle {
+    font-size: 0.8em;
+    color: #6c757d; /* Muted color for subtitle */
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
 }
 .make-specific-content .card-text {
-    font-size: 0.9em;
-    color: #555;
-    margin-bottom: 0.5rem;
+    font-size: 0.95em;
+    color: #495057; /* Darker grey for text */
+    margin-bottom: 1rem; /* More space before links if any */
+    flex-grow: 1; /* Allow text to take space pushing links down */
 }
 .make-specific-content .card-link {
-    color: #00539f;
+    color: #00539f; /* Primary blue for links */
     font-weight: 600;
     text-decoration: none;
     font-size: 0.9em;
+    transition: color 0.2s ease;
+    margin-top: auto; /* Push link to bottom if card body is flex */
 }
 .make-specific-content .card-link:hover {
-    color: #ffc600;
+    color: #ffc600; /* Gold on hover */
     text-decoration: underline;
 }
+.make-specific-content .card .btn-sm { /* Small buttons within cards */
+    padding: .3rem .8rem;
+    font-size: .9rem;
+}
+.make-specific-content .bg-success .card-title,
+.make-specific-content .bg-success .card-subtitle,
+.make-specific-content .bg-success .card-text,
+.make-specific-content .bg-success .card-link {
+    color: #fff; /* White text on success background */
+}
+.make-specific-content .bg-warning .card-title,
+.make-specific-content .bg-warning .card-subtitle,
+.make-specific-content .bg-warning .card-text,
+.make-specific-content .bg-warning .card-link {
+    color: #212529; /* Dark text on warning background for readability */
+}
+.make-specific-content .bg-warning .card-link:hover {
+    color: #000;
+}
 
-/* Utility */
-.d-none {
+/* Styling for the "visible_div" (Owner's Manuals section) */
+#visible_div {
+    background-color: #f8f9fa; /* Consistent light background */
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+#visible_div .dropdown .manual-select-btn { /* Ensure button inside matches theme */
+    font-size: 1.1em; /* Larger font for this prominent button */
+}
+
+/* NHTSA Data Text Area */
+#nhtsa_data textarea {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* Monospace for data */
+    font-size: 0.9em;
+    background-color: #eef1f5; /* Slightly different background */
+    border: 1px solid #d8dde3;
+    border-radius: 6px;
+    padding: 15px;
+    min-height: 150px; /* Ensure enough space */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+
+
+/* --- Utility Classes --- */
+.d-none { /* Bootstrap's display none utility */
     display: none !important;
+}
+.d-block { display: block; } /* Utility for block display */
+.mb-1 { margin-bottom: 0.25rem !important; } /* Margin utility */
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 767.98px) { /* For small devices (phones) */
+    .main-container {
+        margin-top: 15px;
+        margin-bottom: 15px;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    .header-title-vin, .header-title-research {
+        font-size: 1.3rem; /* Adjust title size for smaller screens */
+    }
+    .header-title-hub {
+        font-size: 0.75em;
+        padding: 4px 8px;
+    }
+    .logo-text {
+        font-size: 1.4em;
+    }
+    .nav-bar-section {
+        padding: 15px !important;
+    }
+    .nav-bar-section .col-md-4, .nav-bar-section .col-md-8,
+    .nav-bar-section .col-lg-3, .nav-bar-section .col-lg-9 {
+        padding-left: 5px; /* Reduce padding on smaller screens */
+        padding-right: 5px;
+    }
+    .vin-input-bar input.form-control {
+        font-size: 0.9em; /* Smaller font in VIN bar */
+        height: calc(1.5em + .75rem + 2px);
+    }
+    .vin-input-bar .input-group-text {
+        padding: 0 12px;
+    }
+    .link-section, .make-specific-content {
+        padding: 15px;
+    }
+    .link-section .section-title {
+        font-size: 1.15em;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+    }
+    .accordion-button-style {
+        font-size: 1em;
+        padding: 12px 15px;
+    }
+    #left-sidebar-column, #right-sidebar-column, #main-content-column {
+        margin-bottom: 20px; /* Add space below columns when stacked */
+        order: initial !important; /* Let Bootstrap handle stacking order on mobile */
+    }
+    /* Ensure main content appears first on mobile if desired, or adjust order classes */
+    #main-content-column { order: 1 !important; }
+    #left-sidebar-column { order: 2 !important; }
+    #right-sidebar-column { order: 3 !important; }
+
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) { /* For medium devices (tablets) */
+    .vin-input-bar input.form-control {
+        font-size: 0.95em;
+    }
+    .link-section .section-title {
+        font-size: 1.2em;
+    }
 }
