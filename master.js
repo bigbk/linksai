@@ -147,7 +147,10 @@ $(document).ready(function () {
      * @param {string} makeKey - The make key (e.g., 'AUDI', 'ALL').
      */
     window.updateDisplay = function(makeKey) {
-        $('#VINbar').val(''); // Clear VIN bar when using manual select for a specific make
+        // Do not clear VIN bar if user is just clicking "Show All General Links"
+        if (makeKey !== 'ALL') {
+            // $('#VINbar').val(''); // Clearing VIN on manual make selection might be disruptive if user wants to keep VIN
+        }
         const commonDivId = makeToDivId['COMMON'];
 
         if (makeKey === 'ALL' || !makeKey) {
@@ -203,9 +206,10 @@ $(document).ready(function () {
         $('#VINbar').val(vinValue); // Ensure it's uppercase in the bar
 
         if (vinValue.length !== 17) {
-            $('#output').text("Please enter a full 17-digit VIN.");
+            $('#output').html("<strong>Validation Error:</strong> Please enter a full 17-digit VIN.");
             $('#outputbox').fadeIn();
-            setTimeout(() => $('#outputbox').fadeOut(), 3000);
+            // Do not automatically fade out error messages that require user action/correction
+            // setTimeout(() => $('#outputbox').fadeOut(), 3000); 
             updateDisplay('ALL'); // Revert to general links if VIN is invalid
             return;
         }
@@ -213,11 +217,11 @@ $(document).ready(function () {
         const make = getMakeFromVin(vinValue);
         if (make) {
             showMakeSpecificDiv(make);
-            $('#output').text(`Displaying links for identified make: ${make}.`);
-            $('#outputbox').fadeIn().delay(2000).fadeOut();
+            $('#output').html(`Displaying links for identified make: <strong>${make}</strong>.`);
+            $('#outputbox').fadeIn().delay(2500).fadeOut(); // Slightly longer display for confirmation
         } else {
-            $('#output').text(`Make not identified for VIN. Showing general links.`);
-            $('#outputbox').fadeIn().delay(3000).fadeOut();
+            $('#output').html(`<strong>Notice:</strong> Make not identified for this VIN. Showing general research links.`);
+            $('#outputbox').fadeIn().delay(3500).fadeOut();
             updateDisplay('ALL'); // Revert to general links
         }
 
@@ -226,9 +230,6 @@ $(document).ready(function () {
             getNHTSADataByVIN(vinValue);
         } else {
             console.warn("getNHTSADataByVIN function is not defined. NHTSA data will not be fetched.");
-            // Optionally, display a message in the outputbox if NHTSA fetching is a core feature.
-            // $('#output').append("<br>NHTSA data fetching is currently unavailable.");
-            // $('#outputbox').fadeIn();
         }
     };
 
@@ -246,18 +247,14 @@ $(document).ready(function () {
     }
 
     // --- Event Listeners ---
-    // Attach event listener to the search button for explicit VIN processing
     $('#btn_submit').on('click', processVinAndDisplay);
-
-    // Also allow Enter key in VIN bar to trigger processing
     $('#VINbar').on('keypress', function(e) {
         if (e.which == 13) { // Enter key pressed
             processVinAndDisplay();
-            e.preventDefault(); // Prevent default form submission if it were in a form
+            e.preventDefault(); 
         }
     });
 
-    // CarMax search button functionality (from original inline script)
     if (document.getElementById("kmxbutton")) {
         document.getElementById("kmxbutton").onclick = function () {
             var favorite = [];
@@ -267,335 +264,155 @@ $(document).ready(function () {
             var tcyl = document.getElementById("icyl").value ? "cylinders-" + document.getElementById("icyl").value : "";
             var carmaxUrl = "https://www.carmax.com/cars" +
                 (document.getElementById("iyear").value ? "/" + document.getElementById("iyear").value : "") +
-                (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ /g, "-") : "") +
-                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").value.replace(/ /g, "-") : "") +
-                (document.getElementById("itrim").value ? "/" + document.getElementById("itrim").value.replace(/ /g, "-") : "") +
+                (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") + // Handle spaces and '&'
+                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
+                (document.getElementById("itrim").value ? "/" + document.getElementById("itrim").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
                 (tcyl ? "/" + tcyl : "") +
                 (favorite.length > 0 ? "/" + favorite.join("/") : "") +
-                "?zip=21162&sort=4&distance=all"; // Ensure your default ZIP and params are correct
+                "?zip=21162&sort=4&distance=all"; 
             window.open(carmaxUrl, '_blank');
         };
     }
-
-    // Animated GIF movement (from original inline script)
-    // This was for an element #dancebk, but the image ID in HTML is dancebkstatic.
-    // If you intend to have a separate, perhaps absolutely positioned, #dancebk element for animation,
-    // ensure it exists in your HTML. Otherwise, this won't do anything.
-    // For now, I'll comment it out to prevent potential errors if #dancebk doesn't exist.
-    /*
-    if ($("#dancebk").length) { // Check if #dancebk exists
-         $(document).mousemove(function (e) {
-            $("#dancebk").stop().animate({ left: e.pageX + 8, top: e.pageY + 15 });
-         });
-    }
-    */
-
-    // --- Make-Specific Link Functions ---
-    // These functions are called by onclick attributes in the HTML.
-    // They generally open a new window/tab with a URL constructed using the current VIN.
+    
+    // --- Make-Specific Link Functions & JSON Fetch Helper ---
 
     function getVinOrAlert() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         if (vinValue.length === 17) {
             return vinValue;
         } else {
-            alert("Please enter a valid 17-digit VIN.");
+            $('#output').html("<strong>VIN Required:</strong> Please enter a valid 17-digit VIN before using this link.");
+            $('#outputbox').stop().fadeIn(); // Ensure it's visible
             return null;
         }
     }
 
-    window.vwaudilane = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('http://webtest1.audi.com.edgesuite.net/acf012/v1/applications/vindecoder/default/details/' + vin + '/CA/EN', '_blank');
-    };
-    window.bimmerbtn = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank');
-    };
-    window.bmwlane = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('http://www.nadeauto.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=BMW&img=1', '_blank');
-    };
-    window.miniog = function() {
-        var myear = $("#myear").val();
-        var mmodel = $("#mmodel").val();
-        if(myear && mmodel) {
-            window.open('https://www.google.com/search?q=' + encodeURIComponent(myear + ' ' + mmodel + ' mini cooper ordering guide site:minif56.com'), '_blank');
-        } else {
-            alert("Please enter Year and Model for MINI Guide Search.");
-        }
-    };
-    window.chrysler = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?vin=' + vin, '_blank');
-    };
-    window.chryslerlist = function () { // Jeep Build Sheet
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.jeep.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank');
-    };
-    window.chryslerlist2 = function () { // RAM Build Sheet
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.ramtrucks.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank');
-    };
-    window.chryslerlist3 = function () { // Dodge Build Sheet
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.dodge.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank');
-    };
-    window.fordwiki = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.windowsticker.forddirect.com/windowsticker.pdf?vin=' + vin, '_blank');
-    };
-    window.ford = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.motorcraftservice.com/Home/SetCountry?returnUrl=%2FAsBuilt%3Fvin%3D' + vin, '_blank');
-    };
-    window.fordsticker = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.inventory.ford.com/services/inventory/v2/windowsticker/' + vin + '?dealerId=XXXXX', '_blank'); // Dealer ID might be needed
-    };
-    window.fordstickerkey = function () { // Concentrix JSON
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details', '_blank');
-    };
-    window.fordstickerkey2 = function () { // Concentrix with key input
-        const vin = getVinOrAlert();
-        const mkey = $('#mkey').val().trim();
-        if (vin && mkey.length > 0) {
-            let url = 'https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details';
-            // This would typically be an AJAX request if you could process the JSON and add headers.
-            // For now, just opening the URL. User will need to handle auth/headers in browser if possible or use Postman.
-            alert("Opening Concentrix URL. Authentication/headers may be required: " + url + " with key: " + mkey);
-            window.open(url, '_blank');
-        } else if (vin && mkey.length === 0) {
-            alert("Please enter the Concentrix key.");
-        }
-    };
-    window.gmlink2 = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.gmpartsrebates.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin, '_blank');
-    };
-    window.gmlink = function () {
-        const vin = getVinOrAlert();
-        if (vin) window.open('https://www.gmremarketing.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=SAAB', '_blank'); // Example with make, adjust if needed
-    };
-    window.honda2 = function () { // Honda Trim Level JSON
-        const vin = getVinOrAlert();
-        if (vin) {
-            let url = 'https://www.hondaautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true';
-            attemptJsonFetch(url, 'Honda');
-        }
-    };
-    window.acura = function () { // Acura Trim Level JSON
-        const vin = getVinOrAlert();
-        if (vin) {
-            let url = 'https://www.acuraautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true';
-            attemptJsonFetch(url, 'Acura');
-        }
-    };
-    window.hyunwiki = function () { // Hyundai Details JSON
-        const vin = getVinOrAlert();
-        if (vin) {
-            let url = 'https://www.hyundaiusa.com/var/hyundai/services/inventory/vehicleDetailsByVin.json?vin=' + vin;
-            attemptJsonFetch(url, 'Hyundai');
-        }
-    };
-    window.getnissansticker4 = function() { // Used by Infiniti and Nissan
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); // This is a lookup page, not direct PDF
-    };
-    window.infiniti = function() { // Alternative Infiniti sticker
-        const vin = getVinOrAlert();
-        // This URL pattern might be outdated or require specific conditions.
-        // Example: 'https://www.infinitiusa.com/window-sticker/' + vin + '.pdf' - verify correct pattern
-        if(vin) alert("Infiniti specific sticker link pattern needs verification. Opening general lookup.");
-        if(vin) window.open('https://www.infinitiusa.com/owners/ownership/manuals-guides.html', '_blank'); // General owner page
-    };
-    window.infinititrm = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.infinitiusa.com/owners/vehicle-resources/recall-information.html?dcp=sn_258_RECALLS&uuid=ONLINE_SEARCH_FORM&vin=' + vin, '_blank');
-    };
-    window.kiabtn2 = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.kia.com/us/en/services/kia-owner-portal/information?vin=' + vin, '_blank'); // Points to owner portal, sticker might be there
-    };
-    window.maserati = function() {
-        const vin = getVinOrAlert();
-        // Maserati sticker links are often dealer-specific or require login.
-        if(vin) alert("Maserati window sticker links are typically dealer-specific. Searching Google for dealer inventory.");
-        if(vin) window.open('https://www.google.com/search?q=maserati+dealer+inventory+window+sticker+' + vin, '_blank');
-    };
-    window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable (as per original notes)."); };
-    window.mazdabtn = function() {
-        const vin = getVinOrAlert();
-        if(vin) alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google.");
-        if(vin) window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank');
-    };
-    window.decoderz = function() { // Generic VIN decoder
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://vindecoderz.com/EN/check-lookup/' + vin, '_blank');
-    };
-    window.mitsbtn = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.mitsubishicars.com/owners/service/recalls?vin=' + vin, '_blank'); // Recall site might show trim
-    };
-    window.nissan = function() { // Alternative Nissan sticker
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank');
-    };
-    window.nissantrm = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.nissanusa.com/owners/vehicle-resources/recall-lookup.html?vin=' + vin, '_blank');
-    };
-    window.porwiki = function() {
-        const vin = getVinOrAlert();
-        // Porsche sticker links are often through specific dealer portals or paid services.
-        if(vin) alert("Porsche window sticker links are typically dealer-specific or require login. Searching Porsche USA.");
-        if(vin) window.open('https://www.porsche.com/usa/accessoriesandservices/porscheservice/vehicleinformation/originalvehicleinformation/', '_blank');
-    };
-    window.subaru2 = function() { // Subaru Trim JSON
-        const vin = getVinOrAlert();
-        if (vin) {
-            // This URL pattern might be outdated or require specific conditions.
-            // Example: 'https://www.subaru.com/content/static/json/vehicle_data/' + vin + '.json' - verify pattern
-            alert("Subaru JSON trim link pattern needs verification. Opening recall site.");
-            window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank');
-        }
-    };
-    window.subaru = function() { // Subaru Trim Info
-         const vin = getVinOrAlert();
-         if(vin) window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank');
-    };
-    window.subarusticker = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.subaruwindowsticker.com/parse.php?vin=' + vin, '_blank'); // Third-party site
-    };
-    window.tesla = function() { // Tesla Packages
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.tesla.com/vin/' + vin, '_blank'); // Tesla VIN lookup page
-    };
-    window.teslam = function() { // Tesla Owner's Manual
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.tesla.com/ownersmanual', '_blank'); // General manuals page
-    };
-    window.tesla2 = function() { // Tesla Listing Info
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.google.com/search?q=tesla+vin+' + vin + '+for+sale+history', '_blank');
-    };
-    window.toyotasticker = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://api.toyotainventory.com/vehicles/' + vin + '/monroney', '_blank'); // API based, might change
-    };
-    window.toyotasticker3 = function() {
-        const vin = getVinOrAlert();
-        // DealerSocket/DealerFire links are highly variable and specific to dealer sites.
-        if(vin) alert("DealerSocket/DealerFire Toyota sticker links vary by dealer. Searching Google.");
-        if(vin) window.open('https://www.google.com/search?q=toyota+dealersocket+window+sticker+' + vin, '_blank');
-    };
-    window.volvosticker = function() {
-        const vin = getVinOrAlert();
-        // Volvo sticker links can be tricky. This is a common pattern but might not always work.
-        if(vin) window.open('https://volvo.custhelp.com/app/answers/detail/a_id/9005/~/how-do-i-get-a-window-sticker-%28monroney-label%29-for-my-volvo%3F', '_blank'); // Info page
-    };
-
-    // --- Common/Universal Link Functions ---
-    window.velocitysticker = function() {
-        const vin = getVinOrAlert();
-        if(vin) alert("Velocity sticker link requires dealer login/access. This is a placeholder.");
-        // Example: if(vin) window.open('DEALER_VELOCITY_URL_WITH_VIN=' + vin, '_blank');
-    };
-    window.autobrochures = function() { window.open('http://www.auto-brochures.com/', '_blank'); };
-    window.manheimmmr = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://mmr.manheim.com/#!/vdp?vin=' + vin, '_blank');
-    };
-    window.hclutch = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.vehiclehistory.com/vehicle/history-report-by-vin/' + vin, '_blank'); // Example, verify Clutch.com's current URL structure
-    };
-    window.siriusxm = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.siriusxm.com/vehicleavailability?vin=' + vin, '_blank');
-    };
-    window.hitcher = function() { // e-Trailer
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.etrailer.com/vehicle-fit-guide.aspx?vin=' + vin, '_blank');
-    };
-
-    // --- Right Sidebar Link Functions ---
-    window.invoice = function() { // Blackbook Invoice Guide
-        const vin = getVinOrAlert();
-        if(vin) window.open('http://www.blackbookportals.com/bb/products/newcarhtmlportal.asp?color=o&companyid=MAYO&vin=' + vin, '_blank'); // Example, may need specific portal
-    };
-    window.bidhistory = function() { // Copart/Bidhistory
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.bidhistory.com/search?q=' + vin, '_blank');
-    };
-    window.manheimsearch = function() {
-        const vin = getVinOrAlert();
-        if(vin) window.open('https://www.manheim.com/members/search_results?vin=' + vin, '_blank');
-    };
-
     /**
      * Attempts to fetch and display JSON data from a given URL.
+     * Provides a fallback direct link if fetching fails (e.g., due to CORS).
      * @param {string} url - The URL to fetch JSON from.
      * @param {string} makeName - The name of the make for display purposes.
      */
     function attemptJsonFetch(url, makeName) {
-        $('#output').html(`Attempting to fetch ${makeName} data... <small>(May be blocked by browser CORS policy or API changes)</small>`);
-        $('#outputbox').fadeIn();
+        $('#output').html(`Attempting to fetch ${makeName} data... <small>(May be blocked by browser or API changes)</small>`);
+        $('#outputbox').stop().fadeIn();
+        
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                    // Try to get more info from response if possible, even if not strictly JSON error
+                    let errorDetail = `Network response was not ok: ${response.status} ${response.statusText}`;
+                    if (response.type === 'opaque') { // Opaque responses are common with 'no-cors' mode, but we are not using it here. Still, good to know.
+                        errorDetail = "Received an opaque response, likely due to CORS. Cannot read data.";
+                    }
+                    throw new Error(errorDetail);
                 }
                 return response.json();
             })
             .then(data => {
                 console.log(`${makeName} Data Received:`, data);
                 $('#output').html(`<strong>${makeName} Data Received (JSON):</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`);
-                $('#outputbox').stop().fadeIn(); // Ensure it's visible if it was fading out
+                $('#outputbox').stop().fadeIn(); 
             })
             .catch(error => {
                 console.error(`Error fetching ${makeName} data:`, error);
-                $('#output').html(`<strong>Error fetching ${makeName} data.</strong><br><small>This could be due to browser CORS policy, the API being unavailable/changed, or a network issue. Check the console for details.</small><br><small>URL: ${url}</small>`);
+                // Provide a more user-friendly message with a direct link
+                $('#output').html(
+                    `<strong>Could not fetch ${makeName} data directly.</strong><br>` +
+                    `<small>This can happen due to browser security (CORS), API changes, or network issues.</small><br>` +
+                    `You can try to access the data directly by clicking here: ` +
+                    `<a href="${url}" target="_blank" class="text-warning fw-bold">Open ${makeName} Data Link</a><br>` +
+                    `<small>Error details: ${error.message}</small>`
+                );
                 $('#outputbox').stop().fadeIn();
             });
     }
 
-    // --- NHTSA Data Fetching Function (Placeholder) ---
-    // The actual implementation of this function would make an API call to NHTSA.
-    // This is a placeholder. You'll need to implement the actual API call logic.
-    window.getNHTSADataByVIN = function(vinToQuery) {
-        console.log("Attempting to fetch NHTSA data for VIN:", vinToQuery);
-        $('#txt_results').val(`NHTSA data for VIN: ${vinToQuery} would be fetched here.\n(Actual API call needs implementation)`);
+    // --- Individual Make/Link Functions (using getVinOrAlert and attemptJsonFetch where appropriate) ---
+    window.vwaudilane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://webtest1.audi.com.edgesuite.net/acf012/v1/applications/vindecoder/default/details/' + vin + '/CA/EN', '_blank'); };
+    window.bimmerbtn = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank'); };
+    window.bmwlane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://www.nadeauto.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=BMW&img=1', '_blank'); };
+    window.miniog = function() {
+        var myear = $("#myear").val(); var mmodel = $("#mmodel").val();
+        if(myear && mmodel) { window.open('https://www.google.com/search?q=' + encodeURIComponent(myear + ' ' + mmodel + ' mini cooper ordering guide site:minif56.com'), '_blank'); } 
+        else { alert("Please enter Year and Model for MINI Guide Search."); }
+    };
+    window.chrysler = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?vin=' + vin, '_blank'); };
+    window.chryslerlist = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.jeep.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
+    window.chryslerlist2 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.ramtrucks.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
+    window.chryslerlist3 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.dodge.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
+    window.fordwiki = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.windowsticker.forddirect.com/windowsticker.pdf?vin=' + vin, '_blank'); };
+    window.ford = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.motorcraftservice.com/Home/SetCountry?returnUrl=%2FAsBuilt%3Fvin%3D' + vin, '_blank'); };
+    window.fordsticker = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.inventory.ford.com/services/inventory/v2/windowsticker/' + vin + '?dealerId=XXXXX', '_blank'); };
+    window.fordstickerkey = function () { const vin = getVinOrAlert(); if (vin) window.open('https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details', '_blank'); };
+    window.fordstickerkey2 = function () {
+        const vin = getVinOrAlert(); const mkey = $('#mkey').val().trim();
+        if (vin && mkey.length > 0) { let url = 'https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details'; alert("Opening Concentrix URL. Authentication/headers may be required: " + url + " with key: " + mkey); window.open(url, '_blank'); } 
+        else if (vin && mkey.length === 0) { alert("Please enter the Concentrix key."); }
+    };
+    window.gmlink2 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.gmpartsrebates.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin, '_blank'); };
+    window.gmlink = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.gmremarketing.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=SAAB', '_blank'); };
+    
+    window.honda2 = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hondaautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Honda'); };
+    window.acura = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.acuraautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Acura'); };
+    window.hyunwiki = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hyundaiusa.com/var/hyundai/services/inventory/vehicleDetailsByVin.json?vin=' + vin, 'Hyundai'); };
+    
+    window.getnissansticker4 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); };
+    window.infiniti = function() { const vin = getVinOrAlert(); if(vin) { alert("Infiniti specific sticker link pattern needs verification. Opening general lookup."); window.open('https://www.infinitiusa.com/owners/ownership/manuals-guides.html', '_blank'); } };
+    window.infinititrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.infinitiusa.com/owners/vehicle-resources/recall-information.html?dcp=sn_258_RECALLS&uuid=ONLINE_SEARCH_FORM&vin=' + vin, '_blank'); };
+    window.kiabtn2 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.kia.com/us/en/services/kia-owner-portal/information?vin=' + vin, '_blank'); };
+    window.maserati = function() { const vin = getVinOrAlert(); if(vin) { alert("Maserati window sticker links are typically dealer-specific. Searching Google for dealer inventory."); window.open('https://www.google.com/search?q=maserati+dealer+inventory+window+sticker+' + vin, '_blank'); } };
+    window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable (as per original notes)."); };
+    window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
+    window.decoderz = function() { const vin = getVinOrAlert(); if(vin) window.open('https://vindecoderz.com/EN/check-lookup/' + vin, '_blank'); };
+    window.mitsbtn = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.mitsubishicars.com/owners/service/recalls?vin=' + vin, '_blank'); };
+    window.nissan = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); };
+    window.nissantrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/vehicle-resources/recall-lookup.html?vin=' + vin, '_blank'); };
+    window.porwiki = function() { const vin = getVinOrAlert(); if(vin) { alert("Porsche window sticker links are typically dealer-specific or require login. Searching Porsche USA."); window.open('https://www.porsche.com/usa/accessoriesandservices/porscheservice/vehicleinformation/originalvehicleinformation/', '_blank'); } };
+    window.subaru2 = function() { const vin = getVinOrAlert(); if (vin) { alert("Subaru JSON trim link pattern needs verification. Opening recall site."); window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); } };
+    window.subaru = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); };
+    window.subarusticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaruwindowsticker.com/parse.php?vin=' + vin, '_blank'); };
+    window.tesla = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/vin/' + vin, '_blank'); };
+    window.teslam = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/ownersmanual', '_blank'); };
+    window.tesla2 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.google.com/search?q=tesla+vin+' + vin + '+for+sale+history', '_blank'); };
+    window.toyotasticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://api.toyotainventory.com/vehicles/' + vin + '/monroney', '_blank'); };
+    window.toyotasticker3 = function() { const vin = getVinOrAlert(); if(vin) { alert("DealerSocket/DealerFire Toyota sticker links vary by dealer. Searching Google."); window.open('https://www.google.com/search?q=toyota+dealersocket+window+sticker+' + vin, '_blank'); } };
+    window.volvosticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://volvo.custhelp.com/app/answers/detail/a_id/9005/~/how-do-i-get-a-window-sticker-%28monroney-label%29-for-my-volvo%3F', '_blank'); };
+    
+    window.velocitysticker = function() { const vin = getVinOrAlert(); if(vin) alert("Velocity sticker link requires dealer login/access. This is a placeholder."); };
+    window.autobrochures = function() { window.open('http://www.auto-brochures.com/', '_blank'); };
+    window.manheimmmr = function() { const vin = getVinOrAlert(); if(vin) window.open('https://mmr.manheim.com/#!/vdp?vin=' + vin, '_blank'); };
+    window.hclutch = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.vehiclehistory.com/vehicle/history-report-by-vin/' + vin, '_blank'); };
+    window.siriusxm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.siriusxm.com/vehicleavailability?vin=' + vin, '_blank'); };
+    window.hitcher = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.etrailer.com/vehicle-fit-guide.aspx?vin=' + vin, '_blank'); };
+    
+    window.invoice = function() { const vin = getVinOrAlert(); if(vin) window.open('http://www.blackbookportals.com/bb/products/newcarhtmlportal.asp?color=o&companyid=MAYO&vin=' + vin, '_blank'); };
+    window.bidhistory = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.bidhistory.com/search?q=' + vin, '_blank'); };
+    window.manheimsearch = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.manheim.com/members/search_results?vin=' + vin, '_blank'); };
 
-        // Example of how you might use the vPIC API (client-side fetch)
-        // Note: The official recommendation is often to use this API server-side to avoid exposing API keys if required,
-        // and to handle rate limits. For basic public data, client-side can work.
+    // --- NHTSA Data Fetching Function ---
+    window.getNHTSADataByVIN = function(vinToQuery) {
+        $('#txt_results').val(`Fetching NHTSA data for VIN: ${vinToQuery}...`);
         const nhtsaApiUrl = `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${vinToQuery}?format=json`;
 
         fetch(nhtsaApiUrl)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error(`NHTSA API response was not ok: ${response.status} ${response.statusText}`);
-                }
+                if (!response.ok) { throw new Error(`NHTSA API response error: ${response.status} ${response.statusText}`); }
                 return response.json();
             })
             .then(data => {
-                console.log("NHTSA Data:", data);
                 if (data && data.Results && data.Results.length > 0) {
                     let formattedResults = `NHTSA Decoded VIN: ${vinToQuery}\n\n`;
-                    // Extract and format relevant data from data.Results[0]
                     const vehicleData = data.Results[0];
-                    formattedResults += `Make: ${vehicleData.Make || 'N/A'}\n`;
-                    formattedResults += `Model: ${vehicleData.Model || 'N/A'}\n`;
-                    formattedResults += `Year: ${vehicleData.ModelYear || 'N/A'}\n`;
-                    formattedResults += `Manufacturer: ${vehicleData.Manufacturer || 'N/A'}\n`;
-                    formattedResults += `Vehicle Type: ${vehicleData.VehicleType || 'N/A'}\n`;
-                    // Add more fields as needed
-                    $('#txt_results').val(formattedResults);
+                    const fieldsToShow = ['Make', 'Model', 'ModelYear', 'Manufacturer', 'VehicleType', 'BodyClass', 'DriveType', 'EngineCylinders', 'FuelTypePrimary', 'PlantCity', 'PlantCountry'];
+                    fieldsToShow.forEach(field => {
+                        if (vehicleData[field]) {
+                            formattedResults += `${field.replace(/([A-Z])/g, ' $1').trim()}: ${vehicleData[field]}\n`; // Add space before caps
+                        }
+                    });
+                    $('#txt_results').val(formattedResults.trim());
                 } else {
-                    $('#txt_results').val(`No detailed results from NHTSA for VIN: ${vinToQuery}`);
+                    $('#txt_results').val(`No detailed results from NHTSA for VIN: ${vinToQuery}. Message: ${data.Message || ''}`);
                 }
             })
             .catch(error => {
@@ -604,8 +421,5 @@ $(document).ready(function () {
             });
     };
 
-
-    // --- Initial Page Setup ---
-    updateDisplay('ALL'); // Show general links and common_div by default on page load.
-
-}); // End of $(document).ready()
+    updateDisplay('ALL'); 
+});
