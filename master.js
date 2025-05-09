@@ -3,58 +3,51 @@
 
 $(document).ready(function () {
     // --- Global Variables & Configuration ---
-    // Variables for external services (ensure these are correctly used by getNHTSADataByVIN if defined elsewhere)
-    var piserv = "https://73.39.163.6/"; // Example, ensure this is secure if used for POST
-    var awsserv = "http://3.16.31.159";  // Example
-    // Note: The 'vin' global variable from the original inline script is now handled locally within functions or via $('#VINbar').val().
+    var piserv = "https://73.39.163.6/"; 
+    var awsserv = "http://3.16.31.159";  
 
     // --- VIN Decoding Logic ---
-    // Simplified WMI to Make mapping. This is a crucial part for auto-detection.
-    // Consider expanding this list for better accuracy across more manufacturers and regions.
     const wmiToMake = {
-        '1VW': 'VOLKSWAGEN', '3VW': 'VOLKSWAGEN', 'WAU': 'AUDI', 'WUA': 'AUDI', 'TRU': 'AUDI', // Audi/VW Group
-        '2VW': 'VOLKSWAGEN', // Canada
-        '9BW': 'VOLKSWAGEN', // Brazil
-        'WBA': 'BMW', 'WBS': 'BMW', 'WBX': 'BMW', 'WBY': 'BMW', 'WMW': 'MINI', // BMW Group (WBS is often BMW M)
-        '4US': 'BMW', '5UX': 'BMW', '5YJ': 'TESLA', // BMW US & Tesla (5YJ was BMW, now primarily Tesla) - Check VIN patterns carefully
-        '1C3': 'CHRYSLER', '1C4': 'CHRYSLER', '2C3': 'CHRYSLER', '3C4': 'CHRYSLER', // Chrysler
-        '1J4': 'JEEP', '1J8': 'JEEP', // Jeep
-        'ZAR': 'ALFA ROMEO', 'ZFA': 'FIAT', // Fiat/Alfa
-        '1FA': 'FORD', '1FB': 'FORD', '1FC': 'FORD', '1FD': 'FORD', '1FM': 'FORD', '1FT': 'FORD', '1ZV': 'FORD', // Ford
-        '2FA': 'FORD', '3FA': 'FORD', // Ford (Canada, Mexico)
-        '1L': 'LINCOLN', '1LN': 'LINCOLN', // Lincoln
-        '1ME': 'MERCURY', // Mercury
-        '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '1GN': 'CHEVROLET', '1GT': 'GMC', '1GY': 'CADILLAC', // GM
-        '2G1': 'CHEVROLET', '2GC': 'CHEVROLET', '2GN': 'CHEVROLET', '2GT': 'GMC', '2GY': 'CADILLAC', // GM Canada
-        '3G1': 'CHEVROLET', '3GC': 'CHEVROLET', '3GN': 'CHEVROLET', '3GT': 'GMC', '3GY': 'CADILLAC', // GM Mexico
-        'YS3': 'SAAB', // Saab (formerly GM)
-        '1HG': 'HONDA', '1HF': 'HONDA', 'JH2': 'HONDA', 'JH4': 'ACURA', // Honda/Acura
-        'KMH': 'HYUNDAI', 'KMC': 'HYUNDAI', 'KNA': 'KIA', 'KND': 'KIA', // Hyundai/Kia Korea
-        '5NM': 'HYUNDAI', '5NP': 'HYUNDAI', // Hyundai US
-        'U5Y': 'KIA', // Kia US
-        'MAL': 'HYUNDAI', // Hyundai (Genesis often under Hyundai WMI, but might have its own too e.g., KMG)
-        'KMG': 'GENESIS', // Genesis specific WMI example
-        'JN1': 'NISSAN', 'JN6': 'NISSAN', 'JN8': 'INFINITI', // Nissan/Infiniti Japan
-        '5N1': 'NISSAN', '5N3': 'INFINITI', // Nissan/Infiniti US
-        'SAL': 'LAND ROVER', 'SAJ': 'JAGUAR', // JLR
-        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 'JTH': 'LEXUS', 'JTK': 'SCION', // Toyota/Lexus/Scion Japan
-        '4T1': 'TOYOTA', '4T3': 'TOYOTA', '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', // Toyota US
-        '2T1': 'TOYOTA', // Toyota Canada
-        'JM1': 'MAZDA', 'JMZ': 'MAZDA', // Mazda Japan
-        '4F': 'MAZDA', // Mazda US
-        'WDD': 'MERCEDES-BENZ', 'WDB': 'MERCEDES-BENZ', 'WDC': 'MERCEDES-BENZ', // Mercedes Germany
-        '4JG': 'MERCEDES-BENZ', '55S': 'MERCEDES-BENZ', // Mercedes US
-        'JA3': 'MITSUBISHI', 'JA4': 'MITSUBISHI', // Mitsubishi Japan
-        '4A3': 'MITSUBISHI', '4A4': 'MITSUBISHI', // Mitsubishi US
-        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', // Porsche
-        'JF1': 'SUBARU', 'JF2': 'SUBARU', // Subaru Japan
-        '4S3': 'SUBARU', '4S4': 'SUBARU', // Subaru US
-        // 5YJ is Tesla, already listed with BMW US for older VINs. Tesla is more current for 5YJ.
-        'YV1': 'VOLVO', 'YV4': 'VOLVO' // Volvo Sweden
-        // Add more WMIs as you discover them
+        '1VW': 'VOLKSWAGEN', '3VW': 'VOLKSWAGEN', 'WAU': 'AUDI', 'WUA': 'AUDI', 'TRU': 'AUDI', 
+        '2VW': 'VOLKSWAGEN', 
+        '9BW': 'VOLKSWAGEN', 
+        'WBA': 'BMW', 'WBS': 'BMW', 'WBX': 'BMW', 'WBY': 'BMW', 'WMW': 'MINI', 
+        '4US': 'BMW', '5UX': 'BMW', '5YJ': 'TESLA', 
+        '1C3': 'CHRYSLER', '1C4': 'CHRYSLER', '2C3': 'CHRYSLER', '3C4': 'CHRYSLER', 
+        '1J4': 'JEEP', '1J8': 'JEEP', 
+        'ZAR': 'ALFA ROMEO', 'ZFA': 'FIAT', 
+        '1FA': 'FORD', '1FB': 'FORD', '1FC': 'FORD', '1FD': 'FORD', '1FM': 'FORD', '1FT': 'FORD', '1ZV': 'FORD', 
+        '2FA': 'FORD', '3FA': 'FORD', 
+        '1L': 'LINCOLN', '1LN': 'LINCOLN', 
+        '1ME': 'MERCURY', 
+        '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '1GN': 'CHEVROLET', '1GT': 'GMC', '1GY': 'CADILLAC', 
+        '2G1': 'CHEVROLET', '2GC': 'CHEVROLET', '2GN': 'CHEVROLET', '2GT': 'GMC', '2GY': 'CADILLAC', 
+        '3G1': 'CHEVROLET', '3GC': 'CHEVROLET', '3GN': 'CHEVROLET', '3GT': 'GMC', '3GY': 'CADILLAC', 
+        'YS3': 'SAAB', 
+        '1HG': 'HONDA', '1HF': 'HONDA', 'JH2': 'HONDA', 'JH4': 'ACURA', 
+        'KMH': 'HYUNDAI', 'KMC': 'HYUNDAI', 'KNA': 'KIA', 'KND': 'KIA', 
+        '5NM': 'HYUNDAI', '5NP': 'HYUNDAI', 
+        'U5Y': 'KIA', 
+        'MAL': 'HYUNDAI', 
+        'KMG': 'GENESIS', 
+        'JN1': 'NISSAN', 'JN6': 'NISSAN', 'JN8': 'INFINITI', 
+        '5N1': 'NISSAN', '5N3': 'INFINITI', 
+        'SAL': 'LAND ROVER', 'SAJ': 'JAGUAR', 
+        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 'JTH': 'LEXUS', 'JTK': 'SCION', 
+        '4T1': 'TOYOTA', '4T3': 'TOYOTA', '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', 
+        '2T1': 'TOYOTA', 
+        'JM1': 'MAZDA', 'JMZ': 'MAZDA', 
+        '4F': 'MAZDA', 
+        'WDD': 'MERCEDES-BENZ', 'WDB': 'MERCEDES-BENZ', 'WDC': 'MERCEDES-BENZ', 
+        '4JG': 'MERCEDES-BENZ', '55S': 'MERCEDES-BENZ', 
+        'JA3': 'MITSUBISHI', 'JA4': 'MITSUBISHI', 
+        '4A3': 'MITSUBISHI', '4A4': 'MITSUBISHI', 
+        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', 
+        'JF1': 'SUBARU', 'JF2': 'SUBARU', 
+        '4S3': 'SUBARU', '4S4': 'SUBARU', 
+        'YV1': 'VOLVO', 'YV4': 'VOLVO'
     };
 
-    // Maps make names (as identified by wmiToMake) to the ID of the div that should be displayed.
     const makeToDivId = {
         'AUDI': 'audi_div',
         'VOLKSWAGEN': 'audi_div',
@@ -70,7 +63,7 @@ $(document).ready(function () {
         'FORD': 'ford_div',
         'LINCOLN': 'ford_div',
         'MERCURY': 'ford_div',
-        'GM': 'gm_div', // Generic GM catch-all
+        'GM': 'gm_div', 
         'CHEVROLET': 'gm_div',
         'GMC': 'gm_div',
         'CADILLAC': 'gm_div',
@@ -78,17 +71,17 @@ $(document).ready(function () {
         'PONTIAC': 'gm_div',
         'OLDSMOBILE': 'gm_div',
         'SATURN': 'gm_div',
-        'SAAB': 'gm_div', // Or a separate saab_div if you have specific Saab links
+        'SAAB': 'gm_div', 
         'HONDA': 'honda_div',
         'ACURA': 'honda_div',
         'HYUNDAI': 'hyundai_div',
-        'GENESIS': 'hyundai_div', // Can share with Hyundai or have its own if links differ significantly
+        'GENESIS': 'hyundai_div', 
         'KIA': 'kia_div',
         'INFINITI': 'infiniti_div',
         'JAGUAR': 'jaguar_div',
         'LAND ROVER': 'landrover_div',
         'LEXUS': 'lexus_div',
-        'SCION': 'lexus_div', // Often shares Toyota/Lexus resources
+        'SCION': 'lexus_div', 
         'MASERATI': 'maserati_div',
         'MAZDA': 'mazda_div',
         'MERCEDES-BENZ': 'mercedes_div',
@@ -99,133 +92,132 @@ $(document).ready(function () {
         'TESLA': 'tesla_div',
         'TOYOTA': 'toyota_div',
         'VOLVO': 'volvo_div',
-        'COMMON': 'common_div' // For the common/universal links section
+        'COMMON': 'common_div' 
     };
 
-    // Store all unique make-specific div IDs for easy show/hide operations.
-    const allMakeDivIds = [...new Set(Object.values(makeToDivId))]; // Using Set to get unique div IDs
+    const allMakeDivIds = [...new Set(Object.values(makeToDivId))]; 
 
     // --- Core Display Functions ---
-
-    /**
-     * Hides all make-specific content divs and the common_div.
-     */
     window.hideAllMakeSpecificDivs = function() {
+        allMakeDivIds.forEach(id => {
+            // Only hide divs that are specifically for makes, not the general_links_div
+            if (id !== 'general_links_div') { // Assuming 'general_links_div' is not in makeToDivId
+                 $('#' + id).addClass('d-none');
+            }
+        });
+         // Clear identified make text, but general links remain.
+        $('#identifiedMake').text('');
+    };
+
+    window.showMakeSpecificDiv = function(make) {
+        // First, hide all *other* make-specific divs and the common div
         allMakeDivIds.forEach(id => {
             $('#' + id).addClass('d-none');
         });
-        $('#identifiedMake').text(''); // Clear identified make text
-    };
-
-    /**
-     * Shows the relevant make-specific div and hides general links.
-     * @param {string} make - The make of the vehicle (e.g., 'FORD', 'BMW').
-     */
-    window.showMakeSpecificDiv = function(make) {
-        hideAllMakeSpecificDivs(); // Hide all first
-        const divId = makeToDivId[make.toUpperCase()]; // Ensure make is uppercase for matching
+        
+        const divId = makeToDivId[make.toUpperCase()]; 
         const commonDivId = makeToDivId['COMMON'];
 
+        // Ensure general links div is visible
+        $('#general_links_div').removeClass('d-none'); 
+
         if (divId) {
-            $('#' + divId).removeClass('d-none');
-            $('#identifiedMake').text(`Identified Make: ${make} (Displaying relevant links)`);
-            $('#general_links_div').addClass('d-none'); // Hide general links sidebar
-            if (commonDivId && divId !== commonDivId) { // Show common_div if it's not the primary one being shown
+            $('#' + divId).removeClass('d-none'); // Show the target make-specific div
+            $('#identifiedMake').text(`Identified Make: ${make} (Displaying specific & common links)`);
+            // The line below was hiding the general links. It is now removed.
+            // $('#general_links_div').addClass('d-none'); 
+            
+            if (commonDivId && divId !== commonDivId) { 
                 $('#' + commonDivId).removeClass('d-none');
             }
         } else {
-            $('#identifiedMake').text(`Make "${make}" not recognized or no specific section. Showing general links.`);
-            $('#general_links_div').removeClass('d-none'); // Show general links if make not found
-            if (commonDivId) { // Still show common_div with general links
+            $('#identifiedMake').text(`Make "${make}" not recognized. Showing general & common links.`);
+            // General links are already ensured to be visible above.
+            if (commonDivId) { 
                  $('#' + commonDivId).removeClass('d-none');
             }
         }
     };
 
-    /**
-     * Updates the display based on manual selection from the dropdown or VIN input.
-     * @param {string} makeKey - The make key (e.g., 'AUDI', 'ALL').
-     */
     window.updateDisplay = function(makeKey) {
-        // Do not clear VIN bar if user is just clicking "Show All General Links"
-        if (makeKey !== 'ALL') {
-            // $('#VINbar').val(''); // Clearing VIN on manual make selection might be disruptive if user wants to keep VIN
-        }
         const commonDivId = makeToDivId['COMMON'];
 
         if (makeKey === 'ALL' || !makeKey) {
-            hideAllMakeSpecificDivs();
-            $('#general_links_div').removeClass('d-none'); // Show general links sidebar
-            if (commonDivId) { // Show common_div with general links
+            // Hide all make-specific divs (audi_div, bmw_div etc.)
+            allMakeDivIds.forEach(id => {
+                if (id !== commonDivId) { // Don't hide common_div yet if it's part of allMakeDivIds
+                    $('#' + id).addClass('d-none');
+                }
+            });
+            $('#general_links_div').removeClass('d-none'); 
+            if (commonDivId) { 
                  $('#' + commonDivId).removeClass('d-none');
             }
             $('#identifiedMake').text('Showing General & Common Research Links');
         } else {
-            showMakeSpecificDiv(makeKey);
+            showMakeSpecificDiv(makeKey); // This will handle showing the specific make and common, and keep general visible
         }
     };
 
-    /**
-     * Handles real-time input in the VIN bar to attempt make identification.
-     */
     window.handleVinInput = function() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         const commonDivId = makeToDivId['COMMON'];
+        $('#general_links_div').removeClass('d-none'); // Always ensure general links are visible during VIN input
 
         if (vinValue.length === 0) {
-            updateDisplay('ALL'); // Show general links if VIN is cleared
+            updateDisplay('ALL'); 
             return;
         }
 
-        if (vinValue.length >= 3) { // Attempt to identify make after 3 chars
+        if (vinValue.length >= 3) { 
             const make = getMakeFromVin(vinValue);
             if (make) {
-                showMakeSpecificDiv(make);
+                showMakeSpecificDiv(make); // This will show specific, common, and keep general visible
             } else {
-                // If VIN is partially entered but make not ID'd yet
                 $('#identifiedMake').text(`Typing VIN: ${vinValue.substring(0,3)}... (Make not yet identified)`);
-                hideAllMakeSpecificDivs(); // Hide specific make divs
-                $('#general_links_div').removeClass('d-none'); // Show general links
-                 if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); } // Show common links
+                // Hide all specific make divs, but keep general and common visible
+                allMakeDivIds.forEach(id => {
+                     if (id !== commonDivId) {
+                        $('#' + id).addClass('d-none');
+                     }
+                });
+                if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); } 
             }
         } else {
-            // VIN is too short to identify make
             $('#identifiedMake').text('Enter at least 3 characters of VIN...');
-            hideAllMakeSpecificDivs(); // Hide specific make divs
-            $('#general_links_div').removeClass('d-none'); // Show general links
-            if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); } // Show common links
+            allMakeDivIds.forEach(id => { // Hide all specific make divs
+                 if (id !== commonDivId) {
+                    $('#' + id).addClass('d-none');
+                 }
+            });
+            if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); } 
         }
     };
 
-    /**
-     * Processes the full VIN on submission (button click or Enter).
-     * Fetches NHTSA data if the function is available.
-     */
     window.processVinAndDisplay = function() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
-        $('#VINbar').val(vinValue); // Ensure it's uppercase in the bar
+        $('#VINbar').val(vinValue); 
+
+        $('#general_links_div').removeClass('d-none'); // Ensure general links are visible after processing
 
         if (vinValue.length !== 17) {
             $('#output').html("<strong>Validation Error:</strong> Please enter a full 17-digit VIN.");
             $('#outputbox').fadeIn();
-            // Do not automatically fade out error messages that require user action/correction
-            // setTimeout(() => $('#outputbox').fadeOut(), 3000); 
-            updateDisplay('ALL'); // Revert to general links if VIN is invalid
+            updateDisplay('ALL'); 
             return;
         }
 
         const make = getMakeFromVin(vinValue);
         if (make) {
-            showMakeSpecificDiv(make);
+            showMakeSpecificDiv(make); // This will show specific, common, and keep general visible
             $('#output').html(`Displaying links for identified make: <strong>${make}</strong>.`);
-            $('#outputbox').fadeIn().delay(2500).fadeOut(); // Slightly longer display for confirmation
+            $('#outputbox').fadeIn().delay(2500).fadeOut(); 
         } else {
-            $('#output').html(`<strong>Notice:</strong> Make not identified for this VIN. Showing general research links.`);
+            $('#output').html(`<strong>Notice:</strong> Make not identified for this VIN. Showing general & common research links.`);
             $('#outputbox').fadeIn().delay(3500).fadeOut();
-            updateDisplay('ALL'); // Revert to general links
+            updateDisplay('ALL'); 
         }
 
-        // Attempt to fetch NHTSA data if the function exists
         if (typeof getNHTSADataByVIN === "function") {
             getNHTSADataByVIN(vinValue);
         } else {
@@ -233,11 +225,6 @@ $(document).ready(function () {
         }
     };
 
-    /**
-     * Retrieves the make from the VIN using the WMI.
-     * @param {string} vin - The vehicle identification number.
-     * @returns {string|null} The identified make or null.
-     */
     function getMakeFromVin(vin) {
         if (typeof vin !== 'string' || vin.length < 3) {
             return null;
@@ -249,7 +236,7 @@ $(document).ready(function () {
     // --- Event Listeners ---
     $('#btn_submit').on('click', processVinAndDisplay);
     $('#VINbar').on('keypress', function(e) {
-        if (e.which == 13) { // Enter key pressed
+        if (e.which == 13) { 
             processVinAndDisplay();
             e.preventDefault(); 
         }
@@ -264,7 +251,7 @@ $(document).ready(function () {
             var tcyl = document.getElementById("icyl").value ? "cylinders-" + document.getElementById("icyl").value : "";
             var carmaxUrl = "https://www.carmax.com/cars" +
                 (document.getElementById("iyear").value ? "/" + document.getElementById("iyear").value : "") +
-                (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") + // Handle spaces and '&'
+                (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") + 
                 (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
                 (document.getElementById("itrim").value ? "/" + document.getElementById("itrim").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
                 (tcyl ? "/" + tcyl : "") +
@@ -275,24 +262,17 @@ $(document).ready(function () {
     }
     
     // --- Make-Specific Link Functions & JSON Fetch Helper ---
-
     function getVinOrAlert() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         if (vinValue.length === 17) {
             return vinValue;
         } else {
             $('#output').html("<strong>VIN Required:</strong> Please enter a valid 17-digit VIN before using this link.");
-            $('#outputbox').stop().fadeIn(); // Ensure it's visible
+            $('#outputbox').stop().fadeIn(); 
             return null;
         }
     }
 
-    /**
-     * Attempts to fetch and display JSON data from a given URL.
-     * Provides a fallback direct link if fetching fails (e.g., due to CORS).
-     * @param {string} url - The URL to fetch JSON from.
-     * @param {string} makeName - The name of the make for display purposes.
-     */
     function attemptJsonFetch(url, makeName) {
         $('#output').html(`Attempting to fetch ${makeName} data... <small>(May be blocked by browser or API changes)</small>`);
         $('#outputbox').stop().fadeIn();
@@ -300,9 +280,8 @@ $(document).ready(function () {
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    // Try to get more info from response if possible, even if not strictly JSON error
                     let errorDetail = `Network response was not ok: ${response.status} ${response.statusText}`;
-                    if (response.type === 'opaque') { // Opaque responses are common with 'no-cors' mode, but we are not using it here. Still, good to know.
+                    if (response.type === 'opaque') { 
                         errorDetail = "Received an opaque response, likely due to CORS. Cannot read data.";
                     }
                     throw new Error(errorDetail);
@@ -316,7 +295,6 @@ $(document).ready(function () {
             })
             .catch(error => {
                 console.error(`Error fetching ${makeName} data:`, error);
-                // Provide a more user-friendly message with a direct link
                 $('#output').html(
                     `<strong>Could not fetch ${makeName} data directly.</strong><br>` +
                     `<small>This can happen due to browser security (CORS), API changes, or network issues.</small><br>` +
@@ -328,7 +306,7 @@ $(document).ready(function () {
             });
     }
 
-    // --- Individual Make/Link Functions (using getVinOrAlert and attemptJsonFetch where appropriate) ---
+    // --- Individual Make/Link Functions ---
     window.vwaudilane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://webtest1.audi.com.edgesuite.net/acf012/v1/applications/vindecoder/default/details/' + vin + '/CA/EN', '_blank'); };
     window.bimmerbtn = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank'); };
     window.bmwlane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://www.nadeauto.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=BMW&img=1', '_blank'); };
