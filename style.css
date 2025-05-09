@@ -1,152 +1,177 @@
-@charset "utf-8"; /* CSS Document */
-
-/* Section Title Style */
-.section-title {
-    font-size: 1.1rem;
-    background-color: #ffd51d;
-    color: #036;
-    font-family: Montserrat, 'Trebuchet MS', Helvetica, sans-serif;
-}
-
-/* Input Group Style */
-.input-group.md-form.form-sm.form-2 {
-    display: flex;
-    border: 1px solid #ffca28; /* Amber border for the whole group */
-}
-
-/* Input Field Style */
-.input-group.md-form.form-sm.form-2 .form-control {
-    flex: 1; /* Allows input to fill the space */
-    margin-bottom: 0; /* Aligns with the button */
-    height: 38px; /* Adjust height as needed */
-}
-
-/* Button Style */
-.input-group.md-form.form-sm.form-2 .input-group-append .input-group-text {
-    margin-bottom: 0; /* Aligns with the input field */
-    height: 38px; /* Match input field height */
-    background-color: #ffd51d; /* Amber background */
-    border: none; /* Removes border between input and button */
-}
-
-/* Icon Style */
-.input-group.md-form.form-sm.form-2 .input-group-text .fas {
-    color: #003366; /* Text color for the icon */
-}
-
-
-/* Existing Styles */
-.special-decoration {
-    display: inline-flex;
-    position: relative;
-    color: white;
-    padding-left: 3px;
-    margin-left: -7px;
+/* Basic CarMax Color Palette */
+:root {
+    --carmax-blue: #003366; /* Dark Blue */
+    --carmax-yellow: #ffd51d; /* Bright Yellow */
+    --carmax-white: #ffffff;
+    --carmax-grey: #f8f9fa; /* Light Grey for backgrounds */
+    --carmax-dark-grey: #6c757d; /* For text */
 }
 
 body {
-    background-image: url('./mustang2.jpeg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-color: #003366;
+    font-family: 'Lato', sans-serif;
+    background-color: var(--carmax-grey);
+    color: var(--carmax-dark-grey);
 }
 
-section {
-    height: 63px;
-    page-break-after: 0px;
-    display: flex;
-    align-items: flex-end;
+.container {
+    background-color: var(--carmax-white);
+    padding: 20px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
 }
 
-h1 {
-    letter-spacing: 1px;
-    line-height: 30px;
-    font-family: Chivo, sans-serif;
-    font-weight: 700;
-    margin-left: 5px;
+.carmax-header {
+    border-bottom: 1px solid #eee;
 }
 
-h2 {
-    line-height: 30px;
-    letter-spacing: 1.8px;
-    font-size: 2.5rem;
-    font-family: Chivo, sans-serif;
-    font-weight: 500;
+.carmax-title {
+    font-weight: 900; /* Lato Black */
+    font-size: 2.5em; /* Adjust as needed */
 }
 
-* {
-    box-sizing: border-box;
+.carmax-blue {
+    color: var(--carmax-blue);
 }
 
-/* Style the search field */
-input[type="text"] {
-    padding: 10px;
-    font-size: 17px;
-    border: 1px solid grey;
-    width: 350px;
-    background: #f1f1f1;
+.carmax-yellow-bg {
+    background-color: var(--carmax-yellow);
+    color: var(--carmax-blue); /* Text on yellow should be blue */
 }
 
-/* Style the submit button */
-.srch.button {
-    float: right;
-    width: 50px;
-    padding: 10px;
-    background: #ffd51d;
-    color: white;
-    font-size: 17px;
-    border: 1px solid grey;
-    border-left: none;
-    cursor: pointer;
+.carmax-greeting {
+    font-size: 1.5em;
+    color: var(--carmax-yellow); /* Use yellow for emphasis */
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif;
 }
 
-button:hover {
-    background: #e3c74d;
+
+/* Search Section Styling */
+.carmax-search-section {
+    background-color: var(--carmax-white);
+    border: 1px solid #dee2e6; /* Light border */
 }
 
-.linkbutton {
-    float: left;
-    width: 150px;
-    padding: 1px;
-    background: #fdde58;
-    color: #003366;
-    font-size: 17px;
-    border: 1px solid grey;
-    cursor: pointer;
+.carmax-input-group .form-control {
+    border-color: var(--carmax-blue);
+    border-right: none;
+    border-radius: .25rem 0 0 .25rem;
 }
 
-/* Clear floats */
-::after {
-    content: "";
-    clear: both;
-    display: table;
+.carmax-input-group .form-control:focus {
+    border-color: darken(var(--carmax-blue), 10%);
+    box-shadow: 0 0 0 .25rem rgba(0, 51, 102, .25); /* Focus glow */
 }
 
-.input-group.md-form.form-sm.form-1 input {
-    border: 1px solid #bdbdbd;
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+.carmax-search-button {
+    background-color: var(--carmax-yellow);
+    color: var(--carmax-blue);
+    border-color: var(--carmax-yellow);
+    font-weight: bold;
+    border-radius: 0 .25rem .25rem 0;
+    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
-.input-group.md-form.form-sm.form-2 input {
-    border: 1px solid #bdbdbd;
-    border-top-left-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
+.carmax-search-button:hover {
+    background-color: darken(var(--carmax-yellow), 10%);
+    border-color: darken(var(--carmax-yellow), 10%);
+    color: var(--carmax-blue);
 }
 
-.input-group.md-form.form-sm.form-2 input.red-border {
-    border: 1px solid #ef9a9a;
+.carmax-search-button:active {
+     background-color: darken(var(--carmax-yellow), 15%);
+     border-color: darken(var(--carmax-yellow), 15%);
+     color: var(--carmax-blue);
 }
 
-.input-group.md-form.form-sm.form-2 input.lime-border {
-    border: 1px solid #cddc39;
+
+/* Link Section Styling */
+.carmax-card {
+    border: 1px solid #dee2e6;
+    background-color: var(--carmax-white);
 }
 
-.input-group.md-form.form-sm.form-2 input.amber-border {
-    border: 1px solid #ffca28;
+.section-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
 }
 
-.btn-primary {
-    background-color: #054fa0;
+.list-unstyled li a {
+    color: var(--carmax-blue);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    display: block; /* Make links block for better click area */
+    padding: 5px 0;
+}
+
+.list-unstyled li a:hover {
+    color: var(--carmax-yellow);
+    text-decoration: underline;
+}
+
+.carmax-link {
+     color: var(--carmax-blue);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.carmax-link:hover {
+    color: var(--carmax-yellow);
+    text-decoration: underline;
+}
+
+.carmax-text-muted {
+    color: var(--carmax-dark-grey);
+    font-size: 0.9em;
+}
+
+/* Accordion Button Styling */
+.carmax-link-button {
+    color: var(--carmax-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.carmax-link-button:hover {
+    color: var(--carmax-yellow);
+    text-decoration: underline;
+}
+
+/* Make Specific Link Cards */
+.make-links-section .card {
+    cursor: pointer; /* Indicate clickable */
+     transition: border-color 0.2s ease-in-out;
+}
+
+.make-links-section .card:hover {
+    border-color: var(--carmax-yellow);
+}
+
+.carmax-link-card .card-title {
+    color: var(--carmax-blue);
+     font-size: 1em;
+}
+
+.carmax-link-card .card-subtitle {
+    color: var(--carmax-dark-grey) !important;
+}
+
+/* VIN Data and Captured Data Output */
+#vin-data-output, #data-capture-output {
+    border: 1px dashed var(--carmax-blue); /* Use dashed border for emphasis */
+    background-color: var(--carmax-grey);
+}
+
+#vin-data-output h3, #data-capture-output h3, #data-capture-output h4 {
+    color: var(--carmax-blue);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+#decoded-vin-info p, #nhtsa-data p, #other-captured-data p {
+    margin-bottom: 5px;
+    font-size: 0.95em;
+    color: var(--carmax-dark-grey);
 }
