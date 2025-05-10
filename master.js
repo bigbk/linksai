@@ -440,7 +440,7 @@ $(document).ready(function () {
 
     // --- Individual Make/Link Functions ---
     // Window sticker links are set to reflect original preferences where possible,
-    // except for Mazda and Volvo which retain their v4/v5 logic.
+    // except for Mazda and Volvo which retain their v6 logic.
 
     window.vwaudilane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://webtest1.audi.com.edgesuite.net/acf012/v1/applications/vindecoder/default/details/' + vin + '/CA/EN', '_blank'); };
     window.bimmerbtn = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank'); }; 
@@ -469,20 +469,25 @@ $(document).ready(function () {
     window.honda2 = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hondaautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Honda'); }; 
     window.acura = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.acuraautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Acura'); }; 
     
-    // Hyundai: Using a direct PDF attempt pattern as per "original link" spirit
+    // Hyundai: Using a direct PDF attempt pattern as per "original link" spirit (same as v6)
     window.hyunwiki = function () { 
         const vin = getVinOrAlert(); 
         if (vin) window.open('https://www.hyundaiusa.com/var/hyundai/services/monroney/getWindowStickerByVin.pdf?vin=' + vin, '_blank'); 
     }; 
     
-    window.getnissansticker4 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); }; 
+    // Nissan & Infiniti: Attempting direct PDF patterns.
+    window.getnissansticker4 = function() { // This was used for both Nissan and Infiniti in original HTML
+        const vin = getVinOrAlert(); 
+        if(vin) window.open('https://www.nissanusa.com/pdf/windowsticker?vin=' + vin, '_blank'); // Attempt direct Nissan PDF
+    }; 
     window.infiniti = function() { 
         const vin = getVinOrAlert(); 
-        if(vin) window.open('https://www.infinitiusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); 
+        // Attempt a known (though sometimes unreliable) Infiniti API endpoint for stickers
+        if(vin) window.open('https://www.infinitiusa.com/now/api/vehicles/windowsticker/' + vin, '_blank'); 
     };
     window.infinititrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.infinitiusa.com/owners/vehicle-resources/recall-information.html?dcp=sn_258_RECALLS&uuid=ONLINE_SEARCH_FORM&vin=' + vin, '_blank'); }; 
     
-    // Kia: Using a direct PDF attempt pattern as per "original link" spirit
+    // Kia: Using a direct PDF attempt pattern as per "original link" spirit (same as v6)
     window.kiabtn2 = function() { 
         const vin = getVinOrAlert(); 
         if(vin) window.open('https://www.kia.com/us/en/services/ownerportal/loadVehicleSticker?vin=' + vin, '_blank'); 
@@ -491,31 +496,35 @@ $(document).ready(function () {
     window.maserati = function() { 
         const vin = getVinOrAlert(); 
         if(vin) { 
+            // Direct public Maserati stickers are very rare. Original likely had a non-functional direct attempt or a general search.
+            // Reverting to a Google search as a pragmatic "original-like" fallback for difficult ones.
             alert("Maserati window sticker links are typically dealer-specific or require login. Searching Google for dealer inventory."); 
             window.open('https://www.google.com/search?q=maserati+dealer+inventory+window+sticker+' + vin, '_blank'); 
         } 
     };
     
-    // Mazda: Retain v4/v5 logic (alert for mazdabtn2, Google search for mazdabtn)
+    // Mazda: Retain v6 logic (alert for mazdabtn2, Google search for mazdabtn)
     window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable (as per original notes)."); };
     window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
     
     window.decoderz = function() { const vin = getVinOrAlert(); if(vin) window.open('https://vindecoderz.com/EN/check-lookup/' + vin, '_blank'); }; 
     
-    // Mitsubishi: Using a direct sticker link pattern as per "original link" spirit
+    // Mitsubishi: Using a direct sticker link pattern as per "original link" spirit (same as v6)
     window.mitsbtn = function() { 
         const vin = getVinOrAlert(); 
         if(vin) window.open('https://www.mitsubishicars.com/rs/file/monroney?vin=' + vin, '_blank'); 
     };
     
+    // Nissan (alternative, if getnissansticker4 is preferred for some contexts)
     window.nissan = function() { 
         const vin = getVinOrAlert(); 
-        if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); 
+        if(vin) window.open('https://www.nissanusa.com/pdf/windowsticker?vin=' + vin, '_blank'); // Attempt direct Nissan PDF
     };
     window.nissantrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/vehicle-resources/recall-lookup.html?vin=' + vin, '_blank'); }; 
     window.porwiki = function() { 
         const vin = getVinOrAlert(); 
         if(vin) { 
+            // Direct public Porsche stickers are very rare. Original likely had a non-functional direct attempt or a general search.
             alert("Porsche window sticker links are typically dealer-specific or require login. Opening Porsche USA vehicle information page."); 
             window.open('https://www.porsche.com/usa/accessoriesandservices/porscheservice/vehicleinformation/originalvehicleinformation/', '_blank'); 
         } 
@@ -531,7 +540,7 @@ $(document).ready(function () {
     window.toyotasticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://api.toyotainventory.com/vehicles/' + vin + '/monroney', '_blank'); }; 
     window.toyotasticker3 = function() { const vin = getVinOrAlert(); if(vin) { alert("DealerSocket/DealerFire Toyota sticker links vary by dealer. Searching Google."); window.open('https://www.google.com/search?q=toyota+dealersocket+window+sticker+' + vin, '_blank'); } };
     
-    // Volvo: Retain v4/v5 logic (info page)
+    // Volvo: Retain v6 logic (info page)
     window.volvosticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://volvo.custhelp.com/app/answers/detail/a_id/9005/~/how-do-i-get-a-window-sticker-%28monroney-label%29-for-my-volvo%3F', '_blank'); };
     
     window.velocitysticker = function() { const vin = getVinOrAlert(); if(vin) alert("Velocity sticker link requires dealer login/access. This is a placeholder."); };
