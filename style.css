@@ -4,8 +4,8 @@
 body {
     font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
     background-color: #f4f5f6; /* Base light grey background */
-    /* Subtle diagonal line pattern for a touch of texture */
-    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300539f' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    /* Subtle diagonal line pattern for a touch of texture - opacity slightly increased */
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300539f' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
     color: #333; /* Default text color */
     line-height: 1.6; /* Improved readability */
     font-size: 16px; /* Base font size */
@@ -118,7 +118,7 @@ body {
     border-radius: 6px; 
     background-color: #fff; 
     display: flex; 
-    align-items: stretch; /* Key for same height children */
+    /* align-items: stretch; This is default for flex items, but explicit height control might be better */
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar input.form-control {
@@ -126,9 +126,11 @@ body {
     text-transform: uppercase; 
     font-size: 1em; 
     flex-grow: 1; 
-    padding: .5rem 1rem; /* Vertical padding: .5rem top/bottom */
-    line-height: 1.5; 
-    min-height: calc(1.5em + 1rem + 2px); /* Ensure a minimum height consistent with Bootstrap defaults if padding isn't enough */
+    padding: .5rem 1rem; /* Bootstrap's default vertical padding for form-control-lg is often .5rem */
+    line-height: 1.5; /* Bootstrap's default line-height for form-control */
+    /* No explicit height, let padding and line-height determine it */
+    /* min-height: calc(1.5em + 1rem + 2px); Removed to rely on padding and line-height for natural height */
+    box-sizing: border-box; /* Ensure padding and border are included in height calculation */
 }
 .vin-input-bar input.form-control:focus {
     box-shadow: none; 
@@ -145,10 +147,12 @@ body {
     border-top-right-radius: 6px; 
     border-bottom-right-radius: 6px; 
     padding: .5rem 1rem; /* Matching vertical padding to the input field */
+    line-height: 1.5; /* Matching line-height */
     transition: background-color 0.2s ease;
     display: flex; 
     align-items: center; 
     justify-content: center; 
+    box-sizing: border-box; /* Ensure padding and border are included in height calculation */
 }
 .vin-input-bar .input-group-text:hover {
     background-color: #e6b400; 
