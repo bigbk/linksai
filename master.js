@@ -7,63 +7,203 @@ $(document).ready(function () {
     var awsserv = "http://3.16.31.159";  
 
     // --- VIN Decoding Logic ---
+    // wmiToMake: Maps World Manufacturer Identifier (first 3 VIN chars) to a Make.
+    // This list is comprehensive but can always be expanded.
+    // Note: Some WMIs point to a manufacturing group; specific make might be in VDS (digits 4-8),
+    // which requires more complex decoding beyond this simple mapping.
     const wmiToMake = {
-        '1VW': 'VOLKSWAGEN', '3VW': 'VOLKSWAGEN', 'WAU': 'AUDI', 'WUA': 'AUDI', 'TRU': 'AUDI', 
-        '2VW': 'VOLKSWAGEN', 
-        '9BW': 'VOLKSWAGEN', 
-        'WBA': 'BMW', 'WBS': 'BMW', 'WBX': 'BMW', 'WBY': 'BMW', 'WMW': 'MINI', 
-        '4US': 'BMW', '5UX': 'BMW', '5YJ': 'TESLA', 
-        '1C3': 'CHRYSLER', '1C4': 'CHRYSLER', '2C3': 'CHRYSLER', '3C4': 'CHRYSLER', 
-        '1J4': 'JEEP', '1J8': 'JEEP', 
-        'ZAR': 'ALFA ROMEO', 'ZFA': 'FIAT', 
-        '1FA': 'FORD', '1FB': 'FORD', '1FC': 'FORD', '1FD': 'FORD', '1FM': 'FORD', '1FT': 'FORD', '1ZV': 'FORD', 
-        '2FA': 'FORD', '3FA': 'FORD', 
-        '1L': 'LINCOLN', '1LN': 'LINCOLN', 
-        '1ME': 'MERCURY', 
-        '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '1GN': 'CHEVROLET', '1GT': 'GMC', '1GY': 'CADILLAC', 
-        '2G1': 'CHEVROLET', '2GC': 'CHEVROLET', '2GN': 'CHEVROLET', '2GT': 'GMC', '2GY': 'CADILLAC', 
-        '3G1': 'CHEVROLET', '3GC': 'CHEVROLET', '3GN': 'CHEVROLET', '3GT': 'GMC', '3GY': 'CADILLAC', 
-        'YS3': 'SAAB', 
-        '1HG': 'HONDA', '1HF': 'HONDA', 'JH2': 'HONDA', 'JH4': 'ACURA', 
-        'KMH': 'HYUNDAI', 'KMC': 'HYUNDAI', 'KNA': 'KIA', 'KND': 'KIA', 
-        '5NM': 'HYUNDAI', '5NP': 'HYUNDAI', 
-        'U5Y': 'KIA', 
-        'MAL': 'HYUNDAI', 
-        'KMG': 'GENESIS', 
-        'JN1': 'NISSAN', 'JN6': 'NISSAN', 'JN8': 'INFINITI', 
-        '5N1': 'NISSAN', '5N3': 'INFINITI', 
-        'SAL': 'LAND ROVER', 'SAJ': 'JAGUAR', 
-        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 'JTH': 'LEXUS', 'JTK': 'SCION', 
-        '4T1': 'TOYOTA', '4T3': 'TOYOTA', '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', 
-        '2T1': 'TOYOTA', 
-        'JM1': 'MAZDA', 'JMZ': 'MAZDA', 
-        '4F': 'MAZDA', 
-        'WDD': 'MERCEDES-BENZ', 'WDB': 'MERCEDES-BENZ', 'WDC': 'MERCEDES-BENZ', 
-        '4JG': 'MERCEDES-BENZ', '55S': 'MERCEDES-BENZ', 
-        'JA3': 'MITSUBISHI', 'JA4': 'MITSUBISHI', 
-        '4A3': 'MITSUBISHI', '4A4': 'MITSUBISHI', 
-        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', 
-        'JF1': 'SUBARU', 'JF2': 'SUBARU', 
-        '4S3': 'SUBARU', '4S4': 'SUBARU', 
-        'YV1': 'VOLVO', 'YV4': 'VOLVO'
+        // Volkswagen Group
+        '1VW': 'VOLKSWAGEN', '3VW': 'VOLKSWAGEN', // VW USA/Mexico
+        'WAU': 'AUDI', 'WUA': 'AUDI', 'TRU': 'AUDI', // Audi Germany/Hungary
+        '2VW': 'VOLKSWAGEN', // VW Canada
+        '9BW': 'VOLKSWAGEN', // VW Brazil
+        'WVW': 'VOLKSWAGEN', // VW Germany Passenger Cars
+        'WVG': 'VOLKSWAGEN', // VW Germany SUVs/Touran
+        'WV1': 'VOLKSWAGEN', // VW Commercial Germany
+        'WV2': 'VOLKSWAGEN', // VW Commercial Germany
+        'AAV': 'VOLKSWAGEN', // VW South Africa
+        'SAL': 'LAND ROVER', // Often VW Group for some components, but primary ID for Land Rover
+        'SCB': 'BENTLEY',    // Bentley (UK, under VW Group)
+        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', // Porsche (Germany, under VW Group)
+        'VSS': 'SEAT',       // Seat (Spain, under VW Group)
+        'TMB': 'SKODA',      // Skoda (Czech Republic, under VW Group)
+        'ZHW': 'LAMBORGHINI',// Lamborghini (Italy, under VW Group) - Note: Some start with ZA9
+
+        // BMW Group
+        'WBA': 'BMW', 'WBS': 'BMW', // BMW Germany (WBS often BMW M)
+        'WBX': 'BMW', 'WBY': 'BMW', 
+        'WMW': 'MINI',       // MINI (UK/Netherlands, under BMW Group)
+        'WBY': 'BMW',        // BMW Motorcycles (Germany) - Example, ensure context
+        '4US': 'BMW',        // BMW USA (Spartanburg)
+        '5UX': 'BMW',        // BMW USA (Spartanburg SUVs)
+        '3AV': 'BMW',        // BMW Mexico
+        'X4X': 'BMW',        // BMW Russia (Kaliningrad) - Status may vary
+
+        // Stellantis (formerly FCA - Chrysler, Jeep, Dodge, Ram, Fiat, Alfa Romeo, Peugeot, Citroen, etc.)
+        // Chrysler
+        '1C3': 'CHRYSLER', '1C4': 'CHRYSLER', '2C3': 'CHRYSLER', '3C4': 'CHRYSLER',
+        // Dodge
+        '1B3': 'DODGE', '2B3': 'DODGE', '3B3': 'DODGE', // Dodge Cars
+        '1D3': 'DODGE', // Older Dodge Trucks (pre-Ram separation)
+        // Jeep
+        '1J4': 'JEEP', '1J8': 'JEEP', '3J4': 'JEEP',
+        // Ram
+        '1C6': 'RAM', '2C6': 'RAM', '3C6': 'RAM', // Ram Trucks
+        // Fiat
+        'ZFA': 'FIAT',       // Fiat Italy
+        '1F9': 'FIAT',       // Fiat USA (e.g., 500L)
+        '3F9': 'FIAT',       // Fiat Mexico (e.g., for NA market)
+        // Alfa Romeo
+        'ZAR': 'ALFA ROMEO', // Alfa Romeo Italy
+        // Other Stellantis (Examples, list can be very long)
+        'VF1': 'RENAULT',    // Renault (often associated due to past/present alliances, but distinct)
+        'VF3': 'PEUGEOT',    // Peugeot France
+        'VF7': 'CITROEN',    // Citroen France
+        'ZCG': 'LANCIA',     // Lancia Italy
+
+        // Ford Motor Company
+        '1FA': 'FORD', '1FB': 'FORD', '1FC': 'FORD', '1FD': 'FORD', '1FM': 'FORD', '1FT': 'FORD', '1ZV': 'FORD', // Ford USA
+        '2FA': 'FORD', '3FA': 'FORD', // Ford Canada, Mexico
+        'WF0': 'FORD',       // Ford Germany
+        'SFA': 'FORD',       // Ford UK
+        'NM0': 'FORD',       // Ford Turkey
+        'MAJ': 'FORD',       // Ford India
+        '1L': 'LINCOLN', '1LN': 'LINCOLN', // Lincoln USA
+        '1ME': 'MERCURY',    // Mercury USA (Discontinued)
+
+        // General Motors (GM)
+        // Chevrolet
+        '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '1GN': 'CHEVROLET',
+        '2G1': 'CHEVROLET', '2GC': 'CHEVROLET', '2GN': 'CHEVROLET', // Canada
+        '3G1': 'CHEVROLET', '3GC': 'CHEVROLET', '3GN': 'CHEVROLET', // Mexico
+        'KL1': 'CHEVROLET',  // Daewoo/GM Korea (e.g., Spark, Aveo)
+        // GMC
+        '1GT': 'GMC', '2GT': 'GMC', '3GT': 'GMC',
+        // Cadillac
+        '1GY': 'CADILLAC', '2GY': 'CADILLAC', '3GY': 'CADILLAC',
+        // Buick
+        '1G4': 'BUICK', '2G4': 'BUICK', '3G4': 'BUICK', // Buick North America
+        'LSG': 'BUICK',      // Buick China (SAIC-GM)
+        // Pontiac (Discontinued)
+        '1G2': 'PONTIAC', '2G2': 'PONTIAC', '3G2': 'PONTIAC',
+        // Oldsmobile (Discontinued)
+        '1G3': 'OLDSMOBILE',
+        // Saturn (Discontinued)
+        '1G8': 'SATURN',
+        // Holden (Australia - Discontinued)
+        '6G1': 'HOLDEN', '6H8': 'HOLDEN',
+        // Saab (Formerly GM)
+        'YS3': 'SAAB',
+
+        // Honda / Acura
+        '1HG': 'HONDA', '1HF': 'HONDA', // Honda USA
+        'JH2': 'HONDA',      // Honda Japan (Cars)
+        'JH4': 'ACURA',      // Acura Japan (Often for MDX, etc.)
+        '2HG': 'HONDA',      // Honda Canada
+        '3HG': 'HONDA',      // Honda Mexico
+        'SHH': 'HONDA',      // Honda UK
+        '19U': 'ACURA',      // Acura USA (e.g., some sedans)
+
+        // Hyundai / Kia / Genesis
+        'KMH': 'HYUNDAI', 'KMC': 'HYUNDAI', // Hyundai Korea
+        '5NM': 'HYUNDAI', '5NP': 'HYUNDAI', // Hyundai USA
+        'MAL': 'HYUNDAI',    // Hyundai India
+        'KNA': 'KIA', 'KND': 'KIA',       // Kia Korea
+        'U5Y': 'KIA',        // Kia USA (West Point, GA)
+        'KMG': 'GENESIS',    // Genesis Korea
+        'KM8': 'GENESIS',    // Genesis Korea (another common one)
+        
+        // Nissan / Infiniti
+        'JN1': 'NISSAN', 'JN6': 'NISSAN', 'JN8': 'INFINITI', // Nissan/Infiniti Japan
+        '5N1': 'NISSAN', '5N3': 'INFINITI', // Nissan/Infiniti USA
+        'VSK': 'NISSAN',     // Nissan Spain
+        'SJN': 'NISSAN',     // Nissan UK
+
+        // Jaguar Land Rover (JLR - Tata Motors)
+        'SAJ': 'JAGUAR',     // Jaguar UK
+        // 'SAL': 'LAND ROVER', // Already listed under VW group due to component supply, primary ID for Land Rover. This is correct.
+        'SCA': 'LAND ROVER', // Land Rover UK (another one)
+
+        // Toyota / Lexus / Scion
+        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', // Toyota Japan
+        'JTH': 'LEXUS',      // Lexus Japan
+        'JTK': 'SCION',      // Scion Japan (Discontinued)
+        '4T1': 'TOYOTA', '4T3': 'TOYOTA', // Toyota USA
+        '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', // Toyota USA (Trucks/SUVs)
+        '2T1': 'TOYOTA',     // Toyota Canada
+        'SB1': 'TOYOTA',     // Toyota UK
+
+        // Mazda
+        'JM1': 'MAZDA', 'JMZ': 'MAZDA', // Mazda Japan
+        '4F': 'MAZDA',       // Mazda USA (Flat Rock, MI - often shared plant)
+        '3MD': 'MAZDA',      // Mazda Mexico
+
+        // Mercedes-Benz Group
+        'WDD': 'MERCEDES-BENZ', 'WDB': 'MERCEDES-BENZ', 'WDC': 'MERCEDES-BENZ', // Mercedes Germany
+        '4JG': 'MERCEDES-BENZ', '55S': 'MERCEDES-BENZ', // Mercedes USA
+        'NMB': 'MERCEDES-BENZ', // Mercedes Turkey (Buses)
+
+        // Mitsubishi
+        'JA3': 'MITSUBISHI', 'JA4': 'MITSUBISHI', // Mitsubishi Japan
+        '4A3': 'MITSUBISHI', '4A4': 'MITSUBISHI', // Mitsubishi USA (formerly Normal, IL)
+
+        // Subaru
+        'JF1': 'SUBARU', 'JF2': 'SUBARU', // Subaru Japan
+        '4S3': 'SUBARU', '4S4': 'SUBARU', // Subaru USA (Lafayette, IN)
+
+        // Tesla
+        '5YJ': 'TESLA',      // Tesla USA (Fremont, CA & some older Austin)
+        '7SA': 'TESLA',      // Tesla USA (Austin, TX & some newer Fremont)
+        'LRW': 'TESLA',      // Tesla China (Shanghai)
+        'XP7': 'TESLA',      // Tesla Germany (Berlin)
+
+        // Volvo (Geely)
+        'YV1': 'VOLVO', 'YV4': 'VOLVO', // Volvo Sweden
+        'YV2': 'VOLVO', 'YV3': 'VOLVO', // Volvo Sweden (Trucks/Buses)
+        'LPS': 'POLESTAR',   // Polestar China (Geely/Volvo) - May also appear as Volvo
+        'YSM': 'POLESTAR',   // Polestar Sweden (Design/Engineering - Production often China/US)
+
+        // Newer EV Manufacturers (Examples)
+        '7FC': 'RIVIAN',     // Rivian (USA) - Note: Full code often 7FCTG...
+        '5L1': 'LUCID',      // Lucid Motors (USA)
+        'NVV': 'VINFAST',    // VinFast (Vietnam/USA)
+        
+        // Other Manufacturers (Examples)
+        'SDB': 'PEUGEOT',    // Peugeot UK (Ryton, now closed, but VINs exist)
+        'SUU': 'ISUZU',      // Isuzu Poland (often for engines/components, some vehicles)
+        'TMT': 'TATRA',      // Tatra (Czech Republic)
+        'XL9': 'SPYKER',     // Spyker (Netherlands)
+        'SCC': 'LOTUS',      // Lotus (UK)
+        'ZAM': 'MASERATI'    // Maserati Italy (another common one besides what's in makeToDivId)
     };
 
     const makeToDivId = {
         'AUDI': 'audi_div',
-        'VOLKSWAGEN': 'audi_div',
+        'VOLKSWAGEN': 'audi_div', // Grouping VW with Audi for div display
         'BENTLEY': 'audi_div',
+        'PORSCHE': 'porsche_div', // Porsche has its own div
+        'SEAT': 'audi_div', // Example: Grouping Seat with VW/Audi
+        'SKODA': 'audi_div', // Example: Grouping Skoda
+        'LAMBORGHINI': 'audi_div',
+
         'BMW': 'bmw_div',
         'MINI': 'bmw_div',
+        
         'CHRYSLER': 'chrysler_div',
         'JEEP': 'chrysler_div',
         'DODGE': 'chrysler_div',
         'RAM': 'chrysler_div',
         'FIAT': 'chrysler_div',
         'ALFA ROMEO': 'chrysler_div',
+        'PEUGEOT': 'chrysler_div', // Example grouping
+        'CITROEN': 'chrysler_div',// Example grouping
+        'LANCIA': 'chrysler_div', // Example grouping
+
         'FORD': 'ford_div',
         'LINCOLN': 'ford_div',
         'MERCURY': 'ford_div',
-        'GM': 'gm_div', 
+
+        'GM': 'gm_div', // Generic GM, if specific brand WMI not found
         'CHEVROLET': 'gm_div',
         'GMC': 'gm_div',
         'CADILLAC': 'gm_div',
@@ -71,27 +211,46 @@ $(document).ready(function () {
         'PONTIAC': 'gm_div',
         'OLDSMOBILE': 'gm_div',
         'SATURN': 'gm_div',
+        'HOLDEN': 'gm_div',
         'SAAB': 'gm_div', 
+        
         'HONDA': 'honda_div',
         'ACURA': 'honda_div',
+
         'HYUNDAI': 'hyundai_div',
         'GENESIS': 'hyundai_div', 
         'KIA': 'kia_div',
+
         'INFINITI': 'infiniti_div',
+        'NISSAN': 'nissan_div',
+        
         'JAGUAR': 'jaguar_div',
         'LAND ROVER': 'landrover_div',
+
         'LEXUS': 'lexus_div',
         'SCION': 'lexus_div', 
+        'TOYOTA': 'toyota_div',
+        
         'MASERATI': 'maserati_div',
         'MAZDA': 'mazda_div',
         'MERCEDES-BENZ': 'mercedes_div',
         'MITSUBISHI': 'mitsubishi_div',
-        'NISSAN': 'nissan_div',
-        'PORSCHE': 'porsche_div',
         'SUBARU': 'subaru_div',
         'TESLA': 'tesla_div',
-        'TOYOTA': 'toyota_div',
         'VOLVO': 'volvo_div',
+        'POLESTAR': 'volvo_div', // Grouping Polestar with Volvo for div display
+
+        'RIVIAN': 'tesla_div', // Example: Grouping Rivian with Tesla or create new
+        'LUCID': 'tesla_div',  // Example: Grouping Lucid with Tesla or create new
+        'VINFAST': 'hyundai_div', // Example: Grouping VinFast or create new
+
+        'RENAULT': 'nissan_div', // Example grouping due to alliance
+
+        'ISUZU': 'gm_div', // Often associated with GM for some models/trucks
+        'TATRA': 'common_div', // Example: If no specific div, could go to common
+        'SPYKER': 'common_div',
+        'LOTUS': 'common_div',
+
         'COMMON': 'common_div' 
     };
 
