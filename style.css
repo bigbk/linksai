@@ -3,12 +3,16 @@
 /* --- Global Styles & Typography --- */
 body {
     font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
-    /* Futuristic Background: Dark navy with a subtle blue grid */
+    /* Futuristic Background: Dark navy with a subtle "starfield" or "digital dust" pattern */
     background-color: #0a192f; /* Dark navy blue base */
-    background-image: 
-        linear-gradient(rgba(25, 118, 210, 0.07) 1px, transparent 1px), /* Horizontal lines */
-        linear-gradient(90deg, rgba(25, 118, 210, 0.07) 1px, transparent 1px); /* Vertical lines */
-    background-size: 30px 30px; /* Size of the grid squares */
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(173, 216, 230, 0.1) 0.5px, transparent 0), /* Faint light blue "stars" - layer 1 */
+        radial-gradient(circle at 15px 10px, rgba(173, 216, 230, 0.08) 0.5px, transparent 0), /* Faint light blue "stars" - layer 2 */
+        radial-gradient(circle at 25px 25px, rgba(173, 216, 230, 0.05) 1px, transparent 0); /* Slightly larger, even fainter "stars" - layer 3 */
+    background-size: 
+        25px 25px, /* Density for layer 1 */
+        40px 40px, /* Density for layer 2 */
+        50px 50px;  /* Density for layer 3 */
     color: #cdd6f4; /* Default light text color for dark background, if text is ever directly on body */
     line-height: 1.6; /* Improved readability */
     font-size: 16px; /* Base font size */
@@ -164,7 +168,7 @@ body {
     justify-content: center; 
     box-sizing: border-box;
     margin: 0; /* Reset margin */
-    height: 100%; /* Make button take full height of parent if parent has defined height, or match input via padding */
+    /* height: 100%; Removed as align-items: stretch on parent is preferred */
 }
 .vin-input-bar .input-group-text:hover {
     background-color: #e6b400; 
