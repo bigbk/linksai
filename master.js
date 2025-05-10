@@ -100,17 +100,14 @@ $(document).ready(function () {
     // --- Core Display Functions ---
     window.hideAllMakeSpecificDivs = function() {
         allMakeDivIds.forEach(id => {
-            // Only hide divs that are specifically for makes, not the general_links_div
-            if (id !== 'general_links_div') { // Assuming 'general_links_div' is not in makeToDivId
+            if (id !== 'general_links_div') { 
                  $('#' + id).addClass('d-none');
             }
         });
-         // Clear identified make text, but general links remain.
         $('#identifiedMake').text('');
     };
 
     window.showMakeSpecificDiv = function(make) {
-        // First, hide all *other* make-specific divs and the common div
         allMakeDivIds.forEach(id => {
             $('#' + id).addClass('d-none');
         });
@@ -118,21 +115,17 @@ $(document).ready(function () {
         const divId = makeToDivId[make.toUpperCase()]; 
         const commonDivId = makeToDivId['COMMON'];
 
-        // Ensure general links div is visible
         $('#general_links_div').removeClass('d-none'); 
 
         if (divId) {
-            $('#' + divId).removeClass('d-none'); // Show the target make-specific div
+            $('#' + divId).removeClass('d-none'); 
             $('#identifiedMake').text(`Identified Make: ${make} (Displaying specific & common links)`);
-            // The line below was hiding the general links. It is now removed.
-            // $('#general_links_div').addClass('d-none'); 
             
             if (commonDivId && divId !== commonDivId) { 
                 $('#' + commonDivId).removeClass('d-none');
             }
         } else {
             $('#identifiedMake').text(`Make "${make}" not recognized. Showing general & common links.`);
-            // General links are already ensured to be visible above.
             if (commonDivId) { 
                  $('#' + commonDivId).removeClass('d-none');
             }
@@ -143,9 +136,8 @@ $(document).ready(function () {
         const commonDivId = makeToDivId['COMMON'];
 
         if (makeKey === 'ALL' || !makeKey) {
-            // Hide all make-specific divs (audi_div, bmw_div etc.)
             allMakeDivIds.forEach(id => {
-                if (id !== commonDivId) { // Don't hide common_div yet if it's part of allMakeDivIds
+                if (id !== commonDivId) { 
                     $('#' + id).addClass('d-none');
                 }
             });
@@ -155,14 +147,14 @@ $(document).ready(function () {
             }
             $('#identifiedMake').text('Showing General & Common Research Links');
         } else {
-            showMakeSpecificDiv(makeKey); // This will handle showing the specific make and common, and keep general visible
+            showMakeSpecificDiv(makeKey); 
         }
     };
 
     window.handleVinInput = function() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         const commonDivId = makeToDivId['COMMON'];
-        $('#general_links_div').removeClass('d-none'); // Always ensure general links are visible during VIN input
+        $('#general_links_div').removeClass('d-none'); 
 
         if (vinValue.length === 0) {
             updateDisplay('ALL'); 
@@ -172,10 +164,9 @@ $(document).ready(function () {
         if (vinValue.length >= 3) { 
             const make = getMakeFromVin(vinValue);
             if (make) {
-                showMakeSpecificDiv(make); // This will show specific, common, and keep general visible
+                showMakeSpecificDiv(make); 
             } else {
                 $('#identifiedMake').text(`Typing VIN: ${vinValue.substring(0,3)}... (Make not yet identified)`);
-                // Hide all specific make divs, but keep general and common visible
                 allMakeDivIds.forEach(id => {
                      if (id !== commonDivId) {
                         $('#' + id).addClass('d-none');
@@ -185,7 +176,7 @@ $(document).ready(function () {
             }
         } else {
             $('#identifiedMake').text('Enter at least 3 characters of VIN...');
-            allMakeDivIds.forEach(id => { // Hide all specific make divs
+            allMakeDivIds.forEach(id => { 
                  if (id !== commonDivId) {
                     $('#' + id).addClass('d-none');
                  }
@@ -198,7 +189,7 @@ $(document).ready(function () {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         $('#VINbar').val(vinValue); 
 
-        $('#general_links_div').removeClass('d-none'); // Ensure general links are visible after processing
+        $('#general_links_div').removeClass('d-none'); 
 
         if (vinValue.length !== 17) {
             $('#output').html("<strong>Validation Error:</strong> Please enter a full 17-digit VIN.");
@@ -209,7 +200,7 @@ $(document).ready(function () {
 
         const make = getMakeFromVin(vinValue);
         if (make) {
-            showMakeSpecificDiv(make); // This will show specific, common, and keep general visible
+            showMakeSpecificDiv(make); 
             $('#output').html(`Displaying links for identified make: <strong>${make}</strong>.`);
             $('#outputbox').fadeIn().delay(2500).fadeOut(); 
         } else {
@@ -307,22 +298,25 @@ $(document).ready(function () {
     }
 
     // --- Individual Make/Link Functions ---
+    // Window sticker links are reverted to original direct patterns where possible,
+    // except for Mazda and Volvo which retain their v4 logic.
+
     window.vwaudilane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://webtest1.audi.com.edgesuite.net/acf012/v1/applications/vindecoder/default/details/' + vin + '/CA/EN', '_blank'); };
-    window.bimmerbtn = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank'); };
-    window.bmwlane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://www.nadeauto.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=BMW&img=1', '_blank'); };
+    window.bimmerbtn = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.mdecoder.com/decode/' + vin, '_blank'); }; // Datacard
+    window.bmwlane = function () { const vin = getVinOrAlert(); if (vin) window.open('http://www.nadeauto.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=BMW&img=1', '_blank'); }; // Window Sticker
     window.miniog = function() {
         var myear = $("#myear").val(); var mmodel = $("#mmodel").val();
         if(myear && mmodel) { window.open('https://www.google.com/search?q=' + encodeURIComponent(myear + ' ' + mmodel + ' mini cooper ordering guide site:minif56.com'), '_blank'); } 
         else { alert("Please enter Year and Model for MINI Guide Search."); }
     };
     window.chrysler = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?vin=' + vin, '_blank'); };
-    window.chryslerlist = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.jeep.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
-    window.chryslerlist2 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.ramtrucks.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
-    window.chryslerlist3 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.dodge.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); };
+    window.chryslerlist = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.jeep.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); }; // Build Sheet
+    window.chryslerlist2 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.ramtrucks.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); }; // Build Sheet
+    window.chryslerlist3 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.dodge.com/webselfservice/BuildSheetServlet?vin=' + vin, '_blank'); }; // Build Sheet
     window.fordwiki = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.windowsticker.forddirect.com/windowsticker.pdf?vin=' + vin, '_blank'); };
-    window.ford = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.motorcraftservice.com/Home/SetCountry?returnUrl=%2FAsBuilt%3Fvin%3D' + vin, '_blank'); };
+    window.ford = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.motorcraftservice.com/Home/SetCountry?returnUrl=%2FAsBuilt%3Fvin%3D' + vin, '_blank'); }; // AsBuilt
     window.fordsticker = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.inventory.ford.com/services/inventory/v2/windowsticker/' + vin + '?dealerId=XXXXX', '_blank'); };
-    window.fordstickerkey = function () { const vin = getVinOrAlert(); if (vin) window.open('https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details', '_blank'); };
+    window.fordstickerkey = function () { const vin = getVinOrAlert(); if (vin) window.open('https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details', '_blank'); }; // JSON
     window.fordstickerkey2 = function () {
         const vin = getVinOrAlert(); const mkey = $('#mkey').val().trim();
         if (vin && mkey.length > 0) { let url = 'https://api.concentrix.ford.com/v1.0/vehicle/vin/' + vin + '/details'; alert("Opening Concentrix URL. Authentication/headers may be required: " + url + " with key: " + mkey); window.open(url, '_blank'); } 
@@ -331,30 +325,64 @@ $(document).ready(function () {
     window.gmlink2 = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.gmpartsrebates.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin, '_blank'); };
     window.gmlink = function () { const vin = getVinOrAlert(); if (vin) window.open('https://www.gmremarketing.com/MonroneySticker/MonroneyStickerRequestHandler.ashx?vin=' + vin + '&make=SAAB', '_blank'); };
     
-    window.honda2 = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hondaautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Honda'); };
-    window.acura = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.acuraautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Acura'); };
-    window.hyunwiki = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hyundaiusa.com/var/hyundai/services/inventory/vehicleDetailsByVin.json?vin=' + vin, 'Hyundai'); };
+    window.honda2 = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hondaautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Honda'); }; // JSON Trim
+    window.acura = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.acuraautomobileparts.com/json/vars.aspx?vin=' + vin + '&dl=true', 'Acura'); }; // JSON Trim
+    window.hyunwiki = function () { const vin = getVinOrAlert(); if (vin) attemptJsonFetch('https://www.hyundaiusa.com/var/hyundai/services/inventory/vehicleDetailsByVin.json?vin=' + vin, 'Hyundai'); }; // JSON Details
     
-    window.getnissansticker4 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); };
-    window.infiniti = function() { const vin = getVinOrAlert(); if(vin) { alert("Infiniti specific sticker link pattern needs verification. Opening general lookup."); window.open('https://www.infinitiusa.com/owners/ownership/manuals-guides.html', '_blank'); } };
-    window.infinititrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.infinitiusa.com/owners/vehicle-resources/recall-information.html?dcp=sn_258_RECALLS&uuid=ONLINE_SEARCH_FORM&vin=' + vin, '_blank'); };
-    window.kiabtn2 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.kia.com/us/en/services/kia-owner-portal/information?vin=' + vin, '_blank'); };
-    window.maserati = function() { const vin = getVinOrAlert(); if(vin) { alert("Maserati window sticker links are typically dealer-specific. Searching Google for dealer inventory."); window.open('https://www.google.com/search?q=maserati+dealer+inventory+window+sticker+' + vin, '_blank'); } };
+    window.getnissansticker4 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); }; // Lookup Page
+    window.infiniti = function() { // Reverted to a more direct lookup if possible, or general page
+        const vin = getVinOrAlert(); 
+        if(vin) window.open('https://www.infinitiusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); // Try Infiniti specific lookup
+    };
+    window.infinititrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.infinitiusa.com/owners/vehicle-resources/recall-information.html?dcp=sn_258_RECALLS&uuid=ONLINE_SEARCH_FORM&vin=' + vin, '_blank'); }; // Recall/Trim
+    window.kiabtn2 = function() { // Points to Kia owner portal which may have sticker
+        const vin = getVinOrAlert(); 
+        if(vin) window.open('https://www.kia.com/us/en/services/kia-owner-portal/information?vin=' + vin + '#/epricelabel', '_blank'); // Added #/epricelabel fragment which sometimes works
+    };
+    window.maserati = function() { // Direct Maserati stickers are rare, Google search is a practical original-like fallback
+        const vin = getVinOrAlert(); 
+        if(vin) { 
+            alert("Maserati window sticker links are typically dealer-specific or require login. Searching Google for dealer inventory."); 
+            window.open('https://www.google.com/search?q=maserati+dealer+inventory+window+sticker+' + vin, '_blank'); 
+        } 
+    };
+    
+    // Mazda: Retain v4 logic (alert for mazdabtn2, Google search for mazdabtn)
     window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable (as per original notes)."); };
     window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
-    window.decoderz = function() { const vin = getVinOrAlert(); if(vin) window.open('https://vindecoderz.com/EN/check-lookup/' + vin, '_blank'); };
-    window.mitsbtn = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.mitsubishicars.com/owners/service/recalls?vin=' + vin, '_blank'); };
-    window.nissan = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); };
-    window.nissantrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/vehicle-resources/recall-lookup.html?vin=' + vin, '_blank'); };
-    window.porwiki = function() { const vin = getVinOrAlert(); if(vin) { alert("Porsche window sticker links are typically dealer-specific or require login. Searching Porsche USA."); window.open('https://www.porsche.com/usa/accessoriesandservices/porscheservice/vehicleinformation/originalvehicleinformation/', '_blank'); } };
-    window.subaru2 = function() { const vin = getVinOrAlert(); if (vin) { alert("Subaru JSON trim link pattern needs verification. Opening recall site."); window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); } };
-    window.subaru = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); };
-    window.subarusticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaruwindowsticker.com/parse.php?vin=' + vin, '_blank'); };
-    window.tesla = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/vin/' + vin, '_blank'); };
-    window.teslam = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/ownersmanual', '_blank'); };
-    window.tesla2 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.google.com/search?q=tesla+vin+' + vin + '+for+sale+history', '_blank'); };
-    window.toyotasticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://api.toyotainventory.com/vehicles/' + vin + '/monroney', '_blank'); };
+    
+    window.decoderz = function() { const vin = getVinOrAlert(); if(vin) window.open('https://vindecoderz.com/EN/check-lookup/' + vin, '_blank'); }; // Datacard
+    
+    // Mitsubishi: Reverted to a more direct sticker link pattern
+    window.mitsbtn = function() { 
+        const vin = getVinOrAlert(); 
+        if(vin) window.open('https://www.mitsubishicars.com/rs/file/monroney?vin=' + vin, '_blank'); 
+    };
+    
+    window.nissan = function() { // Using the official lookup page
+        const vin = getVinOrAlert(); 
+        if(vin) window.open('https://www.nissanusa.com/owners/forms/window-sticker-lookup.html?vin=' + vin, '_blank'); 
+    };
+    window.nissantrm = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.nissanusa.com/owners/vehicle-resources/recall-lookup.html?vin=' + vin, '_blank'); }; // Recall/Trim
+    window.porwiki = function() { // Direct Porsche stickers are rare, info page is a good fallback
+        const vin = getVinOrAlert(); 
+        if(vin) { 
+            alert("Porsche window sticker links are typically dealer-specific or require login. Opening Porsche USA vehicle information page."); 
+            window.open('https://www.porsche.com/usa/accessoriesandservices/porscheservice/vehicleinformation/originalvehicleinformation/', '_blank'); 
+        } 
+    };
+    window.subaru2 = function() { const vin = getVinOrAlert(); if (vin) { alert("Subaru JSON trim link pattern needs verification. Opening recall site."); window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); } }; // JSON Trim
+    window.subaru = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaru.com/owners/vehicle-resources/recalls.html?vin=' + vin, '_blank'); }; // Trim Info
+    window.subarusticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.subaruwindowsticker.com/parse.php?vin=' + vin, '_blank'); }; // 3rd party
+    
+    window.tesla = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/vin/' + vin, '_blank'); }; // Packages/Info
+    window.teslam = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.tesla.com/ownersmanual', '_blank'); }; // Manual
+    window.tesla2 = function() { const vin = getVinOrAlert(); if(vin) window.open('https://www.google.com/search?q=tesla+vin+' + vin + '+for+sale+history', '_blank'); }; // Listing Info
+    
+    window.toyotasticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://api.toyotainventory.com/vehicles/' + vin + '/monroney', '_blank'); }; // API based
     window.toyotasticker3 = function() { const vin = getVinOrAlert(); if(vin) { alert("DealerSocket/DealerFire Toyota sticker links vary by dealer. Searching Google."); window.open('https://www.google.com/search?q=toyota+dealersocket+window+sticker+' + vin, '_blank'); } };
+    
+    // Volvo: Retain v4 logic (info page)
     window.volvosticker = function() { const vin = getVinOrAlert(); if(vin) window.open('https://volvo.custhelp.com/app/answers/detail/a_id/9005/~/how-do-i-get-a-window-sticker-%28monroney-label%29-for-my-volvo%3F', '_blank'); };
     
     window.velocitysticker = function() { const vin = getVinOrAlert(); if(vin) alert("Velocity sticker link requires dealer login/access. This is a placeholder."); };
@@ -385,7 +413,7 @@ $(document).ready(function () {
                     const fieldsToShow = ['Make', 'Model', 'ModelYear', 'Manufacturer', 'VehicleType', 'BodyClass', 'DriveType', 'EngineCylinders', 'FuelTypePrimary', 'PlantCity', 'PlantCountry'];
                     fieldsToShow.forEach(field => {
                         if (vehicleData[field]) {
-                            formattedResults += `${field.replace(/([A-Z])/g, ' $1').trim()}: ${vehicleData[field]}\n`; // Add space before caps
+                            formattedResults += `${field.replace(/([A-Z])/g, ' $1').trim()}: ${vehicleData[field]}\n`; 
                         }
                     });
                     $('#txt_results').val(formattedResults.trim());
