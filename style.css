@@ -77,8 +77,8 @@ body {
 }
 
 .manual-select-btn {
-    background-color: #ffc600; /* Gold */
-    color: #003366; /* Darker blue text for contrast */
+    background-color: #ffc600 !important; /* Gold - Added !important to ensure override */
+    color: #003366 !important; /* Darker blue text for contrast - Added !important */
     border: none;
     font-weight: 700; /* Bolder */
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -87,8 +87,8 @@ body {
     border-radius: 6px;
 }
 .manual-select-btn:hover, .manual-select-btn:focus {
-    background-color: #e6b400; /* Darker gold on hover */
-    color: #003366;
+    background-color: #e6b400 !important; /* Darker gold on hover - Added !important */
+    color: #003366 !important; /* Added !important */
     transform: translateY(-1px); /* Slight lift effect */
 }
 .dropdown-menu {
@@ -115,7 +115,8 @@ body {
     border: 1px solid #ccc; /* Slightly darker border for definition */
     border-radius: 6px; /* Consistent radius */
     background-color: #fff; /* White background for the input group */
-    display: flex; /* Ensure items are in a row */
+    display: flex; /* Ensure items are in a row and align vertically */
+    align-items: stretch; /* Make items stretch to fill height */
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar input.form-control {
@@ -123,8 +124,9 @@ body {
     text-transform: uppercase; /* VINs are typically uppercase */
     font-size: 1em; /* Slightly larger font */
     flex-grow: 1; /* Allow input to take available space */
-    height: calc(1.5em + 1rem + 2px); /* Match Bootstrap button height better */
-    padding-left: 15px;
+    /* height: calc(1.5em + 1rem + 2px); Removed fixed height to allow natural flexbox alignment */
+    padding: .5rem 1rem; /* Adjust padding to match button if needed */
+    line-height: 1.5; /* Ensure text is vertically centered */
 }
 .vin-input-bar input.form-control:focus {
     box-shadow: none; /* Remove focus shadow from input itself */
@@ -142,6 +144,9 @@ body {
     border-bottom-right-radius: 6px; /* Match group radius */
     padding: 0 18px; /* Adjust padding */
     transition: background-color 0.2s ease;
+    display: flex; /* For vertical centering of icon */
+    align-items: center; /* For vertical centering of icon */
+    justify-content: center; /* For horizontal centering of icon */
 }
 .vin-input-bar .input-group-text:hover {
     background-color: #e6b400; /* Darker gold on hover */
@@ -190,14 +195,14 @@ body {
     color: #00539f; /* Primary blue for links */
     text-decoration: none;
     font-weight: 600; /* Bolder links */
-    transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+    transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out, background-color 0.2s ease-in-out;
     display: block; /* Make the whole area clickable */
     padding: 8px 5px; /* Adjust padding */
     border-radius: 4px;
 }
 .link-section ul li a:hover {
     color: #ffc600; /* Gold on hover */
-    background-color: #f8f9fa; /* Slight background on hover */
+    background-color: #f0f8ff; /* Slight background on hover */
     padding-left: 10px; /* Slight indent on hover */
     text-decoration: none;
 }
@@ -285,6 +290,15 @@ body {
     overflow-y: auto;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
+#outputbox a { /* Styling for links within the output box */
+    color: #00539f; /* CarMax blue for links */
+    font-weight: 600;
+}
+#outputbox a:hover {
+    color: #ffc600; /* CarMax gold for hover */
+    text-decoration: underline;
+}
+
 
 /* --- Make-Specific Content Sections & Common Div --- */
 .make-specific-content {
@@ -430,7 +444,7 @@ body {
     }
     .vin-input-bar input.form-control {
         font-size: 0.9em; /* Smaller font in VIN bar */
-        height: calc(1.5em + .75rem + 2px);
+        /* height: calc(1.5em + .75rem + 2px); Let flexbox determine height */
     }
     .vin-input-bar .input-group-text {
         padding: 0 12px;
