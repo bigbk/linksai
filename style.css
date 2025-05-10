@@ -3,10 +3,13 @@
 /* --- Global Styles & Typography --- */
 body {
     font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
-    background-color: #f4f5f6; /* Base light grey background */
-    /* Subtle diagonal line pattern for a touch of texture - opacity slightly increased */
-    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300539f' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
-    color: #333; /* Default text color */
+    /* Futuristic Background: Dark navy with a subtle blue grid */
+    background-color: #0a192f; /* Dark navy blue base */
+    background-image: 
+        linear-gradient(rgba(25, 118, 210, 0.07) 1px, transparent 1px), /* Horizontal lines */
+        linear-gradient(90deg, rgba(25, 118, 210, 0.07) 1px, transparent 1px); /* Vertical lines */
+    background-size: 30px 30px; /* Size of the grid squares */
+    color: #cdd6f4; /* Default light text color for dark background, if text is ever directly on body */
     line-height: 1.6; /* Improved readability */
     font-size: 16px; /* Base font size */
     -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
@@ -21,94 +24,95 @@ body {
 
 /* --- Main Container --- */
 .main-container {
-    background-color: #fff; /* White background for the main content area */
+    background-color: #fff; /* White background for the main content area - contrasts with dark body */
+    color: #333; /* Reset text color for content within the container */
     border-radius: 10px; /* Slightly more pronounced rounded corners */
     margin-top: 25px;
     margin-bottom: 25px;
     padding-top: 20px !important; /* Custom padding */
     padding-bottom: 30px !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1); /* Slightly enhanced shadow for depth */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Slightly enhanced shadow for depth on dark bg */
 }
 
 /* --- Header Section --- */
 .header-title-vin {
-    color: #00539f; /* Primary blue */
-    font-weight: 900; /* Bolder "VIN" */
+    color: #00539f; 
+    font-weight: 900; 
     font-family: 'Chivo', sans-serif;
 }
 .header-title-research {
-    color: #00539f; /* Primary blue */
+    color: #00539f; 
     font-weight: 700;
     font-family: 'Chivo', sans-serif;
 }
 .header-title-hub {
-    background-color: #00539f; /* Primary blue background */
-    color: #fff; /* White text */
-    padding: 5px 12px; /* Padding around "Hub" */
-    border-radius: 6px; /* Rounded corners for "Hub" */
+    background-color: #00539f; 
+    color: #fff; 
+    padding: 5px 12px; 
+    border-radius: 6px; 
     font-weight: 700;
-    font-size: 0.85em; /* Slightly smaller "Hub" text */
-    vertical-align: middle; /* Align with other text */
-    display: inline-block; /* Allows padding and vertical alignment */
+    font-size: 0.85em; 
+    vertical-align: middle; 
+    display: inline-block; 
     margin-left: 5px;
     text-transform: uppercase;
 }
 .header-logo-area {
     display: flex;
-    align-items: center; /* Vertically align items */
-    justify-content: flex-end; /* Push to the right */
+    align-items: center; 
+    justify-content: flex-end; 
 }
 .header-logo-area img {
-    margin-right: 10px; /* Space between gif and text */
+    margin-right: 10px; 
 }
 .logo-text {
-    font-size: 1.8em; /* Adjusted size */
-    color: #ffc600; /* Gold accent */
-    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif; /* Specific font for logo */
+    font-size: 1.8em; 
+    color: #ffc600; 
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif; 
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 /* --- Navigation Bar (VIN Input & Manual Select) --- */
 .nav-bar-section {
-    background-color: #00539f; /* Primary blue background for the nav bar */
-    border-radius: 8px; /* Rounded corners for the nav bar itself */
-    margin-left: 0; /* Align with container edges */
+    background-color: #00539f; 
+    border-radius: 8px; 
+    margin-left: 0; 
     margin-right: 0;
-    padding: 20px !important; /* Increased padding */
+    padding: 20px !important; 
 }
 
 .manual-select-btn {
-    background-color: #ffc600 !important; /* Gold - Added !important to ensure override */
-    color: #003366 !important; /* Darker blue text for contrast - Added !important */
+    background-color: #ffc600 !important; 
+    color: #003366 !important; 
     border: none;
-    font-weight: 700; /* Bolder */
+    font-weight: 700; 
     transition: background-color 0.2s ease, transform 0.1s ease;
-    padding: 10px 15px; /* More padding */
+    padding: 10px 15px; 
     font-size: 0.95em;
     border-radius: 6px;
 }
 .manual-select-btn:hover, .manual-select-btn:focus {
-    background-color: #e6b400 !important; /* Darker gold on hover - Added !important */
-    color: #003366 !important; /* Added !important */
-    transform: translateY(-1px); /* Slight lift effect */
+    background-color: #e6b400 !important; 
+    color: #003366 !important; 
+    transform: translateY(-1px); 
 }
 .dropdown-menu {
     border-radius: 6px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* Slightly more pronounced shadow */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
     border: 1px solid #ddd;
     padding: 5px 0;
 }
 .dropdown-item {
     font-weight: 500;
     color: #333;
-    padding: 8px 15px; /* Adjust padding */
+    padding: 8px 15px; 
 }
 .dropdown-item:hover {
-    background-color: #f0f8ff; /* Light blue hover */
+    background-color: #f0f8ff; 
     color: #00539f;
 }
-.dropdown-item:active, .dropdown-item.active { /* Style for active/selected item */
+.dropdown-item:active, .dropdown-item.active { 
     background-color: #00539f;
     color: #fff !important;
 }
@@ -118,7 +122,7 @@ body {
     border-radius: 6px; 
     background-color: #fff; 
     display: flex; 
-    /* align-items: stretch; This is default for flex items, but explicit height control might be better */
+    align-items: stretch; /* Ensure children stretch to the same height */
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar input.form-control {
@@ -126,11 +130,14 @@ body {
     text-transform: uppercase; 
     font-size: 1em; 
     flex-grow: 1; 
-    padding: .5rem 1rem; /* Bootstrap's default vertical padding for form-control-lg is often .5rem */
-    line-height: 1.5; /* Bootstrap's default line-height for form-control */
-    /* No explicit height, let padding and line-height determine it */
-    /* min-height: calc(1.5em + 1rem + 2px); Removed to rely on padding and line-height for natural height */
-    box-sizing: border-box; /* Ensure padding and border are included in height calculation */
+    padding-top: .5rem;    /* Bootstrap's default vertical padding for form-control-lg is often .5rem */
+    padding-bottom: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    line-height: 1.5; 
+    box-sizing: border-box; 
+    margin: 0; /* Reset margin */
+    height: auto; /* Allow padding to determine height */
 }
 .vin-input-bar input.form-control:focus {
     box-shadow: none; 
@@ -142,17 +149,22 @@ body {
 .vin-input-bar .input-group-text { /* Search button styling */
     background-color: #ffc600; 
     color: #003366; 
-    border: none; 
+    border: none; /* Reset Bootstrap border */
     cursor: pointer;
     border-top-right-radius: 6px; 
     border-bottom-right-radius: 6px; 
-    padding: .5rem 1rem; /* Matching vertical padding to the input field */
+    padding-top: .5rem; /* Matching vertical padding to the input field */
+    padding-bottom: .5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     line-height: 1.5; /* Matching line-height */
     transition: background-color 0.2s ease;
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    box-sizing: border-box; /* Ensure padding and border are included in height calculation */
+    box-sizing: border-box;
+    margin: 0; /* Reset margin */
+    height: 100%; /* Make button take full height of parent if parent has defined height, or match input via padding */
 }
 .vin-input-bar .input-group-text:hover {
     background-color: #e6b400; 
@@ -452,7 +464,7 @@ body {
         font-size: 0.9em; 
     }
     .vin-input-bar .input-group-text {
-        padding: .5rem .75rem; /* Ensure button padding is responsive if needed */
+        padding: .5rem .75rem; 
     }
     .link-section, .make-specific-content {
         padding: 15px;
