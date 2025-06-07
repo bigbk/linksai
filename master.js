@@ -174,7 +174,7 @@ $(document).ready(function () {
         'HONDA': 'honda_div', 'ACURA': 'honda_div',
         'HYUNDAI': 'hyundai_div', 'GENESIS': 'hyundai_div', 'KIA': 'kia_div',
         'INFINITI': 'nissaninfiniti_div', 'NISSAN': 'nissaninfiniti_div',
-        'JAGUAR': 'jaguar_div', 'LAND ROVER': 'landrover_div',
+        'JAGUAR': 'lr_div', 'LAND ROVER': 'lr_div',
         'LEXUS': 'lexus_div', 'SCION': 'lexus_div', 'TOYOTA': 'toyota_div',
         'MASERATI': 'maserati_div', 'MAZDA': 'mazda_div', 'MERCEDES-BENZ': 'mercedes_div',
         'MITSUBISHI': 'mitsubishi_div', 'SUBARU': 'subaru_div', 'TESLA': 'tesla_div',
