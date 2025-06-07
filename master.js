@@ -472,13 +472,11 @@ $(document).ready(function () {
     window.wclutch = function() { openWindowWithVin2(`https://www.withclutch.com/window-stickers`); }; 
     window.hclutch = function() { openWindowWithVin(`${awsserv}/hclutch?vin=VIN_PLACEHOLDER`); };
     window.autobrochures = function() { 
-        const currentVin = getVinOrAlert(); 
-        const currentMake = currentVin ? getMakeFromVin(currentVin) : null;
-        if (currentMake) {
-            openWindowWithVin("http://www.auto-brochures.com/" + currentMake + ".html");
-        } else {
-            window.open("http://www.auto-brochures.com/", '_blank');
-        }
+    if (aMake !== "" && typeof aMake !== 'undefined') {
+        openWindowWithVin("http://www.auto-brochures.com/" + aMake + ".html");
+    } else {
+        openWindowWithVin("http://www.auto-brochures.com/");
+    }
     };
     window.bimmerbtn = function() { 
         const currentVin = getVinOrAlert();
