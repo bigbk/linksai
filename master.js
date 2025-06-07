@@ -15,7 +15,7 @@ $(document).ready(function () {
     const wmiToMake = {
         // Volkswagen Group
         '1VW': 'VOLKSWAGEN', '3VW': 'VOLKSWAGEN', // VW USA/Mexico
-        'WAU': 'AUDI', 'WUA': 'AUDI', 'TRU': 'AUDI', // Audi Germany/Hungary
+        'WAU': 'AUDI', 'WUA': 'AUDI', 'WA1': 'AUDI', 'TRU': 'AUDI', // Audi Germany/Hungary
         '2VW': 'VOLKSWAGEN', // VW Canada
         '9BW': 'VOLKSWAGEN', // VW Brazil
         'WVW': 'VOLKSWAGEN', // VW Germany Passenger Cars
@@ -108,12 +108,12 @@ $(document).ready(function () {
         'SCA': 'LAND ROVER', 
 
         // Toyota / Lexus / Scion
-        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 
+        'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 'JTM': 'TOYOTA', 'JTN': 'TOYOTA',
         'JTH': 'LEXUS',      
         'JTK': 'SCION',      
         '4T1': 'TOYOTA', '4T3': 'TOYOTA', 
         '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', 
-        '2T1': 'TOYOTA',     
+        '2T1': 'TOYOTA', '2T3': 'TOYOTA',    
         'SB1': 'TOYOTA',     
 
         // Mazda
