@@ -1,29 +1,43 @@
 /* style.css for VIN Research Hub */
 
 /* --- Global Styles & Typography --- */
+html, body {
+    height: 100%; /* Ensure html and body take full height */
+    min-height: 100vh; /* Ensure html and body take full viewport height */
+    margin: 0; /* Remove default body margin */
+    padding: 0; /* Remove default body padding */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
 body {
-    
+    /* REMOVE all background properties from body now.
+       #particles-js will handle the background visually. */
+    background: none; /* Explicitly remove any remaining background */
+    background-color: #0a192f; /* Fallback for very old browsers or if particles.js fails */
+
+
     font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
-    /* Futuristic Background: Dark navy with a subtle "starfield" or "digital dust" pattern */
-    background-attachment: fixed;
-    background-repeat: repeat;
-    background-color: #0a192f;
-    background-image:
-        radial-gradient(circle at 1px 1px, rgba(173, 216, 230, 0.5) 0.5px, transparent 0), /* Increased opacity */
-        radial-gradient(circle at 15px 10px, rgba(173, 216, 230, 0.4) 0.5px, transparent 0),  /* Increased opacity */
-        radial-gradient(circle at 25px 25px, rgba(173, 216, 230, 0.3) 1px, transparent 0);  /* Increased opacity */
-    background-size:
-        25px 25px,
-        40px 40px,
-        50px 50px;
     color: #cdd6f4; /* Default light text color for dark background, if text is ever directly on body */
     line-height: 1.6; /* Improved readability */
     font-size: 16px; /* Base font size */
     -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
     -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
-
-
 }
+
+/* NEW: Styles for the particles container */
+#particles-js {
+    position: fixed; /* Fixed position relative to the viewport */
+    width: 100%;     /* Full width */
+    height: 100%;    /* Full height */
+    top: 0;          /* Align to top */
+    left: 0;         /* Align to left */
+    z-index: -1;     /* Place it behind all other content */
+    background-color: #0a192f; /* Background color for the particles canvas */
+    background-repeat: no-repeat; /* Particles will fill the space */
+    background-size: cover; /* Ensure particles canvas covers the area */
+    background-position: 50% 50%; /* Center the background */
+}
+
 
 /* --- Color Palette (CarMax Inspired) --- */
 .carmax-blue-text { color: #00539f; } /* Primary blue text */
@@ -33,11 +47,19 @@ body {
 
 /* --- Main Container --- */
 .main-container {
+    /* Ensure main-container is positioned above the particles background */
+    position: relative; /* Needs a position other than static for z-index to work */
+    z-index: 1; /* Ensures it's above z-index: -1 of #particles-js */
+
     background-color: #fff; /* White background for the main content area - contrasts with dark body */
+    /* If you want the particles to subtly show through the main content area,
+       change this to an rgba color with transparency, e.g.: */
+    /* background-color: rgba(255, 255, 255, 0.9); */
     color: #333; /* Reset text color for content within the container */
     border-radius: 10px; /* Slightly more pronounced rounded corners */
-    margin-top: 25px;
-    margin-bottom: 25px;
+    /* Reduced top and bottom margins for the main container */
+    margin-top: 15px; /* Was 25px */
+    margin-bottom: 15px; /* Was 25px */
     padding-top: 20px !important; /* Custom padding */
     padding-bottom: 30px !important;
     box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Slightly enhanced shadow for depth on dark bg */
@@ -49,246 +71,249 @@ body {
 
 /* --- Header Section --- */
 .header-title-vin {
-    color: #00539f; 
-    font-weight: 900; 
+    color: #00539f;
+    font-weight: 900;
     font-family: 'Chivo', sans-serif;
 }
 .header-title-research {
-    color: #00539f; 
+    color: #00539f;
     font-weight: 700;
     font-family: 'Chivo', sans-serif;
 }
 .header-title-hub {
-    background-color: #00539f; 
-    color: #fff; 
-    padding: 5px 12px; 
-    border-radius: 6px; 
+    background-color: #00539f;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 6px;
     font-weight: 700;
-    font-size: 0.85em; 
-    vertical-align: middle; 
-    display: inline-block; 
+    font-size: 0.85em;
+    vertical-align: middle;
+    display: inline-block;
     margin-left: 5px;
     text-transform: uppercase;
 }
 .header-logo-area {
     display: flex;
-    align-items: center; 
-    justify-content: flex-end; 
+    align-items: center;
+    justify-content: flex-end;
 }
 .header-logo-area img {
-    margin-right: 10px; 
+    margin-right: 10px;
 }
 .logo-text {
-    font-size: 1.8em; 
-    color: #ffc600; 
-    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif; 
+    font-size: 1.8em;
+    color: #ffc600;
+    font-family: Impact, Haettenschweiler, 'Franklin Gothic Bold', 'Arial Black', sans-serif;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 /* --- Navigation Bar (VIN Input & Manual Select) --- */
 .nav-bar-section {
-    background-color: #00539f; 
-    border-radius: 8px; 
-    margin-left: 0; 
+    background-color: #00539f;
+    border-radius: 8px;
+    margin-left: 0;
     margin-right: 0;
-    padding: 20px !important; 
+    /* Reduced vertical padding to make this area more compact */
+    padding: 15px !important; /* Was 20px */
 }
 
 .manual-select-btn {
-    background-color: #ffc600 !important; 
-    color: #003366 !important; 
+    background-color: #ffc600 !important;
+    color: #003366 !important;
     border: none;
-    font-weight: 700; 
+    font-weight: 700;
     transition: background-color 0.2s ease, transform 0.1s ease;
-    padding: 10px 15px; 
+    padding: 10px 15px;
     font-size: 0.95em;
     border-radius: 6px;
 }
 .manual-select-btn:hover, .manual-select-btn:focus {
-    background-color: #e6b400 !important; 
-    color: #003366 !important; 
-    transform: translateY(-1px); 
+    background-color: #e6b400 !important;
+    color: #003366 !important;
+    transform: translateY(-1px);
 }
 .dropdown-menu {
     border-radius: 6px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
     border: 1px solid #ddd;
     padding: 5px 0;
 }
 .dropdown-item {
     font-weight: 500;
     color: #333;
-    padding: 8px 15px; 
+    padding: 8px 15px;
 }
 .dropdown-item:hover {
-    background-color: #f0f8ff; 
+    background-color: #f0f8ff;
     color: #00539f;
 }
-.dropdown-item:active, .dropdown-item.active { 
+.dropdown-item:active, .dropdown-item.active {
     background-color: #00539f;
     color: #fff !important;
 }
 
 .vin-input-bar {
-    border: 1px solid #ccc; 
-    border-radius: 6px; 
-    background-color: #fff; 
-    display: flex; 
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    display: flex;
     align-items: stretch; /* Ensure children stretch to the same height */
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar input.form-control {
-    border: none; 
-    text-transform: uppercase; 
-    font-size: 1em; 
-    flex-grow: 1; 
+    border: none;
+    text-transform: uppercase;
+    font-size: 1em;
+    flex-grow: 1;
     padding-top: .5rem;    /* Bootstrap's default vertical padding for form-control-lg is often .5rem */
     padding-bottom: .5rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    line-height: 1.5; 
-    box-sizing: border-box; 
+    line-height: 1.5;
+    box-sizing: border-box;
     margin: 0; /* Reset margin */
     height: auto; /* Allow padding to determine height */
 }
 .vin-input-bar input.form-control:focus {
-    box-shadow: none; 
+    box-shadow: none;
 }
-.vin-input-bar:focus-within { 
-    border-color: #ffc600; 
-    box-shadow: 0 0 0 0.2rem rgba(255, 198, 0, 0.25), inset 0 1px 3px rgba(0,0,0,0.06); 
+.vin-input-bar:focus-within {
+    border-color: #ffc600;
+    box-shadow: 0 0 0 0.2rem rgba(255, 198, 0, 0.25), inset 0 1px 3px rgba(0,0,0,0.06);
 }
 .vin-input-bar .input-group-text { /* Search button styling */
-    background-color: #ffc600; 
-    color: #003366; 
+    background-color: #ffc600;
+    color: #003366;
     border: none; /* Reset Bootstrap border */
     cursor: pointer;
-    border-top-right-radius: 6px; 
-    border-bottom-right-radius: 6px; 
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
     padding-top: .5rem; /* Matching vertical padding to the input field */
     padding-bottom: .5rem;
     padding-left: 1rem;
     padding-right: 1rem;
     line-height: 1.5; /* Matching line-height */
     transition: background-color 0.2s ease;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     margin: 0; /* Reset margin */
     /* height: 100%; Removed as align-items: stretch on parent is preferred */
 }
 .vin-input-bar .input-group-text:hover {
-    background-color: #e6b400; 
+    background-color: #e6b400;
 }
 .vin-input-bar .input-group-text i {
-    color: #003366; 
+    color: #003366;
     font-size: 1.1em;
 }
 
-.identified-make-text { 
-    min-height: 28px; 
-    color: #00539f; 
-    font-weight: 700; 
+.identified-make-text {
+    min-height: 28px;
+    color: #00539f;
+    font-weight: 700;
     font-size: 1.15em;
-    margin-top: 15px !important;
-    margin-bottom: 15px !important;
+    /* Reduced top and bottom margins */
+    margin-top: 10px !important; /* Was 15px */
+    margin-bottom: 10px !important; /* Was 15px */
 }
 
 /* --- Link Sections (General Links on Left & Right Sidebars) --- */
 .link-section {
-    margin-bottom: 25px; 
+    /* Reduced bottom margin to shrink space between these content blocks */
+    margin-bottom: 15px; /* Was 25px */
     padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
-    border: 1px solid #e9ecef; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid #e9ecef;
 }
 .link-section .section-title {
-    color: #00539f; 
-    font-family: 'Chivo', sans-serif; 
+    color: #00539f;
+    font-family: 'Chivo', sans-serif;
     font-weight: 700;
-    margin-bottom: 18px; 
-    border-bottom: 3px solid #ffc600; 
+    margin-bottom: 18px;
+    border-bottom: 3px solid #ffc600;
     padding-bottom: 12px;
-    font-size: 1.3em; 
-    text-transform: uppercase; 
+    font-size: 1.3em;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 .link-section ul {
-    padding-left: 0; 
+    padding-left: 0;
 }
 .link-section ul li {
-    margin-bottom: 10px; 
+    margin-bottom: 10px;
 }
 .link-section ul li a {
-    color: #00539f; 
+    color: #00539f;
     text-decoration: none;
-    font-weight: 600; 
+    font-weight: 600;
     transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out, background-color 0.2s ease-in-out;
-    display: block; 
-    padding: 8px 5px; 
+    display: block;
+    padding: 8px 5px;
     border-radius: 4px;
 }
 .link-section ul li a:hover {
-    color: #ffc600; 
-    background-color: #f0f8ff; 
-    padding-left: 10px; 
+    color: #ffc600;
+    background-color: #f0f8ff;
+    padding-left: 10px;
     text-decoration: none;
 }
 
 /* --- Accordion for CarMax Search --- */
-.accordion-button-style { 
+.accordion-button-style {
     background-color: #00539f;
     color: white;
-    border: none; 
+    border: none;
     width: 100%;
     text-align: left;
-    font-weight: 700; 
-    padding: 15px 20px; 
+    font-weight: 700;
+    padding: 15px 20px;
     font-size: 1.1em;
     transition: background-color 0.2s ease;
 }
 .accordion-button-style:hover, .accordion-button-style:focus {
-    background-color: #004080; 
+    background-color: #004080;
     color: white;
 }
 .accordion .card {
-    border: 1px solid #dee2e6; 
-    border-radius: 8px; 
-    overflow: hidden; 
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
 }
 .accordion .card-header {
-    padding: 0; 
-    background-color: #00539f; 
-    border-bottom: 1px solid #004080; 
+    padding: 0;
+    background-color: #00539f;
+    border-bottom: 1px solid #004080;
 }
 .accordion .card-header button {
-    border-radius: 0; 
+    border-radius: 0;
 }
 .accordion .card-body {
-    background-color: #fdfdff; 
+    background-color: #fdfdff;
     padding: 20px;
 }
 .search-form input[type="text"] {
-    margin-bottom: 12px; 
+    margin-bottom: 12px;
     border-radius: 5px;
     border: 1px solid #ced4da;
     padding: 10px;
 }
 .search-form .options label {
     margin-right: 15px;
-    margin-bottom: 8px; 
+    margin-bottom: 8px;
     font-weight: 500;
-    display: inline-block; 
+    display: inline-block;
 }
-.carmax-search-button { 
+.carmax-search-button {
     background-color: #ffc600;
     color: #003366;
-    font-weight: 700; 
+    font-weight: 700;
     border: none;
-    padding: 12px 25px; 
+    padding: 12px 25px;
     border-radius: 6px;
     transition: background-color 0.2s ease, transform 0.1s ease;
     font-size: 1.05em;
@@ -301,32 +326,32 @@ body {
 
 /* --- Output Box --- */
 #outputbox {
-    background-color: #e7f3fe; 
-    color: #004085; 
-    border: 1px solid #b8daff; 
+    background-color: #e7f3fe;
+    color: #004085;
+    border: 1px solid #b8daff;
     border-radius: 8px;
     font-weight: 500;
-    padding: 20px; 
+    padding: 20px;
 }
-#outputbox pre { 
+#outputbox pre {
     text-align: left;
-    white-space: pre-wrap; 
-    word-break: break-all; 
-    background-color: #fff; 
+    white-space: pre-wrap;
+    word-break: break-all;
+    background-color: #fff;
     padding: 15px;
     border-radius: 6px;
-    border: 1px solid #d1e7fd; 
+    border: 1px solid #d1e7fd;
     font-size: 0.9em;
-    max-height: 350px; 
+    max-height: 350px;
     overflow-y: auto;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
-#outputbox a { 
-    color: #00539f; 
+#outputbox a {
+    color: #00539f;
     font-weight: 600;
 }
 #outputbox a:hover {
-    color: #ffc600; 
+    color: #ffc600;
     text-decoration: underline;
 }
 
@@ -340,63 +365,63 @@ body {
     margin-top: 20px;
     border: 1px solid #e9ecef;
 }
-.make-specific-content p:first-child { 
-    font-weight: 600; 
-    font-size: 1.1em; 
+.make-specific-content p:first-child {
+    font-weight: 600;
+    font-size: 1.1em;
     margin-bottom: 1.5rem;
-    color: #00539f; 
+    color: #00539f;
 }
-.make-specific-content p strong { 
-    color: #004080; 
+.make-specific-content p strong {
+    color: #004080;
 }
-.make-specific-content .card { 
+.make-specific-content .card {
     border: 1px solid #e0e0e0;
     transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-    background-color: #f8f9fa; 
-    border-radius: 8px; 
-    height: 100%; 
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    height: 100%;
 }
 .make-specific-content .card:hover {
-     box-shadow: 0 6px 18px rgba(0,0,0,0.1); 
-     transform: translateY(-4px); 
-     cursor: pointer; 
+     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+     transform: translateY(-4px);
+     cursor: pointer;
 }
 .make-specific-content .card-body {
     padding: 1.25rem;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
 }
 .make-specific-content .card-title {
-    color: #00539f; 
-    font-weight: 700; 
+    color: #00539f;
+    font-weight: 700;
     font-size: 1.1em;
     margin-bottom: 0.6rem;
 }
 .make-specific-content .card-subtitle {
     font-size: 0.8em;
-    color: #6c757d; 
+    color: #6c757d;
     margin-bottom: 0.75rem;
     text-transform: uppercase;
 }
 .make-specific-content .card-text {
     font-size: 0.95em;
-    color: #495057; 
-    margin-bottom: 1rem; 
-    flex-grow: 1; 
+    color: #495057;
+    margin-bottom: 1rem;
+    flex-grow: 1;
 }
 .make-specific-content .card-link {
-    color: #00539f; 
+    color: #00539f;
     font-weight: 600;
     text-decoration: none;
     font-size: 0.9em;
     transition: color 0.2s ease;
-    margin-top: auto; 
+    margin-top: auto;
 }
 .make-specific-content .card-link:hover {
-    color: #ffc600; 
+    color: #ffc600;
     text-decoration: underline;
 }
-.make-specific-content .card .btn-sm { 
+.make-specific-content .card .btn-sm {
     padding: .3rem .8rem;
     font-size: .9rem;
 }
@@ -404,13 +429,13 @@ body {
 .make-specific-content .bg-success .card-subtitle,
 .make-specific-content .bg-success .card-text,
 .make-specific-content .bg-success .card-link {
-    color: #fff; 
+    color: #fff;
 }
 .make-specific-content .bg-warning .card-title,
 .make-specific-content .bg-warning .card-subtitle,
 .make-specific-content .bg-warning .card-text,
 .make-specific-content .bg-warning .card-link {
-    color: #212529; 
+    color: #212529;
 }
 .make-specific-content .bg-warning .card-link:hover {
     color: #000;
@@ -418,37 +443,39 @@ body {
 
 /* Styling for the "visible_div" (Owner's Manuals section) */
 #visible_div {
-    background-color: #f8f9fa; 
+    /* Reduced top margin to bring it closer to the content above */
+    margin-top: 15px; /* Was 20px */
+    background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #dee2e6;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
-#visible_div .dropdown .manual-select-btn { 
-    font-size: 1.1em; 
+#visible_div .dropdown .manual-select-btn {
+    font-size: 1.1em;
 }
 
 /* NHTSA Data Text Area */
 #nhtsa_data textarea {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; 
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 0.9em;
-    background-color: #eef1f5; 
+    background-color: #eef1f5;
     border: 1px solid #d8dde3;
     border-radius: 6px;
     padding: 15px;
-    min-height: 150px; 
+    min-height: 150px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
 }
 
 
 /* --- Utility Classes --- */
-.d-none { 
+.d-none {
     display: none !important;
 }
-.d-block { display: block; } 
-.mb-1 { margin-bottom: 0.25rem !important; } 
+.d-block { display: block; }
+.mb-1 { margin-bottom: 0.25rem !important; }
 
 /* --- Responsive Adjustments --- */
-@media (max-width: 767.98px) { 
+@media (max-width: 767.98px) {
     .main-container {
         margin-top: 15px;
         margin-bottom: 15px;
@@ -456,7 +483,7 @@ body {
         padding-right: 10px !important;
     }
     .header-title-vin, .header-title-research {
-        font-size: 1.3rem; 
+        font-size: 1.3rem;
     }
     .header-title-hub {
         font-size: 0.75em;
@@ -466,21 +493,24 @@ body {
         font-size: 1.4em;
     }
     .nav-bar-section {
-        padding: 15px !important;
+        /* Adjusted for mobile also */
+        padding: 10px !important; /* Was 15px */
     }
     .nav-bar-section .col-md-4, .nav-bar-section .col-md-8,
     .nav-bar-section .col-lg-3, .nav-bar-section .col-lg-9 {
-        padding-left: 5px; 
+        padding-left: 5px;
         padding-right: 5px;
     }
     .vin-input-bar input.form-control {
-        font-size: 0.9em; 
+        font-size: 0.9em;
     }
     .vin-input-bar .input-group-text {
-        padding: .5rem .75rem; 
+        padding: .5rem .75rem;
     }
     .link-section, .make-specific-content {
+        /* Adjusted for mobile also */
         padding: 15px;
+        margin-bottom: 10px; /* Was 15px for desktop, previously unadjusted for mobile */
     }
     .link-section .section-title {
         font-size: 1.15em;
@@ -492,8 +522,8 @@ body {
         padding: 12px 15px;
     }
     #left-sidebar-column, #right-sidebar-column, #main-content-column {
-        margin-bottom: 20px; 
-        order: initial !important; 
+        margin-bottom: 15px; /* Was 20px */
+        order: initial !important;
     }
     #main-content-column { order: 1 !important; }
     #left-sidebar-column { order: 2 !important; }
@@ -501,7 +531,7 @@ body {
 
 }
 
-@media (min-width: 768px) and (max-width: 991.98px) { 
+@media (min-width: 768px) and (max-width: 991.98px) {
     .vin-input-bar input.form-control {
         font-size: 0.95em;
     }
@@ -513,3 +543,4 @@ body {
 #dancebkstatic {
     position: relative;
 }
+
