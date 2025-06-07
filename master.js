@@ -493,17 +493,14 @@ $(document).ready(function () {
         if(myear && mmodel) { window.open('https://www.google.com/search?q=' + encodeURIComponent(myear + ' ' + mmodel + ' mini cooper ordering guide site:minimedia.iconicweb.com'), '_blank'); } 
         else { alert("Please enter Year and Model for MINI Guide Search."); }
     };
-    window.chrysler = function () { openWindowWithVin2("https://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?vin=VIN_PLACEHOLDER"); }; 
+    window.chrysler = function () { openWindowWithVin2("ttps://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?_ga=2.123817667.856222938.1715011172-964708610.1715011172&vin="); }; 
     window.chryslerlist = function () { openWindowWithVin2("http://www.jeep.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
     window.chryslerlist2 = function () { openWindowWithVin2("http://www.chrysler.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
     window.chryslerlist3 = function () { openWindowWithVin2("http://www.dodge.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
     window.decoderz = function() { openWindowWithVin("https://www.vindecoderz.com/EN/check-lookup/VIN_PLACEHOLDER"); }; 
     window.siriusxm = function() { openWindowWithVin2("https://care.siriusxm.com/vinlookup_findVin.action?vin=VIN_PLACEHOLDER"); };
     window.bidhistory = function() { openWindowWithVin("https://en.bidhistory.org/search/?search=VIN_PLACEHOLDER"); };
-    window.ford = function () { 
-        const vin = getVinOrAlert(); 
-        if (vin) window.open('https://www.motorcraftservice.com/Home/SetCountry?returnUrl=%2FAsBuilt%3Fvin%3D' + vin, '_blank'); 
-    };
+    window.ford = function () { openWindowWithVin("https://www.etis.ford.com/selectedVehicleDetails.do#vin=VIN_PLACEHOLDER"); };
     window.fordsticker = function () { openWindowWithVin2("http://www.windowsticker.forddirect.com/windowsticker.pdf?vin=VIN_PLACEHOLDER"); };
     window.fordstickerkey = function () { openWindowWithVin2("https://imola.adesa.com/auction-engine-web-api/encryptVin.json?cgId=947&sellerOrgId=201721&isRunList=1&vin=VIN_PLACEHOLDER"); }; 
     window.fordstickerkey2 = function () {
@@ -517,12 +514,46 @@ $(document).ready(function () {
     };
     window.fordwiki = function () { openWindowWithVin(awsserv + "/ford?vin=VIN_PLACEHOLDER"); };
     window.gmlink = function () { openWindowWithVin2("https://windowsticker-prod.aws.manheim.com/showGmWs?auctionID=&workOrderNumber=7055030&sblu=11546249&vin=VIN_PLACEHOLDER"); };
-    window.gmlink2 = function () { openWindowWithVin2("https://www.codychevrolet.com/services/gm/windowSticker.do?dealerCode=210275&cs:o=%window_sticker%&cs:o=%27WindowSticker%27&vin=VIN_PLACEHOLDER"); };
+    window.gmlink2 = function () {
+    const vin = getVinOrAlert(); // Retrieve VIN using existing helper
+        if (!vin) {
+            return; // Exit if no valid VIN
+        }
+
+        // Helper function for UTF-16LE encoding for this specific API requirement
+        function encodeUTF16LE(str) {
+            const buf = new ArrayBuffer(str.length * 2);
+            const view = new DataView(buf);
+            for (let i = 0; i < str.length; i++) {
+                view.setUint16(i * 2, str.charCodeAt(i), true); // little-endian
+            }
+            // <<< POTENTIAL BUG: btoa expects a string where each character represents a byte (0-255).
+            // While `String.fromCharCode(...new Uint8Array(buf))` is a common pattern to prepare binary data for `btoa`,
+            // directly using `String.fromCharCode(...utf16leBytes)` with `setUint16` might result in characters
+            // outside the 0-255 range, leading to incorrect encoding with `btoa` for non-ASCII characters.
+            // For VINs (alphanumeric), this might not be an issue, but be aware for broader use.
+            return new Uint8Array(buf);
+        }
+
+        const utf16leBytes = encodeUTF16LE(vin); // Use the retrieved VIN
+
+        // Convert byte array to a "binary string" suitable for btoa
+        const base64Vin = btoa(String.fromCharCode(...utf16leBytes));
+
+        const urlEncodedVin = encodeURIComponent(base64Vin);
+
+        // Construct the final URL
+        const url = "https://www.walkerjoneschevy.com/api/vhcliaa/inventory/28622/window-sticker?sv=" + urlEncodedVin + "&make=Chevrolet&dealerCode=114772";
+
+        // Directly open the window since the URL is fully constructed and encoded here.
+        // Using openWindowWithVin would incorrectly try to replace VIN_PLACEHOLDER again.
+        window.open(url, '_blank');
+};
     
     window.honda2 = function () { openWindowWithVin(awsserv + "/honda?vin=VIN_PLACEHOLDER"); }; 
     window.acura = function () { openWindowWithVin(awsserv + "/acura?vin=VIN_PLACEHOLDER"); }; 
     
-    window.hyunwiki = function () { openWindowWithVin2("https://hyundai-sticker.dealerfire.com/new/VIN_PLACEHOLDER"); }; 
+    window.hyunwiki = function () { openWindowWithVin("awsserv + "/hyundai/?model=Venue&vin=VIN_PLACEHOLDER"); }; 
     
     window.infiniti = function() { 
         vincheckin(function(isValidAndAuthorized, checkedVin) {
@@ -556,7 +587,7 @@ $(document).ready(function () {
     window.maserati = function() { openWindowWithVin2("https://www.herbchambers.com/api/legacy/pse/windowsticker/maserati?country=US&language=en&vin=VIN_PLACEHOLDER"); };
     
     // Mazda: Retain v7 logic
-    window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable (as per original notes)."); };
+    window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable."); };
     window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
     
     window.mitsbtn = function() { openWindowWithVin2("https://www.yorkmitsubishi.com/api/OEMProgramsCommon/MitsubishiWindowStickerUrl?vin=VIN_PLACEHOLDER"); };
@@ -613,11 +644,8 @@ $(document).ready(function () {
         }
     }; 
     
-    // Volvo: Retain v7 logic
-    window.volvosticker = function() { 
-        const vin = getVinOrAlert(); 
-        if(vin) window.open('https://volvocars.niello.com/api/legacy/pse/windowsticker/volvo?vin=' + vin, '_blank'); 
-    };
+ 
+    window.volvosticker = function() { openWindowWithVin("https://volvocars.niello.com/api/legacy/pse/windowsticker/volvo?vin="); };
     
     window.vwaudilane = function () { openWindowWithVin2("http://windowsticker-prod.awsmdotcom.manheim.com/windowsticker/VIN_PLACEHOLDER/4905414"); };
     window.hitcher = function() {
