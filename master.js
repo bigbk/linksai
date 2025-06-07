@@ -6,6 +6,8 @@ $(document).ready(function () {
     var piserv = "https://73.39.163.6/"; 
     var awsserv = "http://3.135.192.197";  
 
+    let currentNHTSAMake = '';
+    
     // --- VIN Decoding Logic ---
     const wmiToMake = {
         // Volkswagen Group
@@ -317,6 +319,7 @@ $(document).ready(function () {
             $('#txt_results').val(''); // Clear NHTSA results if VIN is cleared
             $('#output').text(''); 
             $('#outputbox').hide();
+            currentNHTSAMake = '';
             return;
         }
 
@@ -471,10 +474,12 @@ $(document).ready(function () {
     window.invoice = function() { openWindowWithVin(`${awsserv}/invoice?vin=VIN_PLACEHOLDER`); };
     window.wclutch = function() { openWindowWithVin2(`https://www.withclutch.com/window-stickers`); }; 
     window.hclutch = function() { openWindowWithVin(`${awsserv}/hclutch?vin=VIN_PLACEHOLDER`); };
-    window.autobrochures = function() { 
-    if (aMake !== "" && typeof aMake !== 'undefined') {
-        openWindowWithVin("http://www.auto-brochures.com/" + aMake + ".html");
+    window.autobrochures = function() {
+    const makeForBrochure = currentNHTSAMake.toLowerCase();
+    if (makeForBrochure !== "" && makeForBrochure !== 'undefined') {
+        openWindowWithVin("http://www.auto-brochures.com/" + makeForBrochure + ".html");
     } else {
+        // Fallback to the main auto-brochures page if make is not identified
         openWindowWithVin("http://www.auto-brochures.com/");
     }
     };
@@ -647,6 +652,7 @@ $(document).ready(function () {
                 console.log("NHTSA Result:", result);
                 if (result && result.Results && result.Results.length > 0) {
                     var vehicleData = result.Results[0];
+                    currentNHTSAMake = vehicleData.Make || ''; // Ensure it's an empty string if null/undefined
             var displayData = {
                 aYear: vehicleData.ModelYear || "",
                 aMake: vehicleData.Make || "",
@@ -669,12 +675,14 @@ $(document).ready(function () {
                     displayNHTSAResults(result); // Original helper to populate txt_results and update display by make
                 } else {
                     if (document.getElementById("txt_results")) document.getElementById("txt_results").value = `No detailed results from NHTSA for VIN: ${vinToQuery}. Message: ${result.Message || 'Unknown error.'}`;
+                    currentNHTSAMake = '';
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.error('Error fetching NHTSA data: ' + xhr.status);
                 console.error(thrownError);
                 if (document.getElementById("txt_results")) document.getElementById("txt_results").value = `Error fetching NHTSA data for VIN: ${vinToQuery}.\nStatus: ${xhr.status}, Error: ${thrownError || xhr.responseText}`;
+                currentNHTSAMake = '';
             }
         });
     };
