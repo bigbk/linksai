@@ -41,6 +41,10 @@ body {
     padding-top: 20px !important; /* Custom padding */
     padding-bottom: 30px !important;
     box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* Slightly enhanced shadow for depth on dark bg */
+
+    max-width: 1200px; /* Or whatever maximum width you prefer */
+    margin-left: auto; /* Center the container */
+    margin-right: auto; /* Center the container */
 }
 
 /* --- Header Section --- */
