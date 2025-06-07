@@ -6,7 +6,7 @@ $(document).ready(function () {
     // --- Global Variables & Configuration ---
     // Note: Functionality of piserv and awsserv needs external verification as their operational status and HTTPS support cannot be guaranteed.
     var piserv = "https://73.39.163.6/"; 
-    var awsserv = "https://3.135.192.197";
+    var awsserv = "http://3.135.192.197";
 
     let currentNHTSAMake = '';
     var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
