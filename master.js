@@ -4,7 +4,7 @@
 $(document).ready(function () {
     // --- Global Variables & Configuration ---
     var piserv = "https://73.39.163.6/"; 
-    var awsserv = "http://3.16.31.159";  
+    var awsserv = "http://3.135.192.197";  
 
     // --- VIN Decoding Logic ---
     const wmiToMake = {
