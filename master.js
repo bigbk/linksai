@@ -553,7 +553,7 @@ $(document).ready(function () {
     window.honda2 = function () { openWindowWithVin(awsserv + "/honda?vin=VIN_PLACEHOLDER"); }; 
     window.acura = function () { openWindowWithVin(awsserv + "/acura?vin=VIN_PLACEHOLDER"); }; 
     
-    window.hyunwiki = function () { openWindowWithVin("awsserv + "/hyundai/?model=Venue&vin=VIN_PLACEHOLDER"); }; 
+    window.hyunwiki = function () { openWindowWithVin(awsserv + "/hyundai/?model=Venue&vin=VIN_PLACEHOLDER"); }; 
     
     window.infiniti = function() { 
         vincheckin(function(isValidAndAuthorized, checkedVin) {
