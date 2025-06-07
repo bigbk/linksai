@@ -524,36 +524,21 @@ $(document).ready(function () {
             return; // Exit if no valid VIN
         }
 
-        // Helper function for UTF-16LE encoding for this specific API requirement
-        function encodeUTF16LE(str) {
-            const buf = new ArrayBuffer(str.length * 2);
-            const view = new DataView(buf);
-            for (let i = 0; i < str.length; i++) {
-                view.setUint16(i * 2, str.charCodeAt(i), true); // little-endian
-            }
-            // <<< POTENTIAL BUG: btoa expects a string where each character represents a byte (0-255).
-            // While `String.fromCharCode(...new Uint8Array(buf))` is a common pattern to prepare binary data for `btoa`,
-            // directly using `String.fromCharCode(...utf16leBytes)` with `setUint16` might result in characters
-            // outside the 0-255 range, leading to incorrect encoding with `btoa` for non-ASCII characters.
-            // For VINs (alphanumeric), this might not be an issue, but be aware for broader use.
-            return new Uint8Array(buf);
+    const modifiedVin = vin;
+    function encodeUTF16LE(str) {
+        const buf = new ArrayBuffer(str.length * 2);
+        const view = new DataView(buf);
+        for (let i = 0; i < str.length; i++) {
+            view.setUint16(i * 2, str.charCodeAt(i), true); // little-endian
         }
+        return new Uint8Array(buf);
+    }
 
-        const utf16leBytes = encodeUTF16LE(vin); // Use the retrieved VIN
-
-        // Convert byte array to a "binary string" suitable for btoa
-        // Changed to direct btoa(vin) as per task, assuming simpler server expectation.
-        // Original: const base64Vin = btoa(String.fromCharCode(...utf16leBytes));
-        const base64Vin = btoa(vin); // VINs are typically ASCII, direct btoa might be sufficient. Server's specific Base64 requirement (raw string vs UTF-16LE bytes) needs validation if this fails.
-
-        const urlEncodedVin = encodeURIComponent(base64Vin);
-
-        // Construct the final URL
-        const url = "https://www.walkerjoneschevy.com/api/vhcliaa/inventory/28622/window-sticker?sv=" + urlEncodedVin + "&make=Chevrolet&dealerCode=114772";
-
-        // Directly open the window since the URL is fully constructed and encoded here.
-        // Using openWindowWithVin would incorrectly try to replace VIN_PLACEHOLDER again.
-        window.open(url, '_blank');
+    const utf16leBytes = encodeUTF16LE(modifiedVin);
+    const base64Vin = btoa(String.fromCharCode(...utf16leBytes));
+    const urlEncodedVin = encodeURIComponent(base64Vin);
+    const url = "https://www.walkerjoneschevy.com/api/vhcliaa/inventory/28622/window-sticker?sv=" + urlEncodedVin + "&make=Chevrolet&dealerCode=114772";
+    openWindowWithVin(url);
 };
     
     window.honda2 = function () { openWindowWithVin(awsserv + "/honda?vin=VIN_PLACEHOLDER"); }; 
