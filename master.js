@@ -1,12 +1,15 @@
 // VIN Research Hub - master.js
 // This script handles VIN decoding, dynamic content display, and other interactive functionalities.
+// This script relies on the external NHTSA API (vpic.nhtsa.dot.gov) for VIN decoding. Its availability and performance can affect functionality.
 
 $(document).ready(function () {
     // --- Global Variables & Configuration ---
+    // Note: Functionality of piserv and awsserv needs external verification as their operational status and HTTPS support cannot be guaranteed.
     var piserv = "https://73.39.163.6/"; 
-    var awsserv = "http://3.135.192.197";  
+    var awsserv = "https://3.135.192.197";
 
     let currentNHTSAMake = '';
+    var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
     
     // --- VIN Decoding Logic ---
     const wmiToMake = {
@@ -209,6 +212,7 @@ $(document).ready(function () {
     }
 
     function isAuthorized(callback) {
+        // FIXME: This is a placeholder authorization function and always returns true. Implement actual user authorization logic if required.
         // Placeholder authorization - replace with actual logic if needed
         console.warn("Using placeholder authorization. Implement actual check in isAuthorized().");
         callback(true); 
@@ -538,7 +542,9 @@ $(document).ready(function () {
         const utf16leBytes = encodeUTF16LE(vin); // Use the retrieved VIN
 
         // Convert byte array to a "binary string" suitable for btoa
-        const base64Vin = btoa(String.fromCharCode(...utf16leBytes));
+        // Changed to direct btoa(vin) as per task, assuming simpler server expectation.
+        // Original: const base64Vin = btoa(String.fromCharCode(...utf16leBytes));
+        const base64Vin = btoa(vin); // VINs are typically ASCII, direct btoa might be sufficient. Server's specific Base64 requirement (raw string vs UTF-16LE bytes) needs validation if this fails.
 
         const urlEncodedVin = encodeURIComponent(base64Vin);
 
@@ -559,9 +565,7 @@ $(document).ready(function () {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
             if (isValidAndAuthorized && checkedVin) {
                 window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
-                setTimeout(function () {
-                    window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
-                }, 2000);
+                // Removed setTimeout and second window.open call
             }
         });
     };
@@ -596,9 +600,7 @@ $(document).ready(function () {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
             if (isValidAndAuthorized && checkedVin) {
                 window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
-                setTimeout(function () {
-                    window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
-                }, 2000);
+                // Removed setTimeout and second window.open call
             }
         });
     };
@@ -664,6 +666,12 @@ $(document).ready(function () {
 
     // --- NHTSA Data Fetching Function (Restored original $.ajax structure) ---
     window.getNHTSADataByVIN = function(vinToQuery) {
+        if (vinToQuery === lastVinFetched) {
+            console.log("NHTSA data for " + vinToQuery + " already fetched or being fetched.");
+            return; // Avoid refetching for the same VIN immediately
+        }
+        lastVinFetched = vinToQuery;
+
         if (!vinToQuery) {
             console.error('No VIN provided to getNHTSADataByVIN');
             $('#txt_results').val('Error: No VIN provided for NHTSA lookup.');
@@ -709,8 +717,8 @@ $(document).ready(function () {
             error: function (xhr, ajaxOptions, thrownError) {
                 console.error('Error fetching NHTSA data: ' + xhr.status);
                 console.error(thrownError);
-                if (document.getElementById("txt_results")) document.getElementById("txt_results").value = `Error fetching NHTSA data for VIN: ${vinToQuery}.\nStatus: ${xhr.status}, Error: ${thrownError || xhr.responseText}`;
-                currentNHTSAMake = '';
+                if (document.getElementById("txt_results")) document.getElementById("txt_results").value = 'Could not retrieve data from NHTSA for VIN: ' + vinToQuery + '. Please check the VIN or try again later.\nDetails: Status ' + xhr.status + ' - ' + (thrownError || xhr.responseText);
+                currentNHTSAMake = ''; // Reset make if NHTSA call fails
             }
         });
     };

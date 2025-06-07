@@ -505,3 +505,7 @@ body {
         font-size: 1.2em;
     }
 }
+
+#dancebkstatic {
+    position: relative;
+}
