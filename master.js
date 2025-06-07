@@ -647,17 +647,20 @@ $(document).ready(function () {
                 console.log("NHTSA Result:", result);
                 if (result && result.Results && result.Results.length > 0) {
                     var vehicleData = result.Results[0];
-                    var displayData = { 
-                        aYear: vehicleData.ModelYear || "", aMake: vehicleData.Make || "",
-                        aModel: vehicleData.Model || "", aSeries: vehicleData.Series || "",
-                        aTrim: vehicleData.Trim || "",
-                        aDisp: vehicleData.DisplacementL ? parseFloat(vehicleData.DisplacementL).toFixed(1) + "L" : "",
-                        aFuel: vehicleData.FuelTypePrimary || "",
-                        aCyl: vehicleData.EngineCylinders ? vehicleData.EngineCylinders + "cyl" : "",
-                        aDrive: vehicleData.DriveType || "",
-                        aDoor: vehicleData.Doors ? vehicleData.Doors + "D" : "",
-                        aCab: vehicleData.BodyCabType || "", aBody: vehicleData.BodyClass || ""
-                    };
+            var displayData = {
+                aYear: vehicleData.ModelYear || "",
+                aMake: vehicleData.Make || "",
+                aModel: vehicleData.Model || "",
+                aSeries: vehicleData.Series || "",
+                aTrim: vehicleData.Trim || "",
+                aDisp: vehicleData.DisplacementL ? parseFloat(vehicleData.DisplacementL).toFixed(1) + "L" : "",
+                aFuel: vehicleData.FuelTypePrimary || "",
+                aCyl: vehicleData.EngineCylinders ? vehicleData.EngineCylinders + "cyl" : "",
+                aDrive: vehicleData.DriveType || "",
+                aDoor: vehicleData.Doors ? vehicleData.Doors + "D" : "",
+                aCab: vehicleData.BodyCabType || "",
+                aBody: vehicleData.BodyClass || ""
+            };
                     
                     updateInputFields(displayData); // Original helper
                     if (document.getElementById("output")) document.getElementById("output").innerText = formatOutputText(displayData); // Original helper
