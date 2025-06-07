@@ -592,7 +592,7 @@ $(document).ready(function () {
     window.nissantrm = function() { openWindowWithVin("https://www.nissanusa.com/recalls-vin/#/#/Results/VIN_PLACEHOLDER"); }; 
     window.porwiki = function() { openWindowWithVin("https://vinanalytics.com/car/VIN_PLACEHOLDER/VIN_PLACEHOLDER.pdf"); };
     window.subarusticker = function() { openWindowWithVin2(`https://windowsticker.subaru.com/customerMonroneyLabel/pdf?vin=VIN_PLACEHOLDER&jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Nzg1MzYwMDEsImlzcyI6InN1YmFydSIsImF1ZCI6InNob3dtYXgiLCJlbnYiOiJwcm9kIiwid3MiOiJ3aW5kb3dTdGlja2VyL3IifQ.i6582N-cIJqcTGswegYQZUFCQLA_OlXUoI6E9ATcIdM`); };
-    window.subaru = function() { openWindowWithVin("https://www.subaru.com/owners/vehicle-resources/equipment.html?modelCode=VIN_PLACEHOLDER"); }; 
+    window.subaru = function() { openWindowWithVin("https://www.subaru.com/owners/vehicle-resources.html?model=VIN_PLACEHOLDER"); }; 
     window.subaru2 = function () { openWindowWithVin(awsserv + "/subaru?vin=VIN_PLACEHOLDER"); }; 
     
     window.tesla = function() { 
