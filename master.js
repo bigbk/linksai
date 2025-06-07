@@ -497,7 +497,7 @@ $(document).ready(function () {
         if(myear && mmodel) { window.open('https://www.google.com/search?q=' + encodeURIComponent(myear + ' ' + mmodel + ' mini cooper ordering guide site:minimedia.iconicweb.com'), '_blank'); } 
         else { alert("Please enter Year and Model for MINI Guide Search."); }
     };
-    window.chrysler = function () { openWindowWithVin2("ttps://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?_ga=2.123817667.856222938.1715011172-964708610.1715011172&vin=VIN_PLACEHOLDER"); }; 
+    window.chrysler = function () { openWindowWithVin2("https://www.chrysler.com/hostd/windowsticker/getWindowStickerPdf.do?_ga=2.123817667.856222938.1715011172-964708610.1715011172&vin=VIN_PLACEHOLDER"); }; 
     window.chryslerlist = function () { openWindowWithVin2("http://www.jeep.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
     window.chryslerlist2 = function () { openWindowWithVin2("http://www.chrysler.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
     window.chryslerlist3 = function () { openWindowWithVin2("http://www.dodge.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); }; 
