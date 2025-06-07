@@ -33,7 +33,7 @@ body {
 
 /* --- Main Container --- */
 .main-container {
-    background-color: #fff; /* White background for the main content area - contrasts with dark body */
+    /* background-color: #fff; /* White background for the main content area - contrasts with dark body */   */
     color: #333; /* Reset text color for content within the container */
     border-radius: 10px; /* Slightly more pronounced rounded corners */
     margin-top: 25px;
