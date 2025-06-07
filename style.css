@@ -2,6 +2,9 @@
 
 /* --- Global Styles & Typography --- */
 body {
+    background-attachment: fixed;
+    background-size: cover;
+
     font-family: 'Signika Negative', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Primary font with fallbacks */
     /* Futuristic Background: Dark navy with a subtle "starfield" or "digital dust" pattern */
     background-color: #0a192f; /* Dark navy blue base */
@@ -18,6 +21,8 @@ body {
     font-size: 16px; /* Base font size */
     -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
     -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
+
+
 }
 
 /* --- Color Palette (CarMax Inspired) --- */
