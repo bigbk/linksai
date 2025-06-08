@@ -8,5 +8,5 @@
 [2025-05-28] - Revamped styling for better readability.
 
 --- Feedback & Bug Reporting ---
-We appreciate your input! This functionality is coming
-soon. Text me in the mean time. 
+I appreciate your input and sharing new resources to imporove! 
+This functionality is coming soon. Text me in the mean time. 
