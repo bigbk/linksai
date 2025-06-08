@@ -2,8 +2,10 @@
 
 [2025-06-08] - Information and updates button added.
 [2025-06-07] - Removed most old and non-functioning links.
+               Honda trim screen lists exterior color on top.
 [2025-06-05] - New Hyundai window sticker method restores
-               functionality.    
+               functionality.
+               Subaru trim output screen updated
 [2025-05-28] - Revamped styling for better readability.
 
 --- Feedback & Bug Reporting ---
