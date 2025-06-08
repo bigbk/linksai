@@ -6,6 +6,7 @@ const CARMAX_BASE_IMAGE_URL = 'https://img2.carmax.com/img/vehicles/';
 const CARMAX_FALLBACK_URL_SNIPPET = '/fallback.jpg'; // CarMax's generic "no image" placeholder
 const PLACEHOLDER_MAIN_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available';
 const PLACEHOLDER_THUMBNAIL = 'https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A';
+const INITIAL_PLACEHOLDER_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23'; // New: For initial load
 
 // --- Helper Functions ---
 
@@ -33,8 +34,8 @@ function toggleSpinner(show) {
 function displayImage(imageIndex) {
     // If no stock number is set, display a default state
     if (!currentStockNumber) {
-        $('#instructions').show().html('<p><strong>Enter a Stock # (8 digits) or paste a CarMax image link.</strong></p>');
-        $('#dispframe').attr('src', PLACEHOLDER_MAIN_IMAGE).attr('alt', 'Enter Stock Number');
+        $('#instructions').show().html('<p><strong>Enter Stock #</strong></p>');
+        $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Enter Stock Number'); // Use the new initial placeholder
         $('#thumbnail-container').empty(); // Clear thumbnails
         $('#kmxlink').attr('href', '#');
         return;
@@ -238,7 +239,7 @@ $('#dispframe').on('click', function() {
         zoomedImage.src = this.src; // Set the source of the modal image to the current main image
         zoomedImage.alt = this.alt; // Copy alt text for accessibility
         $(zoomedImage).removeClass('no-image-available'); // Ensure no "no-image" class on zoomed image
-        
+
         // Ensure modal is instantiated if not already
         if (!($('#imageZoomModal').data('bs.modal'))) {
             new bootstrap.Modal(document.getElementById('imageZoomModal'));
