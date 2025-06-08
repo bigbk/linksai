@@ -18,6 +18,25 @@
     <!-- This div will hold the particles.js canvas, acting as the dynamic background -->
     <div id="particles-js"></div>
 
+    <!-- Information Button (positioned in the upper right corner via style.css) -->
+    <button id="infoButton">i</button>
+
+    <!-- The Overlay (Modal) for Updates -->
+    <div id="infoOverlay" class="overlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h2>Latest Updates</h2>
+                <span class="close-button" id="closeOverlay">&times;</span>
+            </div>
+            
+            <div id="updatesContent">
+                <!-- Updates from updates.txt will be loaded here -->
+                Loading updates...
+            </div>
+            <!-- The feedback section has been removed as per your request -->
+        </div>
+    </div>
+
     <div class="container main-container shadow p-3">
         <div class="row mb-3 p-3 align-items-center">
             <div class="col-md-6">
@@ -729,6 +748,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Volvo Div -->
                 <div id="volvo_div" class="make-specific-content d-none">
                     <div class="container">
@@ -789,7 +809,7 @@
                             <div class="col-md-6 col-lg-6 mb-3">
                                 <div class="card bg-success text-white h-100" onclick="velocitygoogle()" title="Velocity Google">
                                     <div class="card-body">
-                                        <h4 class="card-title">Velocity Google</h4>
+                                        <h4 class="card-title">Sales Brochures</h4>
                                         <h6 class="card-subtitle mb-2">PDF</h6>
                                         <p class="card-text">Search to see if VIN is available at Velocity dealers</p>
                                     </div>
@@ -871,8 +891,8 @@
                         </ul>
                     </div>
                 </div>
-
-            </div> <div class="col-md-12 col-lg-3 order-md-3 order-2 order-sm-2" id="right-sidebar-column">
+            </div>
+            <div class="col-md-12 col-lg-3 order-md-3 order-2 order-sm-2" id="right-sidebar-column">
                 <div id="blackbook_div" class="link-section">
                     <h2 class="section-title">Black Book Values</h2>
                     <ul class="list-unstyled">
@@ -915,37 +935,75 @@
                     </ul>
                 </div>
             </div>
-        </div> <div class="row mt-3">
-            <div class="col-md-3 order-md-1"></div> <div class="col-md-6 order-md-2 text-center">
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-3 order-md-1"></div>
+            <div class="col-md-6 order-md-2 text-center">
                 <div id="nhtsa_data" class="data-display-area">
                     <textarea id="txt_results" rows="8" class="form-control" placeholder="Vehicle data from NHTSA will appear here after a valid 17-digit VIN is entered." readonly></textarea>
                 </div>
             </div>
-            <div class="col-md-3 order-md-3"></div> </div>
-
-    </div> <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js"
-        crossorigin="anonymous"></script>
-
+            <div class="col-md-3 order-md-3"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script>
-        // Variables for external services (ensure these are correctly used by getNHTSADataByVIN if defined in master.js)
-        // var piserv = "https://73.39.163.6/"; // Defined in master.js
-        // var awsserv = "http://3.16.31.159";  // Defined in master.js
-        // var vin = ""; // Global VIN is managed within master.js functions now
-
         // CarMax search button functionality is now in master.js
-
         // Animated GIF movement
         // Ensure #dancebkstatic is the correct ID for the animated element.
         if ($("#dancebkstatic").length) {
-              $(document).mousemove(function (e) {
+            $(document).mousemove(function (e) {
                 // This animation was in your original code. If you want a different element to animate,
                 // or if #dancebkstatic is not meant to move, adjust or remove this.
                 // For example, if you had a separate #dancebk element:
                 // $("#dancebk").stop().animate({ left: e.pageX + 8, top: e.pageY + 15 });
-             });
+            });
         }
+
+        // --- JavaScript for Overlay Functionality ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const infoButton = document.getElementById('infoButton');
+            const infoOverlay = document.getElementById('infoOverlay');
+            const closeButton = document.getElementById('closeOverlay');
+            const updatesContent = document.getElementById('updatesContent');
+
+            // Function to open the overlay
+            infoButton.addEventListener('click', function() {
+                infoOverlay.style.display = 'flex'; // Use flex to center content
+                fetchUpdates(); // Fetch updates when opening
+            });
+
+            // Function to close the overlay
+            closeButton.addEventListener('click', function() {
+                infoOverlay.style.display = 'none';
+            });
+
+            // Close overlay if clicked outside content
+            infoOverlay.addEventListener('click', function(event) {
+                if (event.target === infoOverlay) {
+                    infoOverlay.style.display = 'none';
+                }
+            });
+
+            // Function to fetch updates from updates.txt
+            function fetchUpdates() {
+                fetch('updates.txt')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to load updates.txt');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        updatesContent.textContent = data; // Display content
+                    })
+                    .catch(error => {
+                        console.error('Error fetching updates:', error);
+                        updatesContent.textContent = 'Could not load updates.';
+                    });
+            }
+        });
     </script>
 </body>
 </html>
