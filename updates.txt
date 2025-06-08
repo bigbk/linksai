@@ -1,0 +1,8 @@
+--- Latest Updates ---
+
+[2025-06-08] - Implemented dynamic news ticker!
+[2025-06-05] - Revamped styling for better readability.
+[2025-05-28] - Added new links related to AI and home automation.
+
+--- Feedback & Bug Reporting ---
+We appreciate your input!
