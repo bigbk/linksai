@@ -10,6 +10,9 @@ $(document).ready(function () {
 
     let currentNHTSAMake = '';
     var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
+particlesJS.load('particles-js', 'particles.json', function() {
+  console.log('particles.json loaded - callback');
+});
     
     // --- VIN Decoding Logic ---
     const wmiToMake = {
