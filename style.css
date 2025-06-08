@@ -7,6 +7,7 @@ html, body {
     margin: 0; /* Remove default body margin */
     padding: 0; /* Remove default body padding */
     overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Allow vertical scrolling for content that exceeds viewport height */
 }
 
 body {
@@ -27,17 +28,17 @@ body {
 /* NEW: Styles for the particles container */
 #particles-js {
     position: fixed; /* Fixed position relative to the viewport */
-    width: 100%;     /* Full width */
-    height: 100%;    /* Full height */
-    top: 0;          /* Align to top */
-    left: 0;         /* Align to left */
-    z-index: -1;     /* Place it behind all other content */
-    background-color: #0a192f; /* Background color for the particles canvas */
-    background-repeat: no-repeat; /* Particles will fill the space */
+    width: 100%;      /* Full width */
+    height: 100%;     /* Full height */
+    top: 0;           /* Align to top */
+    left: 0;          /* Align to left */
+    z-index: -1;      /* Place it behind all other content */
+    background-color: #2e3d49; /* Background color for the particles canvas (from HTML style) */
+    background-image: url(''); /* If you have a background image for particles, specify it here */
     background-size: cover; /* Ensure particles canvas covers the area */
     background-position: 50% 50%; /* Center the background */
+    /* IMPORTANT: Do NOT use pointer-events: none; here if you want mouse interaction with particles */
 }
-
 
 /* --- Color Palette (CarMax Inspired) --- */
 .carmax-blue-text { color: #00539f; } /* Primary blue text */
@@ -67,6 +68,23 @@ body {
     max-width: 1200px; /* Or whatever maximum width you prefer */
     margin-left: auto; /* Center the container */
     margin-right: auto; /* Center the container */
+    min-height: 100vh; /* Ensure content pushes footer down if needed */
+    display: flex; /* Adjust if your layout changes, but keep relative/z-index */
+    flex-direction: column;
+}
+
+/* Style for elements on top of the particles to ensure visibility */
+.header-title-vin, .header-title-research, .logo-text, .manual-select-btn, .vin-input-bar, .identified-make-text, .card, .section-title, p, h1, h2, h4, h5, h6, label, input, button, textarea, ul, li, a {
+    position: relative; /* Ensure these elements are above the particles */
+    z-index: 2; /* Give them a higher z-index than particles */
+    color: #ffffff; /* Set a default color for text if it's white particles on a dark background */
+}
+.text-muted { /* Override default text-muted for visibility on dark background */
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+.card { /* Adjust card background if needed to be transparent or semi-transparent */
+    background-color: rgba(255, 255, 255, 0.1); /* Example: semi-transparent white */
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* --- Header Section --- */
@@ -91,6 +109,7 @@ body {
     display: inline-block;
     margin-left: 5px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .header-logo-area {
     display: flex;
@@ -543,4 +562,3 @@ body {
 #dancebkstatic {
     position: relative;
 }
-
