@@ -24,6 +24,129 @@ body {
     -webkit-font-smoothing: antialiased; /* Smoother fonts on WebKit */
     -moz-osx-font-smoothing: grayscale; /* Smoother fonts on Firefox */
 }
+#infoButton {
+            position: fixed; /* Stays in place when scrolling */
+            top: 20px;       /* Distance from the top */
+            right: 20px;     /* Distance from the right */
+            background-color: #007bff; /* Blue background */
+            color: white;    /* White text */
+            border: none;
+            border-radius: 50%; /* Makes it round */
+            width: 40px;     /* Width of the button */
+            height: 40px;    /* Height of the button */
+            font-size: 1.2em; /* Font size of the 'i' */
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow */
+            z-index: 1000;   /* Make sure it's above other content */
+            transition: background-color 0.3s ease;
+        }
+
+        #infoButton:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        /* --- Overlay (Modal) Styles --- */
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stays in place */
+            z-index: 1001; /* Sits on top of everything else */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if content is too long */
+            background-color: rgba(0,0,0,0.6); /* Black background with opacity */
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+        }
+
+        .overlay-content {
+            background-color: #fefefe; /* White content box */
+            margin: auto; /* Centered */
+            padding: 25px;
+            border-radius: 8px;
+            width: 80%; /* Width of the content box */
+            max-width: 700px; /* Max width for larger screens */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative; /* For close button positioning */
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; /* Max height to allow scrolling */
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .overlay-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .close-button {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        #updatesContent {
+            white-space: pre-wrap; /* Preserves whitespace and line breaks */
+            max-height: 40vh; /* Max height for update content before scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        #feedbackSection {
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        #feedbackSection textarea {
+            width: calc(100% - 20px); /* Adjust for padding */
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px;
+        }
+
+        #submitFeedbackBtn {
+            background-color: #28a745; /* Green background */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitFeedbackBtn:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
 
 /* NEW: Styles for the particles container */
 #particles-js {
