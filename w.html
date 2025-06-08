@@ -11,19 +11,158 @@
     <link href="https://fonts.googleapis.com/css?family=Chivo:400,700,900|Signika+Negative:300,400,600,700" rel="stylesheet">
     <!-- Link to your Style CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- jQuery and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Custom styles for this page */
+        body {
+            background-color: #f0f2f5; /* Light grey background */
+            color: #333;
+            font-family: 'Signika Negative', sans-serif;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .bg-primary {
+            background-color: #00539f !important; /* CarMax Blue */
+        }
+        .btn-warning {
+            background-color: #ffc600 !important; /* CarMax Gold */
+            border-color: #ffc600 !important;
+            color: #003366 !important;
+            font-weight: bold;
+        }
+        .btn-warning:hover {
+            background-color: #e6b400 !important;
+            border-color: #e6b400 !important;
+        }
+        .page-link {
+            color: #00539f;
+            border-color: #00539f;
+            font-weight: bold;
+        }
+        .page-link:hover {
+            background-color: #00539f;
+            color: #fff;
+        }
+        .page-item.active .page-link {
+            background-color: #00539f;
+            border-color: #00539f;
+            color: #fff;
+        }
+        #dispframe {
+            width: 100%;
+            height: auto;
+            max-height: 600px; /* Limit height of main image */
+            object-fit: contain; /* Ensure entire image is visible within frame */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: zoom-in; /* Indicate clickable for zoom */
+        }
+        #thumbnail-container .thumbnail-img {
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+            height: 75px; /* Fixed height for thumbnails */
+            object-fit: cover; /* Crop thumbnails to fit */
+        }
+        #thumbnail-container .thumbnail-img:hover {
+            border-color: #ffc600;
+            transform: translateY(-2px);
+        }
+        #thumbnail-container .thumbnail-img.active-thumbnail {
+            border-color: #00539f;
+            box-shadow: 0 0 0 3px rgba(0, 83, 159, 0.5); /* Blue glow for active */
+        }
+        #thumbnail-container .thumbnail-img.no-image-available {
+            opacity: 0.5; /* Dim unavailable images */
+            cursor: not-allowed;
+        }
+
+        /* Spinner Modal Styling */
+        #spinnerModal .modal-dialog {
+            max-width: 100px; /* Smaller dialog for just the spinner */
+        }
+        #spinnerModal .modal-content {
+            background: none; /* Transparent background */
+            border: none;
+        }
+        #spinnerModal .modal-body {
+            text-align: center;
+        }
+        #spinnerModal .fa-spinner {
+            color: #00539f; /* Spinner color */
+            font-size: 3em; /* Larger spinner */
+        }
+
+        /* Zoom Modal Styling */
+        #imageZoomModal .modal-dialog {
+            max-width: 95vw; /* Almost full width of viewport */
+            height: 95vh; /* Almost full height of viewport */
+        }
+        #imageZoomModal .modal-content {
+            background-color: rgba(0, 0, 0, 0.9); /* Dark overlay for zoom */
+            border-radius: 10px;
+        }
+        #imageZoomModal .modal-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%; /* Make modal body take full height */
+            padding: 0;
+            overflow: hidden; /* Hide scrollbars within modal body */
+        }
+        #zoomedImage {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Ensure image fits within modal initially */
+            transition: transform 0.2s ease-in-out;
+            transform-origin: center center; /* Zoom from center */
+            cursor: zoom-in;
+        }
+        #zoomedImage:hover {
+            transform: scale(1.5); /* Zoom factor on hover */
+            cursor: zoom-out;
+        }
+        .modal-header, .modal-footer {
+            border-bottom: none;
+            border-top: none;
+        }
+        .btn-close-white {
+            filter: invert(1); /* Makes the close button white */
+        }
+    </style>
 </head>
 
-<body class="bg-primary">
+<body>
     <!-- Spinner Modal -->
-    <div class="modal fade" id="spinnerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered justify-content-center">
+    <div class="modal fade" id="spinnerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <span class="fa fa-spinner fa-spin fa-3x"></span>
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <p class="mt-2 text-primary">Loading Image...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Zoom Modal -->
+    <div class="modal fade" id="imageZoomModal" tabindex="-1" aria-labelledby="imageZoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="imageZoomModalLabel">Zoomed Vehicle Image</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center d-flex justify-content-center align-items-center">
+                    <img id="zoomedImage" src="" alt="Zoomed Vehicle Image">
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -32,9 +171,9 @@
     <!-- Main Container -->
     <div class="container shadow p-3 mb-5 bg-body rounded">
         <!-- Search Row -->
-        <div class="row bg-primary text-white py-2">
+        <div class="row bg-primary text-white py-2 rounded-top">
             <!-- VIN Search -->
-            <div class="col-md-6">
+            <div class="col-md-6 py-2">
                 <div class="input-group">
                     <input name="VIN" id="VINbar" class="form-control" type="text" placeholder="Stock# - 8 Digits" aria-label="Search">
                     <button class="btn btn-warning" id="btn_submit">
@@ -43,9 +182,9 @@
                 </div>
             </div>
             <!-- Link Search -->
-            <div class="col-md-6">
+            <div class="col-md-6 py-2">
                 <div class="input-group">
-                    <input name="LINK" id="LINKbar" class="form-control" type="text" placeholder="Copy image address and paste link here" aria-label="Search">
+                    <input name="LINK" id="LINKbar" class="form-control" type="text" placeholder="Paste CarMax image link here" aria-label="Search">
                     <button class="btn btn-warning" id="btn_submit2">
                         <i class="fa fa-search"></i>
                     </button>
@@ -54,8 +193,8 @@
         </div>
 
         <!-- Navigation and Instructions -->
-        <div class="row my-3">
-            <div class="col-md-12">
+        <div class="row my-3 align-items-center">
+            <div class="col-md-12 text-center">
                 <nav aria-label="Photo Navigation">
                     <ul class="pagination justify-content-center">
                         <li class="page-item"><a class="page-link" href="#" onclick="prvs()">PREVIOUS</a></li>
@@ -63,35 +202,22 @@
                         <li class="page-item"><a id="kmxlink" class="page-link" href="#" target="_blank">CarMax Page</a></li>
                     </ul>
                 </nav>
-                <div id="instructions">
-                    <p><strong>Search Tool.<br>Navigate using Previous and Next buttons or jump to the image in the thumbnails below.</strong></p>
+                <div id="instructions" class="text-center my-3">
+                    <p><strong>Enter a Stock # (8 digits) or paste a CarMax image link to view photos.</strong></p>
                 </div>
-                <img src="1.png" id="dispframe" alt="Display Frame" class="img-fluid my-3">
+                <img src="https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23" id="dispframe" alt="Display Frame" class="img-fluid my-3">
             </div>
         </div>
 
-        <!-- Gallery -->
-        <div class="row" id="gallery" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <!-- Thumbnails -->
-            <!-- Repeat this block for each thumbnail -->
-            <div class="col-6 col-md-4 col-lg-3 mb-3">
-                <img class="w-100" src="1.png" id="thumb1" alt="Thumbnail 1" onclick="thumbbtn(1)" style="cursor: pointer;">
-            </div>
-	    <div class="col-6 col-md-4 col-lg-3 mb-3">
-                <img class="w-100" src="1.png" id="thumb2" alt="Thumbnail 2" onclick="thumbbtn(2)" style="cursor: pointer;">
-            </div>
-	    <div class="col-6 col-md-4 col-lg-3 mb-3">
-                <img class="w-100" src="1.png" id="thumb3" alt="Thumbnail 3" onclick="thumbbtn(3)" style="cursor: pointer;">
-            </div>
-	    <div class="col-6 col-md-4 col-lg-3 mb-3">
-                <img class="w-100" src="1.png" id="thumb4" alt="Thumbnail 4" onclick="thumbbtn(4)" style="cursor: pointer;">
-            </div>
-            <!-- ... other thumbnails ... -->
+        <!-- Dynamic Thumbnails Container -->
+        <div class="row justify-content-center mt-3" id="thumbnail-container">
+            <!-- Thumbnails will be dynamically generated here by JavaScript -->
         </div>
 
+    </div>
 
-    </div>	
-	
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script src="photo_album_w_scripts.js"></script>
