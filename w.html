@@ -53,22 +53,51 @@
             border-color: #00539f;
             color: #fff;
         }
-        #dispframe {
+
+        /* --- Main Image Placeholder for stability --- */
+        .main-image-placeholder {
+            position: relative;
             width: 100%;
-            height: auto;
-            max-height: 600px; /* Limit height of main image */
+            padding-bottom: 75%; /* 4:3 Aspect Ratio (3/4 = 0.75) for a stable container */
+            max-height: 600px; /* Limits overall height */
+            background-color: #f0f0f0; /* Light background while loading */
+            border-radius: 8px;
+            overflow: hidden; /* Ensures image doesn't overflow rounded corners */
+            display: flex; /* For centering content within the placeholder */
+            justify-content: center;
+            align-items: center;
+        }
+        #dispframe {
+            position: absolute; /* Position within the aspect ratio container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             object-fit: contain; /* Ensure entire image is visible within frame */
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             cursor: zoom-in; /* Indicate clickable for zoom */
+            transition: opacity 0.2s ease-in-out; /* Smooth fade when loading */
+        }
+        /* --- Thumbnail Aspect Ratio Styling --- */
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 75%; /* 4:3 Aspect Ratio (3/4 = 0.75) */
+            overflow: hidden;
+            border-radius: 8px; /* Match main image radius */
+            background-color: #e0e0e0; /* Background for empty thumbnail slots */
         }
         #thumbnail-container .thumbnail-img {
+            position: absolute; /* Position within aspect ratio wrapper */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Crop thumbnails to fill space */
             border: 2px solid transparent;
             cursor: pointer;
             transition: border-color 0.2s ease, transform 0.2s ease;
-            height: 75px; /* Fixed height for thumbnails */
-            object-fit: cover; /* Crop thumbnails to fit */
-            width: 100%; /* Ensure thumbnails take full width of their column */
         }
         #thumbnail-container .thumbnail-img:hover {
             border-color: #ffc600;
@@ -81,6 +110,13 @@
         #thumbnail-container .thumbnail-img.no-image-available {
             opacity: 0.5; /* Dim unavailable images */
             cursor: not-allowed;
+        }
+        #thumbnail-container .col-thumbnails {
+            /* Standard Bootstrap column for 4 per row on md and up (12/4=3) */
+            /* This gives consistent spacing for 8 thumbnails in 2 rows */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Spinner Modal Styling */
@@ -206,21 +242,56 @@
                 <div id="instructions" class="text-center my-3">
                     <p><strong>Enter Stock #</strong></p> <!-- Initial message set by JS -->
                 </div>
-                <img src="https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23" id="dispframe" alt="Display Frame" class="img-fluid my-3">
+                <!-- Main Image Placeholder for stability -->
+                <div class="main-image-placeholder my-3">
+                    <img src="https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23" id="dispframe" alt="Display Frame">
+                </div>
             </div>
         </div>
 
         <!-- Thumbnail Container: Fixed 8 slots for smoother updates -->
         <div class="row justify-content-center mt-3" id="thumbnail-container">
             <!-- Thumbnails will be dynamically updated by JavaScript by ID -->
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb1" src="" alt="Thumbnail 1"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb2" src="" alt="Thumbnail 2"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb3" src="" alt="Thumbnail 3"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb4" src="" alt="Thumbnail 4"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb5" src="" alt="Thumbnail 5"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb6" src="" alt="Thumbnail 6"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb7" src="" alt="Thumbnail 7"></div>
-            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb8" src="" alt="Thumbnail 8"></div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb1" src="" alt="Thumbnail 1">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb2" src="" alt="Thumbnail 2">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb3" src="" alt="Thumbnail 3">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb4" src="" alt="Thumbnail 4">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb5" src="" alt="Thumbnail 5">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb6" src="" alt="Thumbnail 6">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb7" src="" alt="Thumbnail 7">
+                </div>
+            </div>
+            <div class="col-3 col-sm-3 col-md-3 col-thumbnails mb-2">
+                <div class="thumbnail-wrapper">
+                    <img class="img-fluid rounded thumbnail-img" id="thumb8" src="" alt="Thumbnail 8">
+                </div>
+            </div>
         </div>
 
     </div>
