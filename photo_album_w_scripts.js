@@ -43,7 +43,6 @@ function displayImage(imageIndex) {
         $(mainImageElement).removeClass('no-image-available'); // Ensure no error state class
         zoomedImageElement.src = INITIAL_PLACEHOLDER_IMAGE;
         $(zoomedImageElement).removeClass('no-image-available');
-        // Removed: $('#thumbnail-container').empty(); // This was the culprit for clearing thumbnails on initial load
         updateThumbnails(); // Still call to ensure placeholders are set/updated if needed
         $('#kmxlink').attr('href', '#');
         return; // Exit function early
@@ -51,6 +50,8 @@ function displayImage(imageIndex) {
 
     currentImageIndex = Math.max(1, imageIndex); // Ensure index is at least 1
 
+    // Temporarily hide the main image during loading to prevent flicker
+    mainImageElement.style.opacity = 0;
     toggleSpinner(true); // Show spinner while loading
 
     const newImageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
@@ -67,6 +68,7 @@ function displayImage(imageIndex) {
 
     // Handle main image loading success
     mainImageElement.onload = function() {
+        mainImageElement.style.opacity = 1; // Fade in main image
         toggleSpinner(false); // Hide spinner on load
 
         // Check for CarMax's tiny fallback images
@@ -85,6 +87,7 @@ function displayImage(imageIndex) {
 
     // Handle main image loading error (e.g., network error, 404)
     mainImageElement.onerror = function() {
+        mainImageElement.style.opacity = 1; // Still show placeholder
         console.error(`Error loading main image: ${newImageUrl}. Setting to fallback placeholder.`);
         this.src = 'https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error'; // Local placeholder for general errors
         this.classList.add('no-image-available');
@@ -103,28 +106,40 @@ function displayImage(imageIndex) {
  */
 function updateThumbnails() {
     // Determine the range of thumbnails to show
+    // Aim to center the currentImageIndex among the 8 thumbnails
     let startThumbIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
-    // Ensure the range doesn't go below 1, and adjusts the end if necessary to keep MAX_THUMBNAILS visible
-    if (startThumbIndex + MAX_THUMBNAILS -1 < currentImageIndex) { // If we're at a high index, ensure thumbnails after current one are visible
-        startThumbIndex = currentImageIndex - (MAX_THUMBNAILS -1);
-    }
-    startThumbIndex = Math.max(1, startThumbIndex); // Re-clamp to ensure it's not below 1
+    // Adjust startThumbIndex if it would cause us to miss the currentImageIndex on the right side of the window
+    // This is useful if currentImageIndex is high and the window is short on earlier images.
+    // However, without knowing total image count, this can still result in showing past available images.
+    // For now, let's keep it simple and ensure currentImageIndex is within range.
+
+    // A simpler way to ensure currentImageIndex is within the displayed range of 8:
+    // If currentImageIndex is, say, 1, show 1-8.
+    // If currentImageIndex is 5, show 1-8 (as 5 is in range).
+    // If currentImageIndex is 6, show 2-9 (to keep 6 visible and shift).
+    // If currentImageIndex is 9, show 5-12.
+
+    // This logic ensures `currentImageIndex` is always covered by the `MAX_THUMBNAILS` window,
+    // and shifts the window as `currentImageIndex` increases.
+    // Start index is such that `currentImageIndex` is roughly in the middle (5th slot).
+    startThumbIndex = currentImageIndex - (Math.floor(MAX_THUMBNAILS / 2) - 1); // E.g., for 8, 5th slot, so current - (4-1) = current - 3
+    startThumbIndex = Math.max(1, startThumbIndex); // Never go below 1
 
     for (let i = 0; i < MAX_THUMBNAILS; i++) {
         const thumbNum = startThumbIndex + i;
         const thumbImg = $(`#thumb${i + 1}`); // Get the pre-existing thumbnail image element
 
-        if (thumbImg.length === 0) { // Should not happen with fixed HTML structure, but good for robustness
+        if (thumbImg.length === 0) {
+            console.warn(`Thumbnail slot #thumb${i + 1} not found in HTML.`);
             continue;
         }
 
         let thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`;
         let isPlaceholder = false;
 
-        // If no stock number, or if thumbNum is less than 1 (shouldn't happen but defensive)
-        // or if we're generating thumbnails for a stock number but a high image index
-        // that likely doesn't exist (e.g., index 500 when only 20 images exist)
-        if (!currentStockNumber || thumbNum < 1) {
+        // If no stock number, or if thumbNum is less than 1 (shouldn't happen with Math.max(1, ...))
+        // or if currentStockNumber is empty (initial load state)
+        if (!currentStockNumber || thumbNum < 1) { // Added !currentStockNumber for initial state
             thumbnailUrl = PLACEHOLDER_THUMBNAIL;
             isPlaceholder = true;
         }
@@ -135,7 +150,7 @@ function updateThumbnails() {
         thumbImg.attr('src', thumbnailUrl).attr('alt', `Thumbnail ${thumbNum} for Stock #${currentStockNumber}`).data('image-index', thumbNum);
 
         // Highlight active thumbnail
-        if (thumbNum === currentImageIndex && currentStockNumber) { // Only active if stock number is set
+        if (currentStockNumber && thumbNum === currentImageIndex) { // Only active if stock number is set and it's the current image
             thumbImg.addClass('active-thumbnail');
         } else {
             thumbImg.removeClass('active-thumbnail');
@@ -157,10 +172,11 @@ function updateThumbnails() {
             this.classList.add('no-image-available');
         };
 
-        // If it's explicitly a placeholder, mark it as unavailable
+        // If it's explicitly a placeholder (e.g., beyond available images), mark it as unavailable
         if (isPlaceholder) {
              thumbImg.addClass('no-image-available');
         } else {
+             // Ensure this class is removed if it's no longer a placeholder
              thumbImg.removeClass('no-image-available');
         }
     }
@@ -173,13 +189,13 @@ function prvs() {
     if (currentStockNumber && currentImageIndex > 1) {
         displayImage(currentImageIndex - 1);
     } else if (currentStockNumber && currentImageIndex === 1) {
-        // If at the first image, show a message or just stay at 1
         console.log("Already at the first image.");
     }
 }
 
 function nxt() {
-    // Only navigate if there's a stock number loaded
+    // Only navigate if there's a stock number loaded. We allow going past existing images
+    // as the onerror will correctly display a placeholder if image doesn't exist.
     if (currentStockNumber) {
         displayImage(currentImageIndex + 1);
     }
