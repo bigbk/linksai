@@ -59,16 +59,20 @@ body {
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if content is too long */
-    background-color: rgba(0,0,0,0.6); /* Black background with opacity to dim the image */
-    background-image: url('mustang2.jpeg'); /* NEW: Background image for the overlay */
-    background-size: cover; /* NEW: Scale image to cover the entire container */
-    background-position: center center; /* NEW: Center the background image */
+    background-color: rgba(0,0,0,0.6); /* Dim the background content */
+    /* Removed background-image, background-size, background-position from here */
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
 }
 
 .overlay-content {
-    background-color: #fefefe; /* White content box */
+    background-color: #fefefe; /* Default white background for content box */
+    /* NEW: Background image for the overlay content box */
+    background-image: url('mustang2.jpeg');
+    background-size: cover; /* Scale image to cover the entire content box */
+    background-position: center center; /* Center the background image */
+    background-repeat: no-repeat; /* Ensure image doesn't repeat */
+
     margin: auto; /* Centered */
     padding: 25px;
     border-radius: 8px;
@@ -79,7 +83,7 @@ body {
     display: flex;
     flex-direction: column;
     max-height: 90vh; /* Max height to allow scrolling */
-    color: #222; /* NEW: Make default text darker within the overlay content */
+    color: #222; /* Make default text darker within the overlay content */
 }
 
 .overlay-header {
@@ -88,7 +92,8 @@ body {
     align-items: center;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(0,0,0,0.1); /* Slightly transparent border */
+    color: #111; /* Ensure header text is dark */
 }
 
 .overlay-header h2 {
@@ -115,17 +120,17 @@ body {
     white-space: pre-wrap; /* Preserves whitespace and line breaks */
     max-height: 40vh; /* Max height for update content before scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #ddd;
+    border: 1px solid rgba(0,0,0,0.1); /* Slightly transparent border */
     padding: 10px;
     margin-bottom: 20px;
-    background-color: #f9f9f9; /* Retaining light background for readability of updates */
+    background-color: rgba(255,255,255,0.8); /* Semi-transparent white background for readability */
     border-radius: 4px;
     color: #333; /* Ensuring the text in updates content is dark */
 }
 
 #feedbackSection {
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(0,0,0,0.1); /* Slightly transparent border */
 }
 
 #feedbackSection textarea {
@@ -136,6 +141,7 @@ body {
     border-radius: 4px;
     resize: vertical; /* Allow vertical resizing */
     min-height: 80px;
+    color: #333; /* Ensure text in textarea is dark */
 }
 
 #submitFeedbackBtn {
