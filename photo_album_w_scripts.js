@@ -43,7 +43,8 @@ function displayImage(imageIndex) {
         $(mainImageElement).removeClass('no-image-available'); // Ensure no error state class
         zoomedImageElement.src = INITIAL_PLACEHOLDER_IMAGE;
         $(zoomedImageElement).removeClass('no-image-available');
-        $('#thumbnail-container').empty(); // Clear thumbnails as there's no stock to generate them for
+        // Removed: $('#thumbnail-container').empty(); // This was the culprit for clearing thumbnails on initial load
+        updateThumbnails(); // Still call to ensure placeholders are set/updated if needed
         $('#kmxlink').attr('href', '#');
         return; // Exit function early
     }
@@ -103,17 +104,30 @@ function displayImage(imageIndex) {
 function updateThumbnails() {
     // Determine the range of thumbnails to show
     let startThumbIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
-    let endThumbIndex = startThumbIndex + MAX_THUMBNAILS;
+    // Ensure the range doesn't go below 1, and adjusts the end if necessary to keep MAX_THUMBNAILS visible
+    if (startThumbIndex + MAX_THUMBNAILS -1 < currentImageIndex) { // If we're at a high index, ensure thumbnails after current one are visible
+        startThumbIndex = currentImageIndex - (MAX_THUMBNAILS -1);
+    }
+    startThumbIndex = Math.max(1, startThumbIndex); // Re-clamp to ensure it's not below 1
 
     for (let i = 0; i < MAX_THUMBNAILS; i++) {
         const thumbNum = startThumbIndex + i;
         const thumbImg = $(`#thumb${i + 1}`); // Get the pre-existing thumbnail image element
 
-        if (thumbImg.length === 0) { // If for some reason a thumbnail slot doesn't exist, skip
+        if (thumbImg.length === 0) { // Should not happen with fixed HTML structure, but good for robustness
             continue;
         }
 
-        const thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`;
+        let thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`;
+        let isPlaceholder = false;
+
+        // If no stock number, or if thumbNum is less than 1 (shouldn't happen but defensive)
+        // or if we're generating thumbnails for a stock number but a high image index
+        // that likely doesn't exist (e.g., index 500 when only 20 images exist)
+        if (!currentStockNumber || thumbNum < 1) {
+            thumbnailUrl = PLACEHOLDER_THUMBNAIL;
+            isPlaceholder = true;
+        }
 
         // Reset handlers and set new source
         thumbImg[0].onerror = null;
@@ -121,13 +135,13 @@ function updateThumbnails() {
         thumbImg.attr('src', thumbnailUrl).attr('alt', `Thumbnail ${thumbNum} for Stock #${currentStockNumber}`).data('image-index', thumbNum);
 
         // Highlight active thumbnail
-        if (thumbNum === currentImageIndex) {
+        if (thumbNum === currentImageIndex && currentStockNumber) { // Only active if stock number is set
             thumbImg.addClass('active-thumbnail');
         } else {
             thumbImg.removeClass('active-thumbnail');
         }
 
-        // Error handling for thumbnails
+        // Error handling for thumbnails (checks for CarMax's tiny fallback)
         thumbImg[0].onload = function() {
             if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
                 this.src = PLACEHOLDER_THUMBNAIL;
@@ -137,10 +151,18 @@ function updateThumbnails() {
             }
         };
 
+        // General onerror for network issues or non-CarMax fallbacks
         thumbImg[0].onerror = function() {
             this.src = PLACEHOLDER_THUMBNAIL;
             this.classList.add('no-image-available');
         };
+
+        // If it's explicitly a placeholder, mark it as unavailable
+        if (isPlaceholder) {
+             thumbImg.addClass('no-image-available');
+        } else {
+             thumbImg.removeClass('no-image-available');
+        }
     }
 }
 
@@ -150,6 +172,9 @@ function prvs() {
     // Only navigate if there's a stock number loaded and we're not already at the first image
     if (currentStockNumber && currentImageIndex > 1) {
         displayImage(currentImageIndex - 1);
+    } else if (currentStockNumber && currentImageIndex === 1) {
+        // If at the first image, show a message or just stay at 1
+        console.log("Already at the first image.");
     }
 }
 
@@ -172,10 +197,11 @@ document.getElementById("btn_submit").onclick = function () {
         displayImage(currentImageIndex);
     } else {
         $('#instructions').show().html(`<strong>Invalid Stock Number:</strong> Must be 8 digits. You entered ${inputStockNum.length} digits.`);
-        $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Stock Number'); // Keep initial placeholder
-        $('#thumbnail-container').empty(); // Clear thumbnails
-        $('#kmxlink').attr('href', '#');
+        // Ensure main image reverts to initial placeholder on invalid input
+        $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Stock Number');
         currentStockNumber = ''; // Clear stock number on invalid input
+        updateThumbnails(); // Update thumbnails to show placeholders
+        $('#kmxlink').attr('href', '#');
     }
 };
 
@@ -194,10 +220,11 @@ document.getElementById("btn_submit2").onclick = function () {
             displayImage(currentImageIndex);
         } else {
             $('#instructions').show().html(`<strong>Invalid Image Link:</strong> Please paste a valid CarMax image URL. Example: <br><code>https://img2.carmax.com/img/vehicles/12345678/1.jpg</code>`);
-            $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Link'); // Keep initial placeholder
-            $('#thumbnail-container').empty();
-            $('#kmxlink').attr('href', '#');
+            // Ensure main image reverts to initial placeholder on invalid link
+            $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Link');
             currentStockNumber = '';
+            updateThumbnails(); // Update thumbnails to show placeholders
+            $('#kmxlink').attr('href', '#');
         }
     } else {
         $('#instructions').show().html(`<strong>Please paste a CarMax image link.</strong>`);
