@@ -68,6 +68,7 @@
             transition: border-color 0.2s ease, transform 0.2s ease;
             height: 75px; /* Fixed height for thumbnails */
             object-fit: cover; /* Crop thumbnails to fit */
+            width: 100%; /* Ensure thumbnails take full width of their column */
         }
         #thumbnail-container .thumbnail-img:hover {
             border-color: #ffc600;
@@ -203,15 +204,23 @@
                     </ul>
                 </nav>
                 <div id="instructions" class="text-center my-3">
-                    <p><strong>Enter a Stock # (8 digits) or paste a CarMax image link to view photos.</strong></p>
+                    <p><strong>Enter Stock #</strong></p> <!-- Initial message set by JS -->
                 </div>
                 <img src="https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23" id="dispframe" alt="Display Frame" class="img-fluid my-3">
             </div>
         </div>
 
-        <!-- Dynamic Thumbnails Container -->
+        <!-- Thumbnail Container: Fixed 8 slots for smoother updates -->
         <div class="row justify-content-center mt-3" id="thumbnail-container">
-            <!-- Thumbnails will be dynamically generated here by JavaScript -->
+            <!-- Thumbnails will be dynamically updated by JavaScript by ID -->
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb1" src="" alt="Thumbnail 1"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb2" src="" alt="Thumbnail 2"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb3" src="" alt="Thumbnail 3"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb4" src="" alt="Thumbnail 4"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb5" src="" alt="Thumbnail 5"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb6" src="" alt="Thumbnail 6"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb7" src="" alt="Thumbnail 7"></div>
+            <div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"><img class="img-fluid rounded thumbnail-img" id="thumb8" src="" alt="Thumbnail 8"></div>
         </div>
 
     </div>
