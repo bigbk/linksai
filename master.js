@@ -476,6 +476,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
     window.toyotasticker = function() { openWindowWithVin2(`https://www.royalsouthtoyota.com/api/OEMProgramsCommon/ToyotaDDOAWindowSticker?vin=VIN_PLACEHOLDER`); };
     window.toyotasticker3 = function() { openWindowWithVin2(`https://api-windowsticker.web-aws.dealersocket.com/toyota/VIN_PLACEHOLDER`); };
     window.velocitysticker = function() { openWindowWithVin2(`https://app.velocityautomotive.com/windowsticker/vin/VIN_PLACEHOLDER/account/applefordwhitebearlake`); };
+    window.velocitygoogle = function() { openWindowWithVin2(`https://www.google.com/search?q=VIN_PLACEHOLDER+site:app.velocityautomotive.com/windowsticker`); };
     window.tytspecs = function() { openWindowWithVin(`${awsserv}/toyota?vin=VIN_PLACEHOLDER`); };
     window.lxsspecs = function() { openWindowWithVin(`${awsserv}/lexus?vin=VIN_PLACEHOLDER`); };
     window.invoice = function() { openWindowWithVin(`${awsserv}/invoice?vin=VIN_PLACEHOLDER`); };
