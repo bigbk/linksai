@@ -33,7 +33,7 @@ body {
     top: 0;           /* Align to top */
     left: 0;          /* Align to left */
     z-index: -1;      /* Place it behind all other content */
-    background-color: #2e3d49; /* Background color for the particles canvas (from HTML style) */
+    background-color: #0a192f; /* Background color for the particles canvas (from HTML style) */
     background-image: url(''); /* If you have a background image for particles, specify it here */
     background-size: cover; /* Ensure particles canvas covers the area */
     background-position: 50% 50%; /* Center the background */
