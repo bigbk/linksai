@@ -6,7 +6,7 @@ const CARMAX_BASE_IMAGE_URL = 'https://img2.carmax.com/img/vehicles/';
 const CARMAX_FALLBACK_URL_SNIPPET = '/fallback.jpg'; // CarMax's generic "no image" placeholder
 const PLACEHOLDER_MAIN_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available';
 const PLACEHOLDER_THUMBNAIL = 'https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A';
-const INITIAL_PLACEHOLDER_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23'; // New: For initial load
+const INITIAL_PLACEHOLDER_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23'; // For initial load
 
 // --- Helper Functions ---
 
@@ -32,48 +32,43 @@ function toggleSpinner(show) {
  * @param {number} imageIndex - The index of the image to display (e.g., 1, 2, 3...).
  */
 function displayImage(imageIndex) {
-    // If no stock number is set, display a default state
+    const mainImageElement = document.getElementById('dispframe');
+    const zoomedImageElement = document.getElementById('zoomedImage');
+
+    // If no stock number is set, display initial placeholder and instructions
     if (!currentStockNumber) {
         $('#instructions').show().html('<p><strong>Enter Stock #</strong></p>');
-        $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Enter Stock Number'); // Use the new initial placeholder
-        $('#thumbnail-container').empty(); // Clear thumbnails
+        mainImageElement.src = INITIAL_PLACEHOLDER_IMAGE;
+        mainImageElement.alt = 'Enter Stock Number';
+        $(mainImageElement).removeClass('no-image-available'); // Ensure no error state class
+        zoomedImageElement.src = INITIAL_PLACEHOLDER_IMAGE;
+        $(zoomedImageElement).removeClass('no-image-available');
+        $('#thumbnail-container').empty(); // Clear thumbnails as there's no stock to generate them for
         $('#kmxlink').attr('href', '#');
-        return;
+        return; // Exit function early
     }
 
     currentImageIndex = Math.max(1, imageIndex); // Ensure index is at least 1
 
     toggleSpinner(true); // Show spinner while loading
 
-    const mainImageElement = document.getElementById('dispframe');
-    const zoomedImageElement = document.getElementById('zoomedImage'); // Get the zoomed image element
-
     const newImageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
 
     // Clear previous errors/onload to prevent multiple calls
     mainImageElement.onerror = null;
     mainImageElement.onload = null;
-    zoomedImageElement.onerror = null;
-    zoomedImageElement.onload = null;
 
-    // Set a temporary blank source to trigger reload in some browsers
-    mainImageElement.src = '';
-    zoomedImageElement.src = ''; // Clear zoomed image as well
-
-    mainImageElement.src = newImageUrl; // Set the new image URL for main display
+    // Load the new image for both main display and zoom modal
+    mainImageElement.src = newImageUrl;
     mainImageElement.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
-
-    // Load the same image into the zoomed modal as well
     zoomedImageElement.src = newImageUrl;
     zoomedImageElement.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
-
 
     // Handle main image loading success
     mainImageElement.onload = function() {
         toggleSpinner(false); // Hide spinner on load
 
-        // CarMax often returns a tiny 1x1 or 1x11 fallback image for missing photos.
-        // We can check its natural dimensions to detect this.
+        // Check for CarMax's tiny fallback images
         if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
             console.log(`Main image ${currentImageIndex} for ${currentStockNumber} is a tiny fallback/missing.`);
             this.src = PLACEHOLDER_MAIN_IMAGE;
@@ -103,39 +98,37 @@ function displayImage(imageIndex) {
 }
 
 /**
- * Generates and updates the thumbnail strip.
+ * Updates the existing thumbnail image elements in the DOM.
  */
 function updateThumbnails() {
-    const thumbnailContainer = $('#thumbnail-container');
-    thumbnailContainer.empty(); // Clear existing thumbnails
-
     // Determine the range of thumbnails to show
-    // Try to center the current image if possible, or start from 1
     let startThumbIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
     let endThumbIndex = startThumbIndex + MAX_THUMBNAILS;
 
-    for (let i = startThumbIndex; i < endThumbIndex; i++) {
-        const thumbNum = i;
-        const thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`; // Request smaller, webp for thumbnails
-        // Changed column classes to better fit 8 thumbnails in a row on larger screens, or wrap gracefully
-        const thumbDivResponsive = $(`<div class="col-3 col-sm-3 col-md-3 mb-2 d-flex justify-content-center align-items-center"></div>`); // col-md-3 will display 4 per row on MD+ screens
+    for (let i = 0; i < MAX_THUMBNAILS; i++) {
+        const thumbNum = startThumbIndex + i;
+        const thumbImg = $(`#thumb${i + 1}`); // Get the pre-existing thumbnail image element
 
-        const thumbImg = $(`<img class="img-fluid rounded thumbnail-img" src="${thumbnailUrl}" alt="Thumbnail ${thumbNum} for Stock #${currentStockNumber}" data-image-index="${thumbNum}">`);
+        if (thumbImg.length === 0) { // If for some reason a thumbnail slot doesn't exist, skip
+            continue;
+        }
+
+        const thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`;
+
+        // Reset handlers and set new source
+        thumbImg[0].onerror = null;
+        thumbImg[0].onload = null;
+        thumbImg.attr('src', thumbnailUrl).attr('alt', `Thumbnail ${thumbNum} for Stock #${currentStockNumber}`).data('image-index', thumbNum);
 
         // Highlight active thumbnail
         if (thumbNum === currentImageIndex) {
             thumbImg.addClass('active-thumbnail');
+        } else {
+            thumbImg.removeClass('active-thumbnail');
         }
 
         // Error handling for thumbnails
-        thumbImg.onerror = function() {
-            // Replace with local placeholder if image fails to load or is CarMax's tiny fallback
-            this.src = PLACEHOLDER_THUMBNAIL;
-            this.classList.add('no-image-available');
-        };
-
-        thumbImg.onload = function() {
-            // Check for CarMax's specific tiny fallback images
+        thumbImg[0].onload = function() {
             if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
                 this.src = PLACEHOLDER_THUMBNAIL;
                 this.classList.add('no-image-available');
@@ -144,27 +137,27 @@ function updateThumbnails() {
             }
         };
 
-        // Click handler for thumbnails to set main image
-        thumbImg.on('click', function() {
-            if (!$(this).hasClass('no-image-available')) { // Only click if not a "no image" placeholder
-                 const clickedIndex = parseInt($(this).data('image-index'));
-                 displayImage(clickedIndex);
-            }
-        });
-
-        thumbDivResponsive.append(thumbImg);
-        thumbnailContainer.append(thumbDivResponsive); // Append the responsive div
+        thumbImg[0].onerror = function() {
+            this.src = PLACEHOLDER_THUMBNAIL;
+            this.classList.add('no-image-available');
+        };
     }
 }
 
 // --- Navigation Functions ---
 
 function prvs() {
-    displayImage(currentImageIndex - 1);
+    // Only navigate if there's a stock number loaded and we're not already at the first image
+    if (currentStockNumber && currentImageIndex > 1) {
+        displayImage(currentImageIndex - 1);
+    }
 }
 
 function nxt() {
-    displayImage(currentImageIndex + 1);
+    // Only navigate if there's a stock number loaded
+    if (currentStockNumber) {
+        displayImage(currentImageIndex + 1);
+    }
 }
 
 // --- Search Handlers ---
@@ -179,8 +172,8 @@ document.getElementById("btn_submit").onclick = function () {
         displayImage(currentImageIndex);
     } else {
         $('#instructions').show().html(`<strong>Invalid Stock Number:</strong> Must be 8 digits. You entered ${inputStockNum.length} digits.`);
-        $('#dispframe').attr('src', PLACEHOLDER_MAIN_IMAGE).attr('alt', 'Invalid Stock Number');
-        $('#thumbnail-container').empty();
+        $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Stock Number'); // Keep initial placeholder
+        $('#thumbnail-container').empty(); // Clear thumbnails
         $('#kmxlink').attr('href', '#');
         currentStockNumber = ''; // Clear stock number on invalid input
     }
@@ -191,22 +184,20 @@ document.getElementById("btn_submit2").onclick = function () {
 
     if (linkBarValue) {
         // Regex to extract 8-digit stock number and optional image index from CarMax URLs
-        // Updated regex to more robustly capture stock number and image index
         const carmaxUrlRegex = /(?:vehicles|img)\/(\d{8})(?:\/(\d+))?(?:\.jpg|\.webp|\?|$)/i;
         const match = linkBarValue.match(carmaxUrlRegex);
 
-        if (match && match[1]) { // match[1] is the 8-digit stock number
+        if (match && match[1]) {
             currentStockNumber = match[1];
-            currentImageIndex = parseInt(match[2]) || 1; // match[2] is the image index, default to 1
-
-            document.getElementById("VINbar").value = currentStockNumber; // Populate VIN bar
+            currentImageIndex = parseInt(match[2]) || 1;
+            document.getElementById("VINbar").value = currentStockNumber;
             displayImage(currentImageIndex);
         } else {
             $('#instructions').show().html(`<strong>Invalid Image Link:</strong> Please paste a valid CarMax image URL. Example: <br><code>https://img2.carmax.com/img/vehicles/12345678/1.jpg</code>`);
-            $('#dispframe').attr('src', PLACEHOLDER_MAIN_IMAGE).attr('alt', 'Invalid Link');
+            $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Link'); // Keep initial placeholder
             $('#thumbnail-container').empty();
             $('#kmxlink').attr('href', '#');
-            currentStockNumber = ''; // Clear stock number on invalid link
+            currentStockNumber = '';
         }
     } else {
         $('#instructions').show().html(`<strong>Please paste a CarMax image link.</strong>`);
@@ -219,8 +210,8 @@ var inputFields = ["VINbar", "LINKbar"];
 inputFields.forEach(function(fieldId) {
     var input = document.getElementById(fieldId);
     input.addEventListener("keyup", function(event) {
-        if (event.key === "Enter") { // Use event.key for modern browsers
-            event.preventDefault(); // Prevent default form submission
+        if (event.key === "Enter") {
+            event.preventDefault();
             document.getElementById(fieldId === "VINbar" ? "btn_submit" : "btn_submit2").click();
         }
     });
@@ -236,10 +227,10 @@ $('#dispframe').on('click', function() {
     // Only open the modal if a valid image is displayed (not a placeholder)
     if (!$(this).hasClass('no-image-available') && currentStockNumber) {
         const zoomedImage = document.getElementById('zoomedImage');
-        zoomedImage.src = this.src; // Set the source of the modal image to the current main image
-        zoomedImage.alt = this.alt; // Copy alt text for accessibility
-        $(zoomedImage).removeClass('no-image-available'); // Ensure no "no-image" class on zoomed image
-
+        zoomedImage.src = this.src;
+        zoomedImage.alt = this.alt;
+        $(zoomedImage).removeClass('no-image-available');
+        
         // Ensure modal is instantiated if not already
         if (!($('#imageZoomModal').data('bs.modal'))) {
             new bootstrap.Modal(document.getElementById('imageZoomModal'));
