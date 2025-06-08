@@ -1,8 +1,11 @@
 --- Latest Updates ---
 
-[2025-06-08] - Implemented dynamic news ticker!
-[2025-06-05] - Revamped styling for better readability.
-[2025-05-28] - Added new links related to AI and home automation.
+[2025-06-08] - Information and updates button added.
+[2025-06-07] - Removed most old and non-functioning links.
+[2025-06-05] - New Hyundai window sticker method restores
+               functionality.    
+[2025-05-28] - Revamped styling for better readability.
 
 --- Feedback & Bug Reporting ---
-We appreciate your input!
+We appreciate your input! This functionality is coming
+soon. Text me in the mean time. 
