@@ -635,19 +635,23 @@ $(document).ready(function () {
     window.volvosticker = function() { openWindowWithVin("https://volvocars.niello.com/api/legacy/pse/windowsticker/volvo?vin="); };
     
     window.vwaudilane = function () { openWindowWithVin2("http://windowsticker-prod.awsmdotcom.manheim.com/windowsticker/VIN_PLACEHOLDER/4905414"); };
-    window.hitcher = function() {
-        const currentVin = getVinOrAlert();
-        if (!currentVin) return;
-        const aYear = document.getElementById("iyear").value;
-        const aMake = document.getElementById("imake").value;
-        const aModel = document.getElementById("imodel").value;
-        if (aModel && aYear && aMake) {
-            console.log("pulling hitch");
-            window.open("https://www.etrailer.com/hitch-" + aYear + "_" + aMake + "_" + aModel + ".htm", '_blank');
-        } else {
-            alert("Year, Make, and Model needed for e-Trailer hitch search.");
-        }
-    };
+window.hitcher = function() {
+    const currentVin = getVinOrAlert();
+    if (!currentVin) return;
+
+    const aYear = $('#iyear').val().trim();
+    const aMake = $('#imake').val().trim().toLowerCase().replace(/\s+/g, '-');
+    const aModel = $('#imodel').val().trim().toLowerCase().replace(/\s+/g, '-');
+
+    if (aYear && aMake && aModel) {
+        console.log("Opening eTrailer hitch search for:", aYear, aMake, aModel);
+        const hitchUrl = `https://www.etrailer.com/hitch-${aYear}_${aMake}_${aModel}.htm`;
+        window.open(hitchUrl, '_blank');
+    } else {
+        alert("Year, Make, and Model are required for hitch lookup.\n\nHint: Click 'Submit VIN' to auto-populate if unsure.");
+    }
+};
+
 
     // --- NHTSA Data Fetching Function (Restored original $.ajax structure) ---
     window.getNHTSADataByVIN = function(vinToQuery) {
