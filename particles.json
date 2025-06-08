@@ -20,7 +20,7 @@
         "nb_sides": 5
       },
       "image": {
-        "src": "",  /* Set to empty string if not using an image for particles */
+        "src": "",
         "width": 100,
         "height": 100
       }
@@ -59,7 +59,7 @@
       "random": false,
       "straight": false,
       "out_mode": "out",
-      "bounce": false, /* Added missing 'bounce' property */
+      "bounce": false,
       "attract": {
         "enable": false,
         "rotateX": 600,
@@ -72,7 +72,7 @@
     "events": {
       "onhover": {
         "enable": true,
-        "mode": "grab" /* This enables the mouse interaction */
+        "mode": "grab"
       },
       "onclick": {
         "enable": true,
@@ -105,6 +105,6 @@
         "particles_nb": 2
       }
     },
-    "retina_detect": true /* Removed trailing comma */
+    "retina_detect": true
   }
 }
