@@ -1,5 +1,6 @@
 --- Latest Updates ---
 
+[2025-06-10] - Added countdown timer.
 [2025-06-08] - Information and updates button added.
 [2025-06-07] - Removed most old and non-functioning links.
 [2025-06-07] - Honda trim screen lists exterior color on top.
