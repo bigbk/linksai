@@ -120,7 +120,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         'JTK': 'SCION',      
         '4T1': 'TOYOTA', '4T3': 'TOYOTA', 
         '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', 
-        '2T1': 'TOYOTA', '2T3': 'TOYOTA',    
+        '2T1': 'TOYOTA', '2T3': 'TOYOTA', '7SV': 'TOYOTA',    
         'SB1': 'TOYOTA',     
 
         // Mazda
