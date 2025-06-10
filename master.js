@@ -103,7 +103,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         // Nissan / Infiniti
         'JN1': 'NISSAN', 'JN6': 'NISSAN', 'JN8': 'INFINITI', 
         '5N1': 'NISSAN', '5N3': 'INFINITI', 
-        'VSK': 'NISSAN',     
+        'VSK': 'NISSAN', '1N4': 'INFINITI',      
         'SJN': 'NISSAN',     
 
         // Jaguar Land Rover (JLR - Tata Motors)
