@@ -8,8 +8,9 @@ $(document).ready(function () {
     var piserv = "https://73.39.163.6/"; 
     var awsserv = "http://3.135.192.197";
 
-    let countdown;
-    let timeLeft = 390; // 6 minutes 30 seconds in seconds
+  let countdown;
+  const duration = 390 * 1000; // 6 minutes 30 seconds in milliseconds
+  let endTime;
     
     let currentNHTSAMake = '';
     var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
@@ -262,33 +263,39 @@ particlesJS.load('particles-js', 'particles.json', function() {
             }
         });
     }
-
-  function updateTimerDisplay() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
+function updateTimerDisplay(timeRemaining) {
+    const minutes = Math.floor(timeRemaining / 60000);
+    const seconds = Math.floor((timeRemaining % 60000) / 1000);
     document.getElementById('timerDisplay').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
   function startCountdown() {
-    if (countdown) {
-      clearInterval(countdown);
-    }
-    timeLeft = 390; // Reset to 6 minutes 30 seconds
-    updateTimerDisplay();
+    // Cancel any existing countdown
+    clearInterval(countdown);
+
+    // Set new end time
+    endTime = Date.now() + duration;
+
+    // Show timer display
     document.getElementById('timerDisplay').style.display = 'block';
 
+    // Update immediately
+    updateTimerDisplay(duration);
+
+    // Start new interval
     countdown = setInterval(() => {
-      timeLeft--;
-      updateTimerDisplay();
+      const timeLeft = endTime - Date.now();
 
       if (timeLeft <= 0) {
         clearInterval(countdown);
+        document.getElementById('timerDisplay').textContent = '0:00';
         alert('Time is up!');
         document.getElementById('timerDisplay').style.display = 'none';
+      } else {
+        updateTimerDisplay(timeLeft);
       }
     }, 1000);
-  }
-    
+  }    
     // --- END: Original Helper Functions ---
 
 
