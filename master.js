@@ -263,13 +263,17 @@ particlesJS.load('particles-js', 'particles.json', function() {
         });
     }
 
-      function updateTimerDisplay() {
+  function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     document.getElementById('timerDisplay').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
   function startCountdown() {
+    if (countdown) {
+      clearInterval(countdown);
+    }
+    timeLeft = 390; // Reset to 6 minutes 30 seconds
     updateTimerDisplay();
     document.getElementById('timerDisplay').style.display = 'block';
 
