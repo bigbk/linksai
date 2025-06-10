@@ -8,6 +8,9 @@ $(document).ready(function () {
     var piserv = "https://73.39.163.6/"; 
     var awsserv = "http://3.135.192.197";
 
+    let countdown;
+    let timeLeft = 390; // 6 minutes 30 seconds in seconds
+    
     let currentNHTSAMake = '';
     var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
 particlesJS.load('particles-js', 'particles.json', function() {
@@ -259,6 +262,29 @@ particlesJS.load('particles-js', 'particles.json', function() {
             }
         });
     }
+
+      function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timerDisplay').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function startCountdown() {
+    updateTimerDisplay();
+    document.getElementById('timerDisplay').style.display = 'block';
+
+    countdown = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        alert('Time is up!');
+        document.getElementById('timerDisplay').style.display = 'none';
+      }
+    }, 1000);
+  }
+    
     // --- END: Original Helper Functions ---
 
 
@@ -415,6 +441,12 @@ particlesJS.load('particles-js', 'particles.json', function() {
             e.preventDefault(); 
         }
     });
+
+    document.body.addEventListener('click', (event) => {
+    if (event.target === document.body) {
+      startCountdown();
+    }
+  });
 
     if (document.getElementById("kmxbutton")) {
         document.getElementById("kmxbutton").onclick = function () {
