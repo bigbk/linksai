@@ -7,6 +7,7 @@ const PLACEHOLDER_MAIN_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=
 const PLACEHOLDER_THUMBNAIL = 'https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A';
 const INITIAL_PLACEHOLDER_IMAGE = 'https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23';
 
+// Spinner
 function toggleSpinner(show) {
     if (show) {
         if (!($('#spinnerModal').data('bs.modal'))) {
@@ -18,6 +19,7 @@ function toggleSpinner(show) {
     }
 }
 
+// Display main image
 function displayImage(imageIndex) {
     const mainImageElement = document.getElementById('dispframe');
     const zoomedImageElement = document.getElementById('zoomedImage');
@@ -37,73 +39,83 @@ function displayImage(imageIndex) {
     currentImageIndex = Math.max(1, imageIndex);
     mainImageElement.style.opacity = 0;
     toggleSpinner(true);
+    $('#instructions').show().html('<p>Loading image...</p>');
 
-    const newImageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
+    const timestamp = Date.now(); // for cache busting
+    const newImageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg?cb=${timestamp}`;
 
     mainImageElement.onerror = null;
     mainImageElement.onload = null;
+
     mainImageElement.src = newImageUrl;
     mainImageElement.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     zoomedImageElement.src = newImageUrl;
     zoomedImageElement.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
 
+    const loadTimeout = setTimeout(() => {
+        console.warn('Image load timed out.');
+        mainImageElement.src = PLACEHOLDER_MAIN_IMAGE;
+        mainImageElement.classList.add('no-image-available');
+        zoomedImageElement.src = PLACEHOLDER_MAIN_IMAGE;
+        zoomedImageElement.classList.add('no-image-available');
+        $('#instructions').show().html(`<p><strong>Image took too long to load or is missing.</strong></p>`);
+        toggleSpinner(false);
+    }, 7000); // 7 second timeout
+
     mainImageElement.onload = function () {
+        clearTimeout(loadTimeout);
         mainImageElement.style.opacity = 1;
+        toggleSpinner(false);
+        $('#instructions').hide();
 
         if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
-            console.log(`Main image ${currentImageIndex} for ${currentStockNumber} is a fallback/missing.`);
+            console.log(`Fallback image detected.`);
             currentImageIndex = Math.max(1, currentImageIndex - 1);
-
             this.src = PLACEHOLDER_MAIN_IMAGE;
             this.classList.add('no-image-available');
             zoomedImageElement.src = PLACEHOLDER_MAIN_IMAGE;
             zoomedImageElement.classList.add('no-image-available');
-
             $('#instructions').show().html(`<p><strong>No more images available for Stock #${currentStockNumber}</strong></p>`);
-            toggleSpinner(false); // Ensure spinner is hidden
             return;
         }
 
         this.classList.remove('no-image-available');
         zoomedImageElement.classList.remove('no-image-available');
-        toggleSpinner(false);
         updateThumbnails();
     };
 
     mainImageElement.onerror = function () {
+        clearTimeout(loadTimeout);
         mainImageElement.style.opacity = 1;
-        console.error(`Error loading main image: ${newImageUrl}. Setting to fallback placeholder.`);
         this.src = 'https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error';
         this.classList.add('no-image-available');
         zoomedImageElement.src = 'https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error';
         zoomedImageElement.classList.add('no-image-available');
         toggleSpinner(false);
+        $('#instructions').show().html(`<p><strong>Failed to load image.</strong></p>`);
     };
 
     $('#kmxlink').attr('href', `https://www.carmax.com/car/${currentStockNumber}`);
-    $('#instructions').hide();
 }
 
+// Update thumbnails
 function updateThumbnails() {
-    let startThumbIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
-    startThumbIndex = Math.max(1, startThumbIndex);
+    let startThumbIndex = Math.max(1, currentImageIndex - 3);
 
     for (let i = 0; i < MAX_THUMBNAILS; i++) {
         const thumbNum = startThumbIndex + i;
         const thumbImg = $(`#thumb${i + 1}`);
-
         if (thumbImg.length === 0) continue;
 
-        let thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&fm=webp`;
-        let isPlaceholder = !currentStockNumber || thumbNum < 1;
-
-        if (isPlaceholder) {
-            thumbnailUrl = PLACEHOLDER_THUMBNAIL;
-        }
+        const thumbUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${thumbNum}.jpg?width=100&height=75&cb=${Date.now()}`;
+        const isPlaceholder = !currentStockNumber;
 
         thumbImg[0].onerror = null;
         thumbImg[0].onload = null;
-        thumbImg.attr('src', thumbnailUrl).attr('alt', `Thumbnail ${thumbNum}`).data('image-index', thumbNum);
+
+        thumbImg.attr('src', isPlaceholder ? PLACEHOLDER_THUMBNAIL : thumbUrl);
+        thumbImg.attr('alt', `Thumbnail ${thumbNum}`);
+        thumbImg.data('image-index', thumbNum);
 
         if (currentStockNumber && thumbNum === currentImageIndex) {
             thumbImg.addClass('active-thumbnail');
@@ -133,6 +145,7 @@ function updateThumbnails() {
     }
 }
 
+// Navigation
 function prvs() {
     if (currentStockNumber && currentImageIndex > 1) {
         displayImage(currentImageIndex - 1);
@@ -145,11 +158,12 @@ function nxt() {
     }
 }
 
+// VIN Submit
 document.getElementById("btn_submit").onclick = function () {
     const vinBar = document.getElementById("VINbar");
     const inputStockNum = vinBar.value.trim();
 
-    if (inputStockNum.length === 8) {
+    if (/^\d{8}$/.test(inputStockNum)) {
         currentStockNumber = inputStockNum;
         currentImageIndex = 1;
         displayImage(currentImageIndex);
@@ -162,18 +176,17 @@ document.getElementById("btn_submit").onclick = function () {
     }
 };
 
+// Link Submit
 document.getElementById("btn_submit2").onclick = function () {
-    let linkBarValue = document.getElementById("LINKbar").value.trim();
-    const carmaxUrlRegex = /(?:vehicles|img)\/(\d{8})(?:\/(\d+))?(?:\.jpg|\.webp|\?|$)/i;
-    const match = linkBarValue.match(carmaxUrlRegex);
-
+    let linkVal = document.getElementById("LINKbar").value.trim();
+    const match = linkVal.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i);
     if (match && match[1]) {
         currentStockNumber = match[1];
         currentImageIndex = parseInt(match[2]) || 1;
         document.getElementById("VINbar").value = currentStockNumber;
         displayImage(currentImageIndex);
     } else {
-        $('#instructions').show().html(`<strong>Invalid Link:</strong> Must be CarMax image URL.`);
+        $('#instructions').show().html(`<strong>Invalid URL. Paste a valid CarMax image link.</strong>`);
         $('#dispframe').attr('src', INITIAL_PLACEHOLDER_IMAGE).attr('alt', 'Invalid Link');
         currentStockNumber = '';
         updateThumbnails();
@@ -181,31 +194,27 @@ document.getElementById("btn_submit2").onclick = function () {
     }
 };
 
-["VINbar", "LINKbar"].forEach(function(fieldId) {
-    document.getElementById(fieldId).addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            document.getElementById(fieldId === "VINbar" ? "btn_submit" : "btn_submit2").click();
+// Keyboard enter for inputs
+["VINbar", "LINKbar"].forEach(id => {
+    document.getElementById(id).addEventListener("keyup", function (e) {
+        if (e.key === "Enter") {
+            document.getElementById(id === "VINbar" ? "btn_submit" : "btn_submit2").click();
         }
     });
 });
 
+// Initial load
 $(document).ready(function () {
-    if (!currentStockNumber) {
-        document.getElementById('dispframe').src = INITIAL_PLACEHOLDER_IMAGE;
-        document.getElementById('zoomedImage').src = INITIAL_PLACEHOLDER_IMAGE;
-        $('#instructions').show().html('<p><strong>Enter Stock #</strong></p>');
-        updateThumbnails();
-    }
+    displayImage(currentImageIndex);
 });
 
+// Zoom modal click
 $('#dispframe').on('click', function () {
     if (!$(this).hasClass('no-image-available') && currentStockNumber) {
         const zoomedImage = document.getElementById('zoomedImage');
         zoomedImage.src = this.src;
         zoomedImage.alt = this.alt;
         $(zoomedImage).removeClass('no-image-available');
-
         if (!($('#imageZoomModal').data('bs.modal'))) {
             new bootstrap.Modal(document.getElementById('imageZoomModal'));
         }
