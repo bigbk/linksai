@@ -51,10 +51,8 @@ function displayImage(requestedIndex) {
 
     mainImage.onerror = null;
     mainImage.onload = null;
-    mainImage.src = imageUrl;
     mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
 
-    zoomedImage.src = imageUrl;
     zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
 
     // Set a timeout to handle slow or missing images
@@ -68,45 +66,39 @@ function displayImage(requestedIndex) {
         toggleSpinner(false);
     }, 7000);
 
-    mainImage.onload = function () {
-        clearTimeout(loadTimeout);
-        mainImage.style.opacity = 1;
-        toggleSpinner(false);
-        $("#instructions").hide();
+mainImage.onload = function () {
+    clearTimeout(loadTimeout);
+    mainImage.style.opacity = 1;
+    toggleSpinner(false);
+    $("#instructions").hide();
 
-        // Detect fallback image (very small image usually)
-        if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
-            // If user tried to go forward but no image, revert index back
-            if (requestedIndex > currentImageIndex) {
-                currentImageIndex = Math.max(1, currentImageIndex - 1);
-            }
-            this.src = PLACEHOLDER_MAIN_IMAGE;
-            this.classList.add("no-image-available");
-            zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
-            zoomedImage.classList.add("no-image-available");
-            $("#instructions").show().html(`<p><strong>No more images available for Stock #${currentStockNumber}</strong></p>`);
-            return;
-        }
-
-        this.classList.remove("no-image-available");
-        zoomedImage.classList.remove("no-image-available");
-        updateThumbnails();
-    };
-
-    mainImage.onerror = function () {
-        clearTimeout(loadTimeout);
-        mainImage.style.opacity = 1;
-        this.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
+    if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
+        this.src = PLACEHOLDER_MAIN_IMAGE;
         this.classList.add("no-image-available");
-        zoomedImage.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
+        zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
         zoomedImage.classList.add("no-image-available");
-        toggleSpinner(false);
-        $("#instructions").show().html("<p><strong>Failed to load image.</strong></p>");
-    };
+        $("#instructions").show().html(`<p><strong>No more images available for Stock #${currentStockNumber}</strong></p>`);
+        return;
+    }
 
-    $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
-}
+    this.classList.remove("no-image-available");
+    zoomedImage.classList.remove("no-image-available");
+    updateThumbnails();
+};
 
+mainImage.onerror = function () {
+    clearTimeout(loadTimeout);
+    mainImage.style.opacity = 1;
+    this.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
+    this.classList.add("no-image-available");
+    zoomedImage.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
+    zoomedImage.classList.add("no-image-available");
+    toggleSpinner(false);
+    $("#instructions").show().html("<p><strong>Failed to load image.</strong></p>");
+};
+
+mainImage.src = imageUrl;
+zoomedImage.src = imageUrl;
 // Update the thumbnail images below the main image
 function updateThumbnails() {
     let startIndex = Math.max(1, currentImageIndex - 3);
