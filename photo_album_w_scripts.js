@@ -1,5 +1,7 @@
 var currentImageIndex = 1,
     currentStockNumber = "";
+    const MAX_IMAGE_INDEX = 40;
+
 
 const MAX_THUMBNAILS = 8,
     CARMAX_BASE_IMAGE_URL = "https://img2.carmax.com/img/vehicles/",
@@ -37,7 +39,8 @@ function displayImage(requestedIndex) {
     }
 
     // Ensure index is at least 1
-    currentImageIndex = Math.max(1, requestedIndex);
+    currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
+
 
     mainImage.style.opacity = 0;
     toggleSpinner(true);
@@ -109,8 +112,9 @@ function updateThumbnails() {
     let startIndex = Math.max(1, currentImageIndex - 3);
 
     for (let i = 0; i < MAX_THUMBNAILS; i++) {
-        const imageIndex = startIndex + i;
+        const imageIndex = Math.min(MAX_IMAGE_INDEX, startIndex + i);
         const thumb = $(`#thumb${i + 1}`);
+
 
         if (thumb.length === 0) continue;
 
@@ -161,10 +165,13 @@ function prvs() {
 
 // Go to next image, displayImage will handle missing images gracefully
 function nxt() {
-    if (currentStockNumber) {
+    if (currentStockNumber && currentImageIndex < MAX_IMAGE_INDEX) {
         displayImage(currentImageIndex + 1);
+    } else {
+        $("#instructions").show().html(`<p><strong>No more images. Max is ${MAX_IMAGE_INDEX}.</strong></p>`);
     }
 }
+
 
 // Submit button for entering stock number manually
 document.getElementById("btn_submit").onclick = function () {
