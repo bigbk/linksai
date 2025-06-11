@@ -193,8 +193,21 @@ document.getElementById("btn_submit2").onclick = function () {
 
 // Initialize
 $(document).ready(function () {
-    displayImage(currentImageIndex);
+    // Only display image if a valid stock number is already set
+    if (/^\d{8}$/.test(currentStockNumber)) {
+        displayImage(currentImageIndex);
+    } else {
+        // Show placeholder image
+        const mainImage = document.getElementById("dispframe");
+        const zoomedImage = document.getElementById("zoomedImage");
+        mainImage.src = INITIAL_PLACEHOLDER_IMAGE;
+        zoomedImage.src = INITIAL_PLACEHOLDER_IMAGE;
+        mainImage.alt = "Enter Stock Number";
+        zoomedImage.alt = "Enter Stock Number";
+        $("#instructions").show().html("<p><strong>Enter Stock #</strong></p>");
+    }
 });
+
 
 // Zoom modal
 $("#dispframe").on("click", function () {
