@@ -118,7 +118,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         'JT': 'TOYOTA', 'JTE': 'TOYOTA', 'JTL': 'TOYOTA', 'JTD': 'TOYOTA', 'JTM': 'TOYOTA', 'JTN': 'TOYOTA',
         'JTH': 'LEXUS',      
         'JTK': 'SCION',      
-        '4T1': 'TOYOTA', '4T3': 'TOYOTA', 
+        '4T1': 'TOYOTA', '4T3': 'TOYOTA', '3TM': 'TOYOTA',
         '5TB': 'TOYOTA', '5TD': 'TOYOTA', '5TF': 'TOYOTA', 
         '2T1': 'TOYOTA', '2T3': 'TOYOTA', '7SV': 'TOYOTA',    
         'SB1': 'TOYOTA',     
