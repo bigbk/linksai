@@ -7,7 +7,7 @@
 [2025-06-07] - Honda trim screen lists exterior color on top.
 [2025-06-07] - Fixed e-Trailer direct link in Common Links per VIN.
 [2025-06-05] - New Hyundai window sticker method restores functionality.
-[2025-06-05] - Subaru trim output screen updated
+[2025-06-05] - Subaru trim output screen updated for Matt
 [2025-05-28] - Revamped styling for better readability.
 
 --- Feedback & Bug Reporting ---
