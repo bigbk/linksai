@@ -101,7 +101,7 @@ function displayImage(requestedIndex) {
     mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
-}
+
 
 // Update thumbnail images
 function updateThumbnails() {
