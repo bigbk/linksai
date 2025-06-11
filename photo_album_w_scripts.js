@@ -1,5 +1,6 @@
 var currentImageIndex = 1;
 var currentStockNumber = "";
+let isLoading = false;
 
 const MAX_IMAGE_INDEX = 40;
 const MAX_THUMBNAILS = 8;
@@ -21,35 +22,46 @@ function toggleSpinner(show) {
 }
 
 // Display the main image and zoomed image, handle loading states and errors
+
 function displayImage(requestedIndex) {
+    if (isLoading) return; // Prevent multiple simultaneous requests
+    isLoading = true;
+
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
 
-    if (!currentStockNumber) {
-        $("#instructions").show().html("<p><strong>Enter Stock #</strong></p>");
-        mainImage.src = INITIAL_PLACEHOLDER_IMAGE;
-        mainImage.alt = "Enter Stock Number";
-        zoomedImage.src = INITIAL_PLACEHOLDER_IMAGE;
-        updateThumbnails();
-        $("#kmxlink").attr("href", "#");
-        return;
-    }
+    // Reset loading state
+    mainImage.src = PLACEHOLDER_MAIN_IMAGE;
+    zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
+    mainImage.alt = "Loading...";
+    zoomedImage.alt = "Loading...";
 
-    currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
-    const cacheBuster = Date.now();
-    const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg?cb=${cacheBuster}`;
-
-    mainImage.style.opacity = 0;
+    // Show loading spinner
     toggleSpinner(true);
-    $("#instructions").show().html("<p>Loading image...</p>");
 
-    let loadHandled = false;
-    const timeout = setTimeout(() => {
-        if (!loadHandled) {
-            loadHandled = true;
-            fallbackImage("Image took too long to load or is missing.");
-        }
-    }, 7000);
+    // Clamp requested index to be between 1 and MAX_IMAGE_INDEX
+    currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
+
+    const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
+
+    mainImage.onload = function () {
+        isLoading = false;
+        mainImage.style.opacity = 1;
+        toggleSpinner(false);
+        updateThumbnails();
+    };
+
+    mainImage.onerror = function () {
+        isLoading = false;
+        mainImage.src = PLACEHOLDER_MAIN_IMAGE;
+        zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
+        toggleSpinner(false);
+        updateThumbnails();
+    };
+
+    mainImage.src = imageUrl;
+    zoomedImage.src = imageUrl;
+}
 
     function fallbackImage(message) {
         mainImage.src = PLACEHOLDER_MAIN_IMAGE;
