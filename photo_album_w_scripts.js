@@ -11,24 +11,34 @@ const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?te
 
 // Show or hide the loading spinner modal
 function toggleSpinner(show) {
+    console.log(`[Spinner Debug] toggleSpinner called: ${show ? 'SHOW' : 'HIDE'}`);
     if (show) {
-        // Ensure the modal instance exists before showing
         if (!$("#spinnerModal").data("bs.modal")) {
             new bootstrap.Modal(document.getElementById("spinnerModal"));
         }
         $("#spinnerModal").modal("show");
     } else {
-        // Use a slight delay to ensure the spinner is visible before hiding
         setTimeout(() => {
             $("#spinnerModal").modal("hide");
+            console.log("[Spinner Debug] Spinner hidden after delay.");
+            // Ensure isLoading is false when spinner is hidden, just in case
+            isLoading = false;
+            console.log(`[Spinner Debug] isLoading set to false after spinner hide. Current isLoading: ${isLoading}`);
         }, 100);
     }
 }
 
 // Display the main image and zoomed image, handle loading states and errors
 function displayImage(requestedIndex) {
-    if (isLoading) return; // Prevent multiple loads if one is in progress
+    console.log(`[displayImage] Called with requestedIndex: ${requestedIndex}, currentStockNumber: ${currentStockNumber}, isLoading: ${isLoading}`);
+
+    if (isLoading) {
+        console.log("[displayImage] Aborting: Another image load is already in progress.");
+        return; // Prevent multiple loads if one is in progress
+    }
+
     isLoading = true;
+    console.log(`[displayImage] isLoading set to true. Current isLoading: ${isLoading}`);
 
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
@@ -36,54 +46,72 @@ function displayImage(requestedIndex) {
     // Show spinner immediately and reset image sources/alts
     mainImage.style.opacity = 0.5; // Dim current image while loading new
     toggleSpinner(true);
+    console.log("[displayImage] Spinner shown.");
 
     currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
     const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
+    console.log(`[displayImage] Attempting to load image: ${imageUrl}`);
 
     let loadHandled = false; // To prevent double handling of load/error events
 
     const timeout = setTimeout(() => {
         if (!loadHandled) { // Only fallback if load/error hasn't already fired
-            fallbackImage("Image took too long to load or is missing.");
+            console.warn("[displayImage] Image load timed out!");
+            fallbackImage(`Image took too long to load or is missing for Stock #${currentStockNumber}`);
             loadHandled = true; // Mark as handled
         }
     }, 7000);
+    console.log("[displayImage] Timeout set for 7 seconds.");
 
     function fallbackImage(message) {
+        console.log(`[displayImage] fallbackImage called with message: ${message}`);
         mainImage.src = PLACEHOLDER_MAIN_IMAGE;
         zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
         mainImage.classList.add("no-image-available");
         zoomedImage.classList.add("no-image-available");
         $("#instructions").show().html(`<p><strong>${message}</strong></p>`);
-        toggleSpinner(false);
-        isLoading = false; // Reset isLoading on error
+        toggleSpinner(false); // This will also set isLoading to false
         updateThumbnails(); // Update thumbnails even on error
+        console.log("[displayImage] Fallback image displayed. Spinner hidden.");
     }
 
     // Set up onload/onerror handlers for the main image
     mainImage.onload = function () {
-        if (loadHandled) return;
+        console.log("[displayImage] mainImage.onload fired.");
+        if (loadHandled) {
+            console.log("[displayImage] onload: Event already handled, returning.");
+            return;
+        }
         clearTimeout(timeout);
         loadHandled = true;
-        isLoading = false; // Reset isLoading on successful load
+        
+        console.log(`[displayImage] onload: Image loaded. Natural dimensions: ${this.naturalWidth}x${this.naturalHeight}`);
 
         if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
-            fallbackImage(`No more images available for Stock #${currentStockNumber}`);
+            console.log("[displayImage] onload: Image dimensions too small (placeholder).");
+            fallbackImage(`No more images available or image is invalid for Stock #${currentStockNumber}`);
         } else {
+            console.log("[displayImage] onload: Image valid. Updating UI.");
             mainImage.style.opacity = 1; // Restore full opacity
             mainImage.classList.remove("no-image-available");
             zoomedImage.classList.remove("no-image-available");
             $("#instructions").hide();
-            toggleSpinner(false);
+            toggleSpinner(false); // This will also set isLoading to false
             updateThumbnails(); // Update thumbnails after main image loads
+            console.log("[displayImage] onload: UI updated, spinner hidden, thumbnails updated.");
         }
     };
 
     mainImage.onerror = function () {
-        if (loadHandled) return;
+        console.log("[displayImage] mainImage.onerror fired.");
+        if (loadHandled) {
+            console.log("[displayImage] onerror: Event already handled, returning.");
+            return;
+        }
         clearTimeout(timeout);
         loadHandled = true;
-        fallbackImage("Failed to load image.");
+        fallbackImage("Failed to load image (onerror event).");
+        console.log("[displayImage] onerror: Fallback image displayed.");
     };
 
     // Set the source last to trigger loading
@@ -92,63 +120,68 @@ function displayImage(requestedIndex) {
     mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
+    console.log(`[displayImage] Main image source set to: ${imageUrl}`);
 }
 
 // Update thumbnail images and set active state
 function updateThumbnails() {
-    // Calculate start index to try and center the current image
+    console.log("[updateThumbnails] Called.");
     let startIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
-    // Ensure we don't go past the MAX_IMAGE_INDEX with the last thumbnail
     startIndex = Math.min(startIndex, MAX_IMAGE_INDEX - MAX_THUMBNAILS + 1);
-    // Ensure startIndex is never less than 1
-    startIndex = Math.max(1, startIndex);
+    startIndex = Math.max(1, startIndex); // Ensure startIndex is never less than 1
+    console.log(`[updateThumbnails] Calculated startIndex: ${startIndex}`);
 
     for (let i = 0; i < MAX_THUMBNAILS; i++) {
         const imageIndex = startIndex + i;
         const thumb = $(`#thumb${i + 1}`);
 
-        if (thumb.length === 0) continue; // Skip if thumbnail element doesn't exist
+        if (thumb.length === 0) {
+            console.warn(`[updateThumbnails] Thumbnail element #thumb${i + 1} not found.`);
+            continue;
+        }
 
-        const url = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${imageIndex}.jpg?width=100&height=75`; // Removed cb=${Date.now()}
+        const url = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${imageIndex}.jpg?width=100&height=75`;
         const noStock = !currentStockNumber;
+        console.log(`[updateThumbnails] Processing thumb${i + 1} for imageIndex: ${imageIndex}, URL: ${url}`);
 
         thumb.attr("src", noStock ? PLACEHOLDER_THUMBNAIL : url);
         thumb.attr("alt", `Thumbnail ${imageIndex}`);
         thumb.data("image-index", imageIndex); // Store the actual image index
 
-        // Add/remove active class based on currentImageIndex
         if (currentStockNumber && imageIndex === currentImageIndex) {
             thumb.addClass("active-thumbnail");
+            console.log(`[updateThumbnails] thumb${i + 1} marked as active.`);
         } else {
             thumb.removeClass("active-thumbnail");
         }
 
-        // Handle thumbnail load/error
         thumb[0].onload = function () {
+            console.log(`[updateThumbnails] Thumbnail ${this.id} onload fired. Natural dimensions: ${this.naturalWidth}x${this.naturalHeight}`);
             if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
                 this.src = PLACEHOLDER_THUMBNAIL;
                 this.classList.add("no-image-available");
-                // Remove clickability if placeholder
                 $(this).off("click").css("cursor", "not-allowed");
+                console.log(`[updateThumbnails] Thumbnail ${this.id} identified as placeholder, set to N/A.`);
             } else {
                 this.classList.remove("no-image-available");
-                // Re-add clickability
                 $(this).off("click").on("click", handleThumbnailClick).css("cursor", "pointer");
+                console.log(`[updateThumbnails] Thumbnail ${this.id} is valid.`);
             }
         };
 
         thumb[0].onerror = function () {
+            console.error(`[updateThumbnails] Thumbnail ${this.id} onerror fired.`);
             this.src = PLACEHOLDER_THUMBNAIL;
             this.classList.add("no-image-available");
-            $(this).off("click").css("cursor", "not-allowed"); // Remove clickability on error
+            $(this).off("click").css("cursor", "not-allowed");
+            console.log(`[updateThumbnails] Thumbnail ${this.id} failed to load, set to N/A.`);
         };
 
-        // If no stock number, default to placeholder and no-image-available
         if (noStock) {
             thumb.addClass("no-image-available");
             $(thumb).off("click").css("cursor", "not-allowed");
+            console.log(`[updateThumbnails] No stock number, thumbnail ${i + 1} set to no-image-available.`);
         } else {
-            // Ensure click handler is set if a stock number exists
             $(thumb).off("click").on("click", handleThumbnailClick).css("cursor", "pointer");
         }
     }
@@ -157,6 +190,7 @@ function updateThumbnails() {
 // Handler for thumbnail clicks
 function handleThumbnailClick() {
     const clickedIndex = $(this).data("image-index");
+    console.log(`[handleThumbnailClick] Thumbnail with index ${clickedIndex} clicked.`);
     if (clickedIndex && currentStockNumber) {
         displayImage(clickedIndex);
     }
@@ -164,30 +198,39 @@ function handleThumbnailClick() {
 
 // Previous image
 function prvs() {
+    console.log("[prvs] Previous button clicked.");
     if (currentStockNumber && currentImageIndex > 1) {
         displayImage(currentImageIndex - 1);
+    } else {
+        console.log("[prvs] No more previous images or no stock number.");
     }
 }
 
 // Next image
 function nxt() {
+    console.log("[nxt] Next button clicked.");
     if (currentStockNumber) {
         if (currentImageIndex < MAX_IMAGE_INDEX) {
             displayImage(currentImageIndex + 1);
         } else {
             $("#instructions").show().html(`<p><strong>No more images. Max is ${MAX_IMAGE_INDEX}.</strong></p>`);
+            console.log("[nxt] Reached max image index.");
         }
     } else {
         $("#instructions").show().html("<strong>Enter Stock #:</strong> Please enter a stock number to view images.");
+        console.log("[nxt] No stock number entered.");
     }
 }
 
 // Submit by Stock Number
 document.getElementById("btn_submit").onclick = function () {
+    console.log("[btn_submit] Search (VIN) button clicked.");
     const val = document.getElementById("VINbar").value.trim();
+    console.log(`[btn_submit] VINbar value: "${val}"`);
     if (/^\d{8}$/.test(val)) {
         currentStockNumber = val;
         currentImageIndex = 1; // Start from the first image for a new stock number
+        console.log(`[btn_submit] Valid Stock Number. Setting currentStockNumber to ${currentStockNumber}. Calling displayImage.`);
         displayImage(currentImageIndex);
     } else {
         $("#instructions").show().html("<strong>Invalid Stock Number:</strong> Must be 8 digits.");
@@ -196,18 +239,21 @@ document.getElementById("btn_submit").onclick = function () {
         currentStockNumber = ""; // Clear stock number on invalid input
         updateThumbnails(); // Clear thumbnails
         $("#kmxlink").attr("href", "#");
+        console.log("[btn_submit] Invalid Stock Number. Resetting UI.");
     }
 };
 
 // Submit by CarMax URL
 document.getElementById("btn_submit2").onclick = function () {
+    console.log("[btn_submit2] Search (Link) button clicked.");
     const val = document.getElementById("LINKbar").value.trim();
-    const match = val.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i); // Adjusted regex to be more robust
+    console.log(`[btn_submit2] LINKbar value: "${val}"`);
+    const match = val.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i);
     if (match && match[1]) {
         currentStockNumber = match[1];
-        // If an image index is found in the URL, use it, otherwise default to 1
         currentImageIndex = Math.min(parseInt(match[2]) || 1, MAX_IMAGE_INDEX);
         document.getElementById("VINbar").value = currentStockNumber; // Populate VIN bar
+        console.log(`[btn_submit2] Valid Link. Stock Number: ${currentStockNumber}, Image Index: ${currentImageIndex}. Calling displayImage.`);
         displayImage(currentImageIndex);
     } else {
         $("#instructions").show().html("<strong>Invalid URL. Paste a valid CarMax image link.</strong>");
@@ -216,6 +262,7 @@ document.getElementById("btn_submit2").onclick = function () {
         currentStockNumber = ""; // Clear stock number on invalid input
         updateThumbnails(); // Clear thumbnails
         $("#kmxlink").attr("href", "#");
+        console.log("[btn_submit2] Invalid Link. Resetting UI.");
     }
 };
 
@@ -223,6 +270,7 @@ document.getElementById("btn_submit2").onclick = function () {
 ["VINbar", "LINKbar"].forEach((id) => {
     document.getElementById(id).addEventListener("keyup", function (event) {
         if (event.key === "Enter") {
+            console.log(`[Keyboard Event] Enter key pressed on ${id}. Triggering click event.`);
             document.getElementById(id === "VINbar" ? "btn_submit" : "btn_submit2").click();
         }
     });
@@ -230,7 +278,7 @@ document.getElementById("btn_submit2").onclick = function () {
 
 // Initialize on document ready
 $(document).ready(function () {
-    // Initial state: show placeholder and clear thumbnails
+    console.log("[Document Ready] Initializing application.");
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
     mainImage.src = INITIAL_PLACEHOLDER_IMAGE;
@@ -240,17 +288,22 @@ $(document).ready(function () {
     $("#instructions").show().html("<p><strong>Enter Stock #</strong></p>");
     currentStockNumber = ""; // Ensure stock number is cleared on initial load
     updateThumbnails(); // Load initial placeholder thumbnails
+    console.log("[Document Ready] Initial UI set up.");
 });
 
 // Zoom modal functionality
 $("#dispframe").on("click", function () {
-    // Only allow zoom if there's a current stock number and the image isn't a placeholder
+    console.log("[Zoom Modal] Main image clicked.");
     if (currentStockNumber && !$(this).hasClass("no-image-available") && $(this).attr("src") !== PLACEHOLDER_MAIN_IMAGE) {
         const zoomedImage = document.getElementById("zoomedImage");
         zoomedImage.src = this.src;
         zoomedImage.alt = this.alt;
         $(zoomedImage).removeClass("no-image-available"); // Ensure it's not dimmed
-        $("#imageZoomModal").data("bs.modal") || new bootstrap.Modal(document.getElementById("imageZoomModal")); // Ensure modal instance
+        // Ensure modal instance is created if it doesn't exist
+        $("#imageZoomModal").data("bs.modal") || new bootstrap.Modal(document.getElementById("imageZoomModal"));
         $("#imageZoomModal").modal("show");
+        console.log("[Zoom Modal] Showing zoom modal.");
+    } else {
+        console.log("[Zoom Modal] Click ignored: No stock number, image unavailable, or placeholder.");
     }
 });
