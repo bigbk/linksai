@@ -73,6 +73,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
 
         // General Motors (GM)
         '1G1': 'CHEVROLET', '1GC': 'CHEVROLET', '1GN': 'CHEVROLET',
+        '1GK': 'GMC', 
         '2G1': 'CHEVROLET', '2GC': 'CHEVROLET', '2GN': 'CHEVROLET', 
         '3G1': 'CHEVROLET', '3GC': 'CHEVROLET', '3GN': 'CHEVROLET', 
         'KL1': 'CHEVROLET',  
