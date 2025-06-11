@@ -61,7 +61,6 @@ function displayImage(requestedIndex) {
 
     mainImage.src = imageUrl;
     zoomedImage.src = imageUrl;
-}
 
     function fallbackImage(message) {
         mainImage.src = PLACEHOLDER_MAIN_IMAGE;
