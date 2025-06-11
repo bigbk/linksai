@@ -2,8 +2,7 @@ var currentImageIndex = 1;
 var currentStockNumber = "";
 let isLoading = false; // Flag to prevent multiple image loads simultaneously
 
-// Global variable to store the Bootstrap modal instance for the spinner
-let spinnerModalInstance = null;
+// Removed: spinnerModalInstance variable as modal HTML is removed
 
 const MAX_IMAGE_INDEX = 40;
 const MAX_THUMBNAILS = 8; // Number of thumbnail slots in the HTML
@@ -12,76 +11,33 @@ const PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=
 const PLACEHOLDER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A";
 const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23";
 
-// --- IMPORTANT: Event listener for when the modal is *actually* hidden ---
-// This ensures `isLoading` is reset only after the modal has completed its hide animation.
-document.addEventListener('hidden.bs.modal', function (event) {
-    if (event.target.id === 'spinnerModal') {
-        isLoading = false; // Reset isLoading ONLY when spinner is fully hidden
-        console.log(`[Spinner Debug] hidden.bs.modal event fired for spinnerModal. isLoading set to false: ${isLoading}`);
-        // Manual cleanup: Sometimes Bootstrap might leave 'show' class or inline style.
-        // This acts as a safeguard.
-        const spinnerElement = document.getElementById('spinnerModal');
-        if (spinnerElement) {
-            spinnerElement.classList.remove('show');
-            spinnerElement.style.display = ''; // Clear inline style
-            console.log("[Spinner Debug] Manual cleanup: Removed 'show' class and inline style from spinnerModal.");
-        }
-    }
-});
+// Removed: document.addEventListener('hidden.bs.modal')
 
-// Show or hide the loading spinner modal
+// --- REMOVED LOADING MODAL FUNCTIONALITY ---
 function toggleSpinner(show) {
-    console.log(`[Spinner Debug] toggleSpinner called: ${show ? 'SHOW' : 'HIDE'}`);
-
-    const spinnerModalElement = document.getElementById("spinnerModal");
-
-    if (show) {
-        // Create Bootstrap modal instance if it doesn't exist
-        if (!spinnerModalInstance) {
-            spinnerModalInstance = new bootstrap.Modal(spinnerModalElement, {
-                backdrop: 'static', // Prevents closing by clicking outside
-                keyboard: false     // Prevents closing by ESC key
-            });
-            console.log("[Spinner Debug] New Bootstrap Modal instance created.");
-        }
-        // Set isLoading to true here, it will be reset by the 'hidden.bs.modal' event listener
-        isLoading = true;
-        spinnerModalInstance.show();
-        console.log("[Spinner Debug] Spinner modal instance .show() called.");
-        console.log(`[Spinner Debug] isLoading set to true immediately after show() call: ${isLoading}`);
-    } else {
-        // Request the modal to hide. The actual isLoading reset happens in the event listener.
-        if (spinnerModalInstance) {
-            spinnerModalInstance.hide();
-            console.log("[Spinner Debug] Spinner modal instance .hide() called.");
-        } else {
-            console.warn("[Spinner Debug] spinnerModalInstance is null when trying to hide.");
-            // Fallback: if modal instance isn't found, force isLoading to false.
-            isLoading = false;
-            console.log(`[Spinner Debug] Forced isLoading to false as modal instance was null. Current isLoading: ${isLoading}`);
-        }
-    }
+    // This function now does nothing, effectively removing the spinner.
+    console.log(`[Spinner Debug] toggleSpinner called: ${show ? 'SHOW' : 'HIDE'} (MODAL REMOVED)`);
 }
+// --- END REMOVED LOADING MODAL FUNCTIONALITY ---
+
 
 // Display the main image and zoomed image, handle loading states and errors
 function displayImage(requestedIndex) {
     console.log(`[displayImage] Called with requestedIndex: ${requestedIndex}, currentStockNumber: ${currentStockNumber}, isLoading: ${isLoading}`);
 
-    // This check prevents new image loads if one is already in progress,
-    // where 'in progress' means the spinner is *currently* visible.
-    // The `isLoading` flag is now controlled by the `hidden.bs.modal` event.
     if (isLoading) {
-        console.log("[displayImage] Aborting: An image load (and spinner) is already in progress.");
+        console.log("[displayImage] Aborting: Another image load is already in progress.");
         return;
     }
+
+    isLoading = true; // Set isLoading true at the start of load
+    console.log(`[displayImage] isLoading set to true. Current isLoading: ${isLoading}`);
 
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
 
-    mainImage.style.opacity = 0.5; // Dim current image while loading new
-    toggleSpinner(true); // Show spinner and set isLoading to true
-    console.log("[displayImage] Spinner shown. isLoading state after toggleSpinner(true):", isLoading);
-
+    mainImage.style.opacity = 0.5; // Still dim the image for visual feedback during load
+    // toggleSpinner(true); // Removed: Call to toggleSpinner
 
     currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
     const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
@@ -105,9 +61,12 @@ function displayImage(requestedIndex) {
         mainImage.classList.add("no-image-available");
         zoomedImage.classList.add("no-image-available");
         $("#instructions").show().html(`<p><strong>${message}</strong></p>`);
-        toggleSpinner(false); // Request spinner to hide (isLoading reset in hidden.bs.modal event)
+        // toggleSpinner(false); // Removed: Call to toggleSpinner
+        isLoading = false; // Reset isLoading directly
+        console.log(`[displayImage] fallbackImage: isLoading set to false: ${isLoading}`);
+
         updateThumbnails(); // Update thumbnails even on error
-        console.log("[displayImage] Fallback image displayed. Spinner hide requested.");
+        console.log("[displayImage] Fallback image displayed.");
     }
 
     // Set up onload/onerror handlers for the main image
@@ -131,9 +90,12 @@ function displayImage(requestedIndex) {
             mainImage.classList.remove("no-image-available");
             zoomedImage.classList.remove("no-image-available");
             $("#instructions").hide();
-            toggleSpinner(false); // Request spinner to hide (isLoading reset in hidden.bs.modal event)
+            // toggleSpinner(false); // Removed: Call to toggleSpinner
+            isLoading = false; // Reset isLoading directly
+            console.log(`[displayImage] onload: isLoading set to false: ${isLoading}`);
+
             updateThumbnails(); // Update thumbnails after main image loads
-            console.log("[displayImage] onload: UI updated, spinner hide requested, thumbnails updated.");
+            console.log("[displayImage] onload: UI updated, thumbnails updated.");
         }
     };
 
