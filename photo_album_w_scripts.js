@@ -2,28 +2,29 @@ var currentImageIndex = 1;
 var currentStockNumber = "";
 let isLoading = false; // Flag to prevent multiple image loads simultaneously
 
-// Global variable to store the modal instance
-let spinnerModalInstance = null; // Declare this at the top with other global vars
+// Global variable to store the Bootstrap modal instance for the spinner
+let spinnerModalInstance = null;
 
 const MAX_IMAGE_INDEX = 40;
 const MAX_THUMBNAILS = 8; // Number of thumbnail slots in the HTML
 const CARMAX_BASE_IMAGE_URL = "https://img2.carmax.com/img/vehicles/";
 const PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available";
-const PLACEHHER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A";
+const PLACEHOLDER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A";
 const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23";
 
 // --- IMPORTANT: Event listener for when the modal is *actually* hidden ---
+// This ensures `isLoading` is reset only after the modal has completed its hide animation.
 document.addEventListener('hidden.bs.modal', function (event) {
     if (event.target.id === 'spinnerModal') {
         isLoading = false; // Reset isLoading ONLY when spinner is fully hidden
         console.log(`[Spinner Debug] hidden.bs.modal event fired for spinnerModal. isLoading set to false: ${isLoading}`);
-        // Optionally, remove the 'show' class and style attribute if Bootstrap fails to
-        // This is a last resort/manual cleanup, Bootstrap *should* handle this
+        // Manual cleanup: Sometimes Bootstrap might leave 'show' class or inline style.
+        // This acts as a safeguard.
         const spinnerElement = document.getElementById('spinnerModal');
         if (spinnerElement) {
             spinnerElement.classList.remove('show');
             spinnerElement.style.display = ''; // Clear inline style
-            console.log("[Spinner Debug] Manual cleanup: Removed 'show' class and inline style.");
+            console.log("[Spinner Debug] Manual cleanup: Removed 'show' class and inline style from spinnerModal.");
         }
     }
 });
@@ -41,21 +42,21 @@ function toggleSpinner(show) {
                 backdrop: 'static', // Prevents closing by clicking outside
                 keyboard: false     // Prevents closing by ESC key
             });
-            console.log("[Spinner Debug] New Bootstrap Modal instance created or retrieved.");
+            console.log("[Spinner Debug] New Bootstrap Modal instance created.");
         }
-        // Temporarily set isLoading to true here, it will be reset on hidden.bs.modal
+        // Set isLoading to true here, it will be reset by the 'hidden.bs.modal' event listener
         isLoading = true;
         spinnerModalInstance.show();
         console.log("[Spinner Debug] Spinner modal instance .show() called.");
         console.log(`[Spinner Debug] isLoading set to true immediately after show() call: ${isLoading}`);
     } else {
-        // No setTimeout needed here, as we're relying on hidden.bs.modal for final isLoading reset
+        // Request the modal to hide. The actual isLoading reset happens in the event listener.
         if (spinnerModalInstance) {
             spinnerModalInstance.hide();
             console.log("[Spinner Debug] Spinner modal instance .hide() called.");
         } else {
             console.warn("[Spinner Debug] spinnerModalInstance is null when trying to hide.");
-            // If instance is null, we can't reliably hide. Force isLoading to false.
+            // Fallback: if modal instance isn't found, force isLoading to false.
             isLoading = false;
             console.log(`[Spinner Debug] Forced isLoading to false as modal instance was null. Current isLoading: ${isLoading}`);
         }
@@ -66,37 +67,24 @@ function toggleSpinner(show) {
 function displayImage(requestedIndex) {
     console.log(`[displayImage] Called with requestedIndex: ${requestedIndex}, currentStockNumber: ${currentStockNumber}, isLoading: ${isLoading}`);
 
-    // IMPORTANT: Move the isLoading check to *after* the toggleSpinner(true) call
-    // This ensures the spinner *always* shows when displayImage is initiated
-    // The subsequent calls will be blocked if isLoading is true from the show() call itself
-    // But the first call will *always* trigger the show.
-    // It's critical that the displayImage function itself doesn't return early before
-    // the spinner has a chance to be explicitly told to show.
+    // This check prevents new image loads if one is already in progress,
+    // where 'in progress' means the spinner is *currently* visible.
+    // The `isLoading` flag is now controlled by the `hidden.bs.modal` event.
+    if (isLoading) {
+        console.log("[displayImage] Aborting: An image load (and spinner) is already in progress.");
+        return;
+    }
 
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
 
     mainImage.style.opacity = 0.5; // Dim current image while loading new
-    toggleSpinner(true); // Show spinner first
-    console.log("[displayImage] Spinner shown. Checking isLoading status again after show():", isLoading);
-
-    if (isLoading && mainImage.src !== INITIAL_PLACEHOLDER_IMAGE) { // Added condition to allow initial load
-         // This `isLoading` here will be true because `toggleSpinner(true)` just set it.
-         // We prevent *re-entering* `displayImage` if an old one is truly stuck.
-         // However, for the very first call, we *want* it to proceed.
-         // The main guard against re-entry is at the very top of `displayImage`
-         // when it's called repeatedly, but now it's inside `toggleSpinner`'s `show()`.
-         // Re-evaluate if this `if (isLoading)` block should even be here.
-         // For now, let's remove the return here to ensure the logic flows.
-         // The `isLoading` check at the very top of `displayImage` is the primary gate.
-         // If toggleSpinner(true) sets isLoading to true, and displayImage was called again,
-         // then the top `if (isLoading) return;` should catch it.
-         // Let's rely on that and the `hidden.bs.modal` event.
-    }
+    toggleSpinner(true); // Show spinner and set isLoading to true
+    console.log("[displayImage] Spinner shown. isLoading state after toggleSpinner(true):", isLoading);
 
 
     currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
-    const imageUrl = `<span class="math-inline">\{CARMAX\_BASE\_IMAGE\_URL\}</span>{currentStockNumber}/${currentImageIndex}.jpg`;
+    const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
     console.log(`[displayImage] Attempting to load image: ${imageUrl}`);
 
     let loadHandled = false; // To prevent double handling of load/error events
@@ -117,7 +105,7 @@ function displayImage(requestedIndex) {
         mainImage.classList.add("no-image-available");
         zoomedImage.classList.add("no-image-available");
         $("#instructions").show().html(`<p><strong>${message}</strong></p>`);
-        toggleSpinner(false); // Request spinner to hide
+        toggleSpinner(false); // Request spinner to hide (isLoading reset in hidden.bs.modal event)
         updateThumbnails(); // Update thumbnails even on error
         console.log("[displayImage] Fallback image displayed. Spinner hide requested.");
     }
@@ -132,7 +120,7 @@ function displayImage(requestedIndex) {
         clearTimeout(timeout);
         loadHandled = true;
 
-        console.log(`[displayImage] onload: Image loaded. Natural dimensions: <span class="math-inline">\{this\.naturalWidth\}x</span>{this.naturalHeight}`);
+        console.log(`[displayImage] onload: Image loaded. Natural dimensions: ${this.naturalWidth}x${this.naturalHeight}`);
 
         if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
             console.log("[displayImage] onload: Image dimensions too small (placeholder).");
@@ -143,7 +131,7 @@ function displayImage(requestedIndex) {
             mainImage.classList.remove("no-image-available");
             zoomedImage.classList.remove("no-image-available");
             $("#instructions").hide();
-            toggleSpinner(false); // Request spinner to hide
+            toggleSpinner(false); // Request spinner to hide (isLoading reset in hidden.bs.modal event)
             updateThumbnails(); // Update thumbnails after main image loads
             console.log("[displayImage] onload: UI updated, spinner hide requested, thumbnails updated.");
         }
@@ -164,12 +152,202 @@ function displayImage(requestedIndex) {
     // Set the source last to trigger loading
     mainImage.src = imageUrl;
     zoomedImage.src = imageUrl; // Also set for the zoom modal
-    mainImage.alt = `Vehicle Image <span class="math-inline">\{currentImageIndex\} for Stock \#</span>{currentStockNumber}`;
-    zoomedImage.alt = `Zoomed Vehicle Image <span class="math-inline">\{currentImageIndex\} for Stock \#</span>{currentStockNumber}`;
+    mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
+    zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
     console.log(`[displayImage] Main image source set to: ${imageUrl}`);
 }
 
-// Rest of your script (updateThumbnails, prvs, nxt, btn_submit, btn_submit2, event listeners, document.ready, zoom modal) remains the same as previously provided with debug logs.
-// Ensure the `updateThumbnails` and other functions are using the `currentImageIndex` and `currentStockNumber` as defined.
-// I'm not repeating the entire script for brevity, but make sure you integrate these changes into your existing one.
+// Update thumbnail images and set active state
+function updateThumbnails() {
+    console.log("[updateThumbnails] Called.");
+    // Calculate start index to try and center the current image
+    let startIndex = Math.max(1, currentImageIndex - Math.floor(MAX_THUMBNAILS / 2));
+    // Ensure we don't go past the MAX_IMAGE_INDEX with the last thumbnail
+    startIndex = Math.min(startIndex, MAX_IMAGE_INDEX - MAX_THUMBNAILS + 1);
+    // Ensure startIndex is never less than 1
+    startIndex = Math.max(1, startIndex);
+    console.log(`[updateThumbnails] Calculated startIndex: ${startIndex}`);
+
+    for (let i = 0; i < MAX_THUMBNAILS; i++) {
+        const imageIndex = startIndex + i;
+        const thumb = $(`#thumb${i + 1}`);
+
+        if (thumb.length === 0) {
+            console.warn(`[updateThumbnails] Thumbnail element #thumb${i + 1} not found.`);
+            continue;
+        }
+
+        const url = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${imageIndex}.jpg?width=100&height=75`;
+        const noStock = !currentStockNumber;
+        console.log(`[updateThumbnails] Processing thumb${i + 1} for imageIndex: ${imageIndex}, URL: ${url}`);
+
+        thumb.attr("src", noStock ? PLACEHOLDER_THUMBNAIL : url);
+        thumb.attr("alt", `Thumbnail ${imageIndex}`);
+        thumb.data("image-index", imageIndex); // Store the actual image index
+
+        // Add/remove active class based on currentImageIndex
+        if (currentStockNumber && imageIndex === currentImageIndex) {
+            thumb.addClass("active-thumbnail");
+            console.log(`[updateThumbnails] thumb${i + 1} marked as active.`);
+        } else {
+            thumb.removeClass("active-thumbnail");
+        }
+
+        // Handle thumbnail load/error
+        thumb[0].onload = function () {
+            console.log(`[updateThumbnails] Thumbnail ${this.id} onload fired. Natural dimensions: ${this.naturalWidth}x${this.naturalHeight}`);
+            if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
+                this.src = PLACEHOLDER_THUMBNAIL;
+                this.classList.add("no-image-available");
+                // Remove clickability if placeholder
+                $(this).off("click").css("cursor", "not-allowed");
+                console.log(`[updateThumbnails] Thumbnail ${this.id} identified as placeholder, set to N/A.`);
+            } else {
+                this.classList.remove("no-image-available");
+                // Re-add clickability
+                $(this).off("click").on("click", handleThumbnailClick).css("cursor", "pointer");
+                console.log(`[updateThumbnails] Thumbnail ${this.id} is valid.`);
+            }
+        };
+
+        thumb[0].onerror = function () {
+            console.error(`[updateThumbnails] Thumbnail ${this.id} onerror fired.`);
+            this.src = PLACEHOLDER_THUMBNAIL;
+            this.classList.add("no-image-available");
+            $(this).off("click").css("cursor", "not-allowed"); // Remove clickability on error
+            console.log(`[updateThumbnails] Thumbnail ${this.id} failed to load, set to N/A.`);
+        };
+
+        // If no stock number, default to placeholder and no-image-available
+        if (noStock) {
+            thumb.addClass("no-image-available");
+            $(thumb).off("click").css("cursor", "not-allowed");
+            console.log(`[updateThumbnails] No stock number, thumbnail ${i + 1} set to no-image-available.`);
+        } else {
+            // Ensure click handler is set if a stock number exists
+            $(thumb).off("click").on("click", handleThumbnailClick).css("cursor", "pointer");
+        }
+    }
+}
+
+// Handler for thumbnail clicks
+function handleThumbnailClick() {
+    const clickedIndex = $(this).data("image-index");
+    console.log(`[handleThumbnailClick] Thumbnail with index ${clickedIndex} clicked.`);
+    if (clickedIndex && currentStockNumber) {
+        displayImage(clickedIndex);
+    }
+}
+
+// Previous image
+function prvs() {
+    console.log("[prvs] Previous button clicked.");
+    if (currentStockNumber && currentImageIndex > 1) {
+        displayImage(currentImageIndex - 1);
+    } else {
+        console.log("[prvs] No more previous images or no stock number.");
+    }
+}
+
+// Next image
+function nxt() {
+    console.log("[nxt] Next button clicked.");
+    if (currentStockNumber) {
+        if (currentImageIndex < MAX_IMAGE_INDEX) {
+            displayImage(currentImageIndex + 1);
+        } else {
+            $("#instructions").show().html(`<p><strong>No more images. Max is ${MAX_IMAGE_INDEX}.</strong></p>`);
+            console.log("[nxt] Reached max image index.");
+        }
+    } else {
+        $("#instructions").show().html("<strong>Enter Stock #:</strong> Please enter a stock number to view images.");
+        console.log("[nxt] No stock number entered.");
+    }
+}
+
+// Submit by Stock Number
+document.getElementById("btn_submit").onclick = function () {
+    console.log("[btn_submit] Search (VIN) button clicked.");
+    const val = document.getElementById("VINbar").value.trim();
+    console.log(`[btn_submit] VINbar value: "${val}"`);
+    if (/^\d{8}$/.test(val)) {
+        currentStockNumber = val;
+        currentImageIndex = 1; // Start from the first image for a new stock number
+        console.log(`[btn_submit] Valid Stock Number. Setting currentStockNumber to ${currentStockNumber}. Calling displayImage.`);
+        displayImage(currentImageIndex);
+    } else {
+        $("#instructions").show().html("<strong>Invalid Stock Number:</strong> Must be 8 digits.");
+        $("#dispframe").attr("src", INITIAL_PLACEHOLDER_IMAGE).attr("alt", "Invalid Stock Number");
+        $("#zoomedImage").attr("src", INITIAL_PLACEHOLDER_IMAGE).attr("alt", "Invalid Stock Number");
+        currentStockNumber = ""; // Clear stock number on invalid input
+        updateThumbnails(); // Clear thumbnails
+        $("#kmxlink").attr("href", "#");
+        console.log("[btn_submit] Invalid Stock Number. Resetting UI.");
+    }
+};
+
+// Submit by CarMax URL
+document.getElementById("btn_submit2").onclick = function () {
+    console.log("[btn_submit2] Search (Link) button clicked.");
+    const val = document.getElementById("LINKbar").value.trim();
+    console.log(`[btn_submit2] LINKbar value: "${val}"`);
+    const match = val.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i);
+    if (match && match[1]) {
+        currentStockNumber = match[1];
+        currentImageIndex = Math.min(parseInt(match[2]) || 1, MAX_IMAGE_INDEX);
+        document.getElementById("VINbar").value = currentStockNumber; // Populate VIN bar
+        console.log(`[btn_submit2] Valid Link. Stock Number: ${currentStockNumber}, Image Index: ${currentImageIndex}. Calling displayImage.`);
+        displayImage(currentImageIndex);
+    } else {
+        $("#instructions").show().html("<strong>Invalid URL. Paste a valid CarMax image link.</strong>");
+        $("#dispframe").attr("src", INITIAL_PLACEHOLDER_IMAGE).attr("alt", "Invalid Link");
+        $("#zoomedImage").attr("src", INITIAL_PLACEHOLDER_IMAGE).attr("alt", "Invalid Link");
+        currentStockNumber = ""; // Clear stock number on invalid input
+        updateThumbnails(); // Clear thumbnails
+        $("#kmxlink").attr("href", "#");
+        console.log("[btn_submit2] Invalid Link. Resetting UI.");
+    }
+};
+
+// Handle Enter key for both fields
+["VINbar", "LINKbar"].forEach((id) => {
+    document.getElementById(id).addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            console.log(`[Keyboard Event] Enter key pressed on ${id}. Triggering click event.`);
+            document.getElementById(id === "VINbar" ? "btn_submit" : "btn_submit2").click();
+        }
+    });
+});
+
+// Initialize on document ready
+$(document).ready(function () {
+    console.log("[Document Ready] Initializing application.");
+    const mainImage = document.getElementById("dispframe");
+    const zoomedImage = document.getElementById("zoomedImage");
+    mainImage.src = INITIAL_PLACEHOLDER_IMAGE;
+    zoomedImage.src = INITIAL_PLACEHOLDER_IMAGE;
+    mainImage.alt = "Enter Stock Number";
+    zoomedImage.alt = "Enter Stock Number";
+    $("#instructions").show().html("<p><strong>Enter Stock #</strong></p>");
+    currentStockNumber = ""; // Ensure stock number is cleared on initial load
+    updateThumbnails(); // Load initial placeholder thumbnails
+    console.log("[Document Ready] Initial UI set up.");
+});
+
+// Zoom modal functionality
+$("#dispframe").on("click", function () {
+    console.log("[Zoom Modal] Main image clicked.");
+    if (currentStockNumber && !$(this).hasClass("no-image-available") && $(this).attr("src") !== PLACEHOLDER_MAIN_IMAGE) {
+        const zoomedImage = document.getElementById("zoomedImage");
+        zoomedImage.src = this.src;
+        zoomedImage.alt = this.alt;
+        $(zoomedImage).removeClass("no-image-available"); // Ensure it's not dimmed
+        // Ensure modal instance is created if it doesn't exist
+        $("#imageZoomModal").data("bs.modal") || new bootstrap.Modal(document.getElementById("imageZoomModal"));
+        $("#imageZoomModal").modal("show");
+        console.log("[Zoom Modal] Showing zoom modal.");
+    } else {
+        console.log("[Zoom Modal] Click ignored: No stock number, image unavailable, or placeholder.");
+    }
+});
