@@ -24,43 +24,26 @@ function toggleSpinner(show) {
 // Display the main image and zoomed image, handle loading states and errors
 
 function displayImage(requestedIndex) {
-    if (isLoading) return; // Prevent multiple simultaneous requests
+    if (isLoading) return;
     isLoading = true;
 
     const mainImage = document.getElementById("dispframe");
     const zoomedImage = document.getElementById("zoomedImage");
 
-    // Reset loading state
     mainImage.src = PLACEHOLDER_MAIN_IMAGE;
     zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
     mainImage.alt = "Loading...";
     zoomedImage.alt = "Loading...";
-
-    // Show loading spinner
     toggleSpinner(true);
 
-    // Clamp requested index to be between 1 and MAX_IMAGE_INDEX
     currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
-
     const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg`;
 
-    mainImage.onload = function () {
-        isLoading = false;
-        mainImage.style.opacity = 1;
-        toggleSpinner(false);
-        updateThumbnails();
-    };
+    const timeout = setTimeout(() => {
+        fallbackImage("Image took too long to load or is missing.");
+    }, 7000);
 
-    mainImage.onerror = function () {
-        isLoading = false;
-        mainImage.src = PLACEHOLDER_MAIN_IMAGE;
-        zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
-        toggleSpinner(false);
-        updateThumbnails();
-    };
-
-    mainImage.src = imageUrl;
-    zoomedImage.src = imageUrl;
+    let loadHandled = false;
 
     function fallbackImage(message) {
         mainImage.src = PLACEHOLDER_MAIN_IMAGE;
@@ -69,12 +52,14 @@ function displayImage(requestedIndex) {
         zoomedImage.classList.add("no-image-available");
         $("#instructions").show().html(`<p><strong>${message}</strong></p>`);
         toggleSpinner(false);
+        isLoading = false;
     }
 
     mainImage.onload = function () {
         if (loadHandled) return;
         clearTimeout(timeout);
         loadHandled = true;
+        isLoading = false;
         mainImage.style.opacity = 1;
         toggleSpinner(false);
         $("#instructions").hide();
@@ -84,7 +69,7 @@ function displayImage(requestedIndex) {
         } else {
             mainImage.classList.remove("no-image-available");
             zoomedImage.classList.remove("no-image-available");
-            updateThumbnails();
+            updateThumbnails();  // Now this works, since it's declared outside
         }
     };
 
@@ -100,7 +85,7 @@ function displayImage(requestedIndex) {
     mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
     $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
-
+}
 
 // Update thumbnail images
 function updateThumbnails() {
