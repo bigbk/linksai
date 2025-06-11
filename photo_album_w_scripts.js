@@ -9,18 +9,35 @@ const PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=
 const PLACEHOLDER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A";
 const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23";
 
+// Global variable to store the modal instance
+let spinnerModalInstance = null;
+
 // Show or hide the loading spinner modal
 function toggleSpinner(show) {
     console.log(`[Spinner Debug] toggleSpinner called: ${show ? 'SHOW' : 'HIDE'}`);
+
+    const spinnerModalElement = document.getElementById("spinnerModal");
+
     if (show) {
-        if (!$("#spinnerModal").data("bs.modal")) {
-            new bootstrap.Modal(document.getElementById("spinnerModal"));
+        // Create Bootstrap modal instance if it doesn't exist
+        if (!spinnerModalInstance) {
+            spinnerModalInstance = new bootstrap.Modal(spinnerModalElement, {
+                backdrop: 'static', // Prevents closing by clicking outside
+                keyboard: false     // Prevents closing by ESC key
+            });
+            console.log("[Spinner Debug] New Bootstrap Modal instance created.");
         }
-        $("#spinnerModal").modal("show");
+        spinnerModalInstance.show();
+        console.log("[Spinner Debug] Spinner modal instance .show() called.");
     } else {
+        // Use a slight delay to ensure the spinner is visible before hiding
         setTimeout(() => {
-            $("#spinnerModal").modal("hide");
-            console.log("[Spinner Debug] Spinner hidden after delay.");
+            if (spinnerModalInstance) {
+                spinnerModalInstance.hide();
+                console.log("[Spinner Debug] Spinner modal instance .hide() called after delay.");
+            } else {
+                console.warn("[Spinner Debug] spinnerModalInstance is null when trying to hide.");
+            }
             // Ensure isLoading is false when spinner is hidden, just in case
             isLoading = false;
             console.log(`[Spinner Debug] isLoading set to false after spinner hide. Current isLoading: ${isLoading}`);
