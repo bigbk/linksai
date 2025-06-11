@@ -30,9 +30,11 @@ particlesJS.load('particles-js', 'particles.json', function() {
         'WV1': 'VOLKSWAGEN', // VW Commercial Germany
         'WV2': 'VOLKSWAGEN', // VW Commercial Germany
         'AAV': 'VOLKSWAGEN', // VW South Africa
+        'WvC': 'VOLKSWAGEN',
+        '8AW': 'VOLKSWAGEN',
         'SAL': 'LAND ROVER', 
         'SCB': 'BENTLEY',    
-        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', 
+        'WP0': 'PORSCHE', 'WP1': 'PORSCHE', 'WP9': 'PORSCHE', 
         'VSS': 'SEAT',       
         'TMB': 'SKODA',      
         'ZHW': 'LAMBORGHINI',
@@ -44,7 +46,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         '4US': 'BMW',        
         '5UX': 'BMW',        
         '3AV': 'BMW',        
-        'X4X': 'BMW',        
+        'X4X': 'BMW', 'WBV': 'BMW',        
 
         // Stellantis 
         '1C3': 'CHRYSLER', '1C4': 'CHRYSLER', '2C3': 'CHRYSLER', '3C4': 'CHRYSLER',
@@ -102,7 +104,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         'MAL': 'HYUNDAI',    
         'KNA': 'KIA', 'KND': 'KIA',       
         'U5Y': 'KIA',        
-        'KMG': 'GENESIS',    
+        'KMG': 'GENESIS', 'KMJ': 'GENESIS', 'KMT': 'GENESIS',    
         'KM8': 'GENESIS',    
         
         // Nissan / Infiniti
