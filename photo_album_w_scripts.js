@@ -254,7 +254,10 @@ document.getElementById("btn_submit2").onclick = function () {
     console.log("[btn_submit2] Search (Link) button clicked.");
     const val = document.getElementById("LINKbar").value.trim();
     console.log(`[btn_submit2] LINKbar value: "${val}"`);
-    const match = val.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i);
+
+    // Updated regex: matches 8-digit stock number after '/assets/'
+    const match = val.match(/\/assets\/(\d{8})(?:\/(\d+))?/i);
+
     if (match && match[1]) {
         currentStockNumber = match[1];
         currentImageIndex = Math.min(parseInt(match[2]) || 1, MAX_IMAGE_INDEX);
@@ -271,6 +274,7 @@ document.getElementById("btn_submit2").onclick = function () {
         console.log("[btn_submit2] Invalid Link. Resetting UI.");
     }
 };
+
 
 // Handle Enter key for both fields
 ["VINbar", "LINKbar"].forEach((id) => {
