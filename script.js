@@ -6,6 +6,7 @@ let isLoading = false; // Flag to prevent multiple image loads simultaneously
 const MAX_UV_IMAGES = 40; // Max UV images to try (UV1 to UV40)
 const MAX_REGULAR_IMAGES = 50; // Max Regular images to try (10.jpg to 50.jpg, adjust as needed)
 const MAX_THUMBNAILS_DISPLAY = 8; // Number of thumbnails to show per row/section
+const IMAGES_TO_PRELOAD = 5; // How many images to preload ahead/behind the current one
 
 const CARMAX_BASE_IMAGE_URL = "https://img2.carmax.com/assets/";
 const PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available";
@@ -14,8 +15,9 @@ const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?te
 const MIN_IMAGE_SIZE_BYTES = 50 * 1024; // 50KB minimum size for a valid image
 
 // --- Centralized Image Loader with Promise, Timeout, and Size Check ---
+// This function will now also handle preloading
 async function loadImage(imageUrl, isMainImage = false) {
-    console.log(`[loadImage] Attempting to load: ${imageUrl}`);
+    console.log(`[loadImage] Attempting to load: ${imageUrl} (isMainImage: ${isMainImage})`);
     return new Promise((resolve, reject) => {
         const img = new Image();
         let timeoutId;
@@ -46,13 +48,8 @@ async function loadImage(imageUrl, isMainImage = false) {
             if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
                 console.log(`[loadImage] Image is too small/invalid placeholder: ${imageUrl}`);
                 reject(new Error("Image is too small or an invalid placeholder."));
-            } else if (isMainImage) {
-                // For main images, we also need to check size if possible, though fetch is better for that
-                // Here we just use dimension check for simplicity, actual size check done by fetch.
-                resolve(imageUrl); // Resolve with the URL if it's a valid image
             } else {
-                // For thumbnails, we resolve directly after dimension check
-                resolve(imageUrl);
+                resolve(imageUrl); // Resolve with the URL
             }
         };
 
@@ -64,8 +61,29 @@ async function loadImage(imageUrl, isMainImage = false) {
             reject(new Error("Image failed to load."));
         };
 
+        // Attempt to load the image
         img.src = imageUrl;
     });
+}
+
+// --- Preload Images ---
+function preloadImages(imageType, startIndex, endIndex, typePrefix) {
+    console.log(`[preloadImages] Preloading images for ${imageType} from ${startIndex} to ${endIndex}`);
+    for (let i = startIndex; i <= endIndex; i++) {
+        // Ensure index is within valid range for its type
+        let actualIndex = i;
+        if (imageType === 'uv') {
+            actualIndex = Math.max(1, Math.min(i, MAX_UV_IMAGES));
+        } else if (imageType === 'regular') {
+            actualIndex = Math.max(10, Math.min(i, MAX_REGULAR_IMAGES));
+        }
+
+        const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/image/${typePrefix}${actualIndex}.jpg`;
+        loadImage(imageUrl).catch(error => {
+            // console.log(`[preloadImages] Preload failed for ${imageUrl}: ${error.message}`);
+            // It's okay for preloads to fail, we just log it, no need to interrupt flow
+        });
+    }
 }
 
 
@@ -105,27 +123,17 @@ async function displayImage(imageType, requestedIndex) {
     const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/image/${prefix}${currentImageVar}.jpg`;
     const zoomedImageElement = document.getElementById("zoomImage");
 
-    // Dim the main image and show placeholder immediately
+    // Dim the main image for visual feedback
     mainImageElement.style.opacity = 0.5;
-    mainImageElement.src = PLACEHOLDER_MAIN_IMAGE; // Set placeholder
-    zoomedImageElement.src = PLACEHOLDER_MAIN_IMAGE;
-    mainImageElement.classList.add("no-image-available"); // Add class temporarily
-    zoomedImageElement.classList.add("no-image-available");
 
     $("#instructions").text("Loading image..."); // Update instruction message
 
     try {
-        // Fetch to check size first, then load image
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const blob = await response.blob();
-        if (blob.size < MIN_IMAGE_SIZE_BYTES) {
-            throw new Error("Image too small.");
-        }
+        // Try to load the image. loadImage handles pre-checks.
+        // It will use browser cache if available, otherwise fetch.
+        await loadImage(imageUrl, true); // Pass true for isMainImage for proper checks
 
-        // If fetch successful and size ok, set actual image sources
+        // If loadImage resolves, it means the image is valid and loaded (or cached)
         mainImageElement.src = imageUrl;
         zoomedImageElement.src = imageUrl;
         mainImageElement.style.opacity = 1; // Restore full opacity
@@ -133,7 +141,12 @@ async function displayImage(imageType, requestedIndex) {
         zoomedImageElement.classList.remove("no-image-available");
         $("#instructions").hide(); // Hide instruction message
 
-        console.log(`[displayImage] Successfully loaded and displayed: ${imageUrl}`);
+        console.log(`[displayImage] Successfully displayed: ${imageUrl}`);
+
+        // Preload next/previous images for seamless Browse
+        const startPreload = Math.max(imageType === 'uv' ? 1 : 10, currentImageVar - IMAGES_TO_PRELOAD);
+        const endPreload = Math.min(imageType === 'uv' ? MAX_UV_IMAGES : MAX_REGULAR_IMAGES, currentImageVar + IMAGES_TO_PRELOAD);
+        preloadImages(imageType, startPreload, endPreload, prefix);
 
     } catch (error) {
         console.error(`[displayImage] Error loading ${imageType} image ${imageUrl}:`, error);
@@ -179,7 +192,9 @@ function updateThumbnails(imageTypeToUpdate = null) {
 
         for (let i = 0; i < MAX_THUMBNAILS_DISPLAY; i++) {
             const imgIndex = startIndex + i;
-            const thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/image/${typePrefix}${imgIndex}.jpg?width=100&height=75`;
+            // Removed `?width=100&height=75` from thumbnail URL for better caching
+            // since we're setting object-fit: cover and browser will scale.
+            const thumbnailUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/image/${typePrefix}${imgIndex}.jpg`;
 
             const thumbnailWrapper = document.createElement("div");
             thumbnailWrapper.className = "col-3 col-sm-3 col-md-3 col-thumbnails mb-2"; // Bootstrap 4 per row
@@ -308,6 +323,7 @@ function openZoom(imageType) {
         mainImageAlt = document.getElementById("dispframeRegular").alt;
     }
 
+    // Only open zoom if there's a valid stock number and the image isn't a placeholder
     if (currentStockNumber && mainImageSrc && !mainImageSrc.includes("placehold.co")) {
         const zoomedImage = document.getElementById("zoomImage");
         zoomedImage.src = mainImageSrc;
