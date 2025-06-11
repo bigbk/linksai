@@ -1,13 +1,12 @@
-var currentImageIndex = 1,
-    currentStockNumber = "";
-    const MAX_IMAGE_INDEX = 40;
+var currentImageIndex = 1;
+var currentStockNumber = "";
 
-
-const MAX_THUMBNAILS = 8,
-    CARMAX_BASE_IMAGE_URL = "https://img2.carmax.com/img/vehicles/",
-    PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available",
-    PLACEHOLDER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A",
-    INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23";
+const MAX_IMAGE_INDEX = 40;
+const MAX_THUMBNAILS = 8;
+const CARMAX_BASE_IMAGE_URL = "https://img2.carmax.com/img/vehicles/";
+const PLACEHOLDER_MAIN_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Image+Not+Available";
+const PLACEHOLDER_THUMBNAIL = "https://placehold.co/100x75/eeeeee/aaaaaa?text=N/A";
+const INITIAL_PLACEHOLDER_IMAGE = "https://placehold.co/800x600/cccccc/000000?text=Enter+Stock+%23";
 
 // Show or hide the loading spinner modal
 function toggleSpinner(show) {
@@ -23,83 +22,76 @@ function toggleSpinner(show) {
 
 // Display the main image and zoomed image, handle loading states and errors
 function displayImage(requestedIndex) {
-    const mainImage = document.getElementById("dispframe"),
-        zoomedImage = document.getElementById("zoomedImage");
+    const mainImage = document.getElementById("dispframe");
+    const zoomedImage = document.getElementById("zoomedImage");
 
     if (!currentStockNumber) {
         $("#instructions").show().html("<p><strong>Enter Stock #</strong></p>");
         mainImage.src = INITIAL_PLACEHOLDER_IMAGE;
         mainImage.alt = "Enter Stock Number";
-        $(mainImage).removeClass("no-image-available");
         zoomedImage.src = INITIAL_PLACEHOLDER_IMAGE;
-        $(zoomedImage).removeClass("no-image-available");
         updateThumbnails();
         $("#kmxlink").attr("href", "#");
         return;
     }
 
-    // Ensure index is at least 1
     currentImageIndex = Math.max(1, Math.min(requestedIndex, MAX_IMAGE_INDEX));
-
+    const cacheBuster = Date.now();
+    const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg?cb=${cacheBuster}`;
 
     mainImage.style.opacity = 0;
     toggleSpinner(true);
     $("#instructions").show().html("<p>Loading image...</p>");
 
-    const cacheBuster = Date.now();
-    const imageUrl = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${currentImageIndex}.jpg?cb=${cacheBuster}`;
-
-    mainImage.onerror = null;
-    mainImage.onload = null;
-    mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
-
-    zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
-
-    // Set a timeout to handle slow or missing images
-    const loadTimeout = setTimeout(() => {
-        console.warn("Image load timed out.");
-        mainImage.src = PLACEHOLDER_MAIN_IMAGE;
-        mainImage.classList.add("no-image-available");
-        zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
-        zoomedImage.classList.add("no-image-available");
-        $("#instructions").show().html("<p><strong>Image took too long to load or is missing.</strong></p>");
-        toggleSpinner(false);
+    let loadHandled = false;
+    const timeout = setTimeout(() => {
+        if (!loadHandled) {
+            loadHandled = true;
+            fallbackImage("Image took too long to load or is missing.");
+        }
     }, 7000);
 
-mainImage.onload = function () {
-    clearTimeout(loadTimeout);
-    mainImage.style.opacity = 1;
-    toggleSpinner(false);
-    $("#instructions").hide();
-
-    if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
-        this.src = PLACEHOLDER_MAIN_IMAGE;
-        this.classList.add("no-image-available");
+    function fallbackImage(message) {
+        mainImage.src = PLACEHOLDER_MAIN_IMAGE;
         zoomedImage.src = PLACEHOLDER_MAIN_IMAGE;
+        mainImage.classList.add("no-image-available");
         zoomedImage.classList.add("no-image-available");
-        $("#instructions").show().html(`<p><strong>No more images available for Stock #${currentStockNumber}</strong></p>`);
-        return;
+        $("#instructions").show().html(`<p><strong>${message}</strong></p>`);
+        toggleSpinner(false);
     }
 
-    this.classList.remove("no-image-available");
-    zoomedImage.classList.remove("no-image-available");
-    updateThumbnails();
-};
+    mainImage.onload = function () {
+        if (loadHandled) return;
+        clearTimeout(timeout);
+        loadHandled = true;
+        mainImage.style.opacity = 1;
+        toggleSpinner(false);
+        $("#instructions").hide();
 
-mainImage.onerror = function () {
-    clearTimeout(loadTimeout);
-    mainImage.style.opacity = 1;
-    this.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
-    this.classList.add("no-image-available");
-    zoomedImage.src = "https://placehold.co/800x600/cccccc/000000?text=Image+Load+Error";
-    zoomedImage.classList.add("no-image-available");
-    toggleSpinner(false);
-    $("#instructions").show().html("<p><strong>Failed to load image.</strong></p>");
-};
+        if (this.naturalWidth <= 11 && this.naturalHeight <= 11) {
+            fallbackImage(`No more images available for Stock #${currentStockNumber}`);
+        } else {
+            mainImage.classList.remove("no-image-available");
+            zoomedImage.classList.remove("no-image-available");
+            updateThumbnails();
+        }
+    };
 
-mainImage.src = imageUrl;
-zoomedImage.src = imageUrl;
-// Update the thumbnail images below the main image
+    mainImage.onerror = function () {
+        if (loadHandled) return;
+        clearTimeout(timeout);
+        loadHandled = true;
+        fallbackImage("Failed to load image.");
+    };
+
+    mainImage.src = imageUrl;
+    zoomedImage.src = imageUrl;
+    mainImage.alt = `Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
+    zoomedImage.alt = `Zoomed Vehicle Image ${currentImageIndex} for Stock #${currentStockNumber}`;
+    $("#kmxlink").attr("href", `https://www.carmax.com/car/${currentStockNumber}`);
+}
+
+// Update thumbnail images
 function updateThumbnails() {
     let startIndex = Math.max(1, currentImageIndex - 3);
 
@@ -107,14 +99,10 @@ function updateThumbnails() {
         const imageIndex = Math.min(MAX_IMAGE_INDEX, startIndex + i);
         const thumb = $(`#thumb${i + 1}`);
 
-
         if (thumb.length === 0) continue;
 
         const url = `${CARMAX_BASE_IMAGE_URL}${currentStockNumber}/${imageIndex}.jpg?width=100&height=75&cb=${Date.now()}`;
         const noStock = !currentStockNumber;
-
-        thumb[0].onerror = null;
-        thumb[0].onload = null;
 
         thumb.attr("src", noStock ? PLACEHOLDER_THUMBNAIL : url);
         thumb.attr("alt", `Thumbnail ${imageIndex}`);
@@ -148,14 +136,14 @@ function updateThumbnails() {
     }
 }
 
-// Go to previous image if possible
+// Previous image
 function prvs() {
     if (currentStockNumber && currentImageIndex > 1) {
         displayImage(currentImageIndex - 1);
     }
 }
 
-// Go to next image, displayImage will handle missing images gracefully
+// Next image
 function nxt() {
     if (currentStockNumber && currentImageIndex < MAX_IMAGE_INDEX) {
         displayImage(currentImageIndex + 1);
@@ -164,13 +152,13 @@ function nxt() {
     }
 }
 
-
-// Submit button for entering stock number manually
+// Submit by Stock Number
 document.getElementById("btn_submit").onclick = function () {
     const val = document.getElementById("VINbar").value.trim();
     if (/^\d{8}$/.test(val)) {
         currentStockNumber = val;
-        displayImage(currentImageIndex = 1);
+        currentImageIndex = 1;
+        displayImage(currentImageIndex);
     } else {
         $("#instructions").show().html("<strong>Invalid Stock Number:</strong> Must be 8 digits.");
         $("#dispframe").attr("src", INITIAL_PLACEHOLDER_IMAGE).attr("alt", "Invalid Stock Number");
@@ -180,13 +168,13 @@ document.getElementById("btn_submit").onclick = function () {
     }
 };
 
-// Submit button for entering URL containing stock number and optional image index
+// Submit by CarMax URL
 document.getElementById("btn_submit2").onclick = function () {
     const val = document.getElementById("LINKbar").value.trim();
     const match = val.match(/(?:vehicles|img)\/(\d{8})(?:\/(\d+))?/i);
     if (match && match[1]) {
         currentStockNumber = match[1];
-        currentImageIndex = parseInt(match[2]) || 1;
+        currentImageIndex = Math.min(parseInt(match[2]) || 1, MAX_IMAGE_INDEX);
         document.getElementById("VINbar").value = currentStockNumber;
         displayImage(currentImageIndex);
     } else {
@@ -198,25 +186,21 @@ document.getElementById("btn_submit2").onclick = function () {
     }
 };
 
-// Allow pressing Enter key to trigger submit buttons
+// Handle Enter key for both fields
 ["VINbar", "LINKbar"].forEach((id) => {
     document.getElementById(id).addEventListener("keyup", function (event) {
         if (event.key === "Enter") {
-            if (id === "VINbar") {
-                document.getElementById("btn_submit").click();
-            } else {
-                document.getElementById("btn_submit2").click();
-            }
+            document.getElementById(id === "VINbar" ? "btn_submit" : "btn_submit2").click();
         }
     });
 });
 
-// Initialize page by displaying placeholder image
+// Initialize
 $(document).ready(function () {
     displayImage(currentImageIndex);
 });
 
-// Clicking the main image opens zoom modal if image is available
+// Zoom modal
 $("#dispframe").on("click", function () {
     if (!$(this).hasClass("no-image-available") && currentStockNumber) {
         const zoomedImage = document.getElementById("zoomedImage");
