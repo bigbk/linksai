@@ -599,6 +599,7 @@ body {
 /* Styling for the "visible_div" (Owner's Manuals section) */
 #visible_div {
     /* Reduced top margin to bring it closer to the content above */
+    overflow: visible 
     margin-top: 15px; /* Was 20px */
     background-color: #f8f9fa;
     border-radius: 8px;
