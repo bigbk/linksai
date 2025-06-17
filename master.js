@@ -103,7 +103,7 @@ particlesJS.load('particles-js', 'particles.json', function() {
         '5NM': 'HYUNDAI', '5NP': 'HYUNDAI', 
         'MAL': 'HYUNDAI',    
         'KNA': 'KIA', 'KND': 'KIA',       
-        'U5Y': 'KIA',        
+        'U5Y': 'KIA', '5XY': 'KIA',      
         'KMG': 'GENESIS', 'KMJ': 'GENESIS', 'KMT': 'GENESIS',    
         'KM8': 'GENESIS',    
         
