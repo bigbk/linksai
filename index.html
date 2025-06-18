@@ -5,29 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VIN Research Hub</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
     <link href="https://fonts.googleapis.com/css?family=Chivo:400,700,900|Signika+Negative:300,400,600,700" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script> 
-    <!-- particles.js library -->
-    <script src="./particles.js" defer></script>
-    <script src="./master.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>    
 </head>
 <body>
-    <!-- This div will hold the particles.js canvas, acting as the dynamic background -->
     <div id="particles-js"></div>
 
 <div id="timerDisplay" style="position: absolute; top: 50px; right: 10px; font-size: 24px; color: white; background: rgba(0, 0, 0, 0.5); padding: 5px 10px; border-radius: 5px; display: none;">
-  6:30
+    6:30
 </div>
 
-    <!-- Information Button (positioned in the upper right corner via style.css) -->
     <button id="infoButton">i</button>
 
-    <!-- The Overlay (Modal) for Updates -->
     <div id="infoOverlay" class="overlay">
         <div class="overlay-content">
             <div class="overlay-header">
@@ -36,11 +29,9 @@
             </div>
             
             <div id="updatesContent">
-                <!-- Updates from updates.txt will be loaded here -->
                 Loading updates...
             </div>
-            <!-- The feedback section has been removed -->
-        </div>
+            </div>
     </div>
 
     <div class="container main-container shadow p-3">
@@ -259,16 +250,16 @@
                         <div class="pt-3"><p>Below are research links specifically for <strong>BMW and MINI</strong> vehicles.</p></div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <div class="card h-100" title="Get BMW/MINI Datacard from bimmer.work">
-                                     <div class="card-body">
-                                        <h4 class="card-title">Datacard 1 (bimmer.work)</h4>
-                                        <h6 class="card-subtitle mb-2 text-muted">List</h6>
-                                        <p class="card-text">Equipment listing. Try backups if primary is down.</p>
-                                        <a href="http://bimmer.work" target="_blank" class="card-link d-block mb-1">bimmer.work</a>
-                                        <a href="https://bimmercat.com/bmw/en/vin/decoder" target="_blank" class="card-link d-block">Backup (Bimmercat)</a>
-                                        <a href="https://decoder.bvzine.com/" target="_blank" class="card-link d-block">Backup (bvzine)</a>
-                                    </div>
-                                </div>
+                                   <div class="card h-100" title="Get BMW/MINI Datacard from bimmer.work">
+                                       <div class="card-body">
+                                           <h4 class="card-title">Datacard 1 (bimmer.work)</h4>
+                                           <h6 class="card-subtitle mb-2 text-muted">List</h6>
+                                           <p class="card-text">Equipment listing. Try backups if primary is down.</p>
+                                           <a href="http://bimmer.work" target="_blank" class="card-link d-block mb-1">bimmer.work</a>
+                                           <a href="https://bimmercat.com/bmw/en/vin/decoder" target="_blank" class="card-link d-block">Backup (Bimmercat)</a>
+                                           <a href="https://decoder.bvzine.com/" target="_blank" class="card-link d-block">Backup (bvzine)</a>
+                                       </div>
+                                   </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="card h-100" onclick="bimmerbtn()" title="Get BMW/MINI Datacard from mdecoder.com">
@@ -306,7 +297,7 @@
                                         <input size="6" placeholder="Year" id="myear" type="text" class="form-control d-inline-block w-auto me-2 mb-2">
                                         <input size="15" placeholder="Model (e.g., Cooper S)" id="mmodel" type="text" class="form-control d-inline-block w-auto me-2 mb-2">
                                         <button class="btn btn-sm manual-select-btn" onclick="miniog()">Search MINI Guides</button>
-                                     </div>
+                                    </div>
                                 </div>
                             </div>
                              <div class="col-12 mt-3">
@@ -459,7 +450,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -480,7 +470,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -571,7 +560,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -622,7 +610,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                             <div class="col-md-6 col-lg-6 mb-3">
                                 <div class="card h-100">
@@ -653,7 +640,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -674,7 +660,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -715,13 +700,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Toyota Div -->
                 <div id="toyota_div" class="make-specific-content d-none">
                     <div class="container">
                         <div class="pt-3">
@@ -734,7 +717,6 @@
                                         <h4 class="card-title">Window Sticker</h4>
                                         <h6 class="card-subtitle mb-2 text-muted">PDF</h6>
                                         <p class="card-text">Equipment Listing link now requires reCaptcha. Window Sticker is available for most newer vehicles</p>
-                                        <!-- Stack links vertically -->
                                         <div class="d-flex flex-column">
                                             <a class="card-link mb-1" onclick="toyotasticker()" style="cursor: pointer;">Window Sticker</a>
                                             <a href="https://www.toyota.com/owners/my-vehicle/vehicle-specification" target="_blank" class="card-link">Equipment Listing</a>
@@ -755,7 +737,6 @@
                     </div>
                 </div>
 
-                <!-- Volvo Div -->
                 <div id="volvo_div" class="make-specific-content d-none">
                     <div class="container">
                         <div class="pt-3">
@@ -771,7 +752,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -793,7 +773,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Placeholder for future content -->
                             <div class="col-md-6 col-lg-6 mb-3"></div>
                         </div>
                     </div>
@@ -843,9 +822,9 @@
                             </div>
                         </div>
                         <div class="pt-3 pb-3">
-                          <a href="#" id="siriusbutton" onclick="siriusxm()" class="btn btn-link d-block text-start ps-0" title="Check SiriusXM Radio Trial Status by VIN">Check Sirius XM Radio Trial</a>
-                          <a href="#" id="decoderzbutton" onclick="decoderz()" class="btn btn-link d-block text-start ps-0" title="Decode VIN with VinDecoderz (Daily Limit)">Vin Decoderz (Use with caution)</a>
-                          <a href="#" id="hitchbutton" onclick="hitcher()" class="btn btn-link d-block text-start ps-0" title="Find Tow Hitch Information on e-Trailer">e-Trailer Tow Hitch Info</a>
+                            <a href="#" id="siriusbutton" onclick="siriusxm()" class="btn btn-link d-block text-start ps-0" title="Check SiriusXM Radio Trial Status by VIN">Check Sirius XM Radio Trial</a>
+                            <a href="#" id="decoderzbutton" onclick="decoderz()" class="btn btn-link d-block text-start ps-0" title="Decode VIN with VinDecoderz (Daily Limit)">Vin Decoderz (Use with caution)</a>
+                            <a href="#" id="hitchbutton" onclick="hitcher()" class="btn btn-link d-block text-start ps-0" title="Find Tow Hitch Information on e-Trailer">e-Trailer Tow Hitch Info</a>
                         </div>
                     </div>
                 </div>
@@ -952,12 +931,9 @@
             <div class="col-md-3 order-md-3"></div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@latest/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@latest/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-<!-- Bootstrap 5 Bundle (includes Bootstrap JS and Popper.js) -->
-// <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="./particles.js"></script>
+    <script src="./master.js"></script>
     <script>
         // CarMax search button functionality is now in master.js
         // Animated GIF movement
