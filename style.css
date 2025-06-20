@@ -213,7 +213,7 @@ body {
 .header-title-vin, .header-title-research, .logo-text, .manual-select-btn, .vin-input-bar, .identified-make-text, .card, .section-title, p, h1, h2, h4, h5, h6, label, input, button, textarea, ul, li, a {
     position: relative; /* Ensure these elements are above the particles */
     z-index: 2; /* Give them a higher z-index than particles */
-    color: #ffffff; /* Set a default color for text if it's white particles on a dark background */
+    color: #00539f; /* Set a default color for text if it's white particles on a dark background */
 }
 .text-muted { /* Override default text-muted for visibility on dark background */
     color: rgba(255, 255, 255, 0.75) !important;
