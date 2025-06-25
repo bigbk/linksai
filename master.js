@@ -1,4 +1,4 @@
-// VIN Research Hub - master.js 2
+// VIN Research Hub - master.js 3
 // This script handles VIN decoding, dynamic content display, and other interactive functionalities.
 // This script relies on the external NHTSA API (vpic.nhtsa.dot.gov) for VIN decoding. Its availability and performance can affect functionality.
 
@@ -382,6 +382,8 @@ $(document).ready(function () {
             $('#output').text('');
             $('#outputbox').hide();
             currentNHTSAMake = '';
+            // --- NEW: Also clear lastVinFetched when VIN input is cleared ---
+            lastVinFetched = '';
             return;
         }
 
@@ -426,31 +428,41 @@ $(document).ready(function () {
 
         if (vinValue.length !== 17) {
             $('#output').html("<strong>Validation Error:</strong> Please enter a full 17-digit VIN.");
-            $('#outputbox').fadeIn();
+            $('#outputbox').fadeIn().delay(3000).fadeOut(); // Fade out invalid VIN message
             updateDisplay('ALL');
             return;
         }
 
+        // If VIN is valid and matches the last fetched VIN, just show the message and fade out, don't re-fetch NHTSA
+        if (vinValue === lastVinFetched && currentNHTSAMake) {
+            $('#output').html(`Displaying links for identified make: <strong>${currentNHTSAMake}</strong> (data already retrieved).`);
+            $('#outputbox').fadeIn().delay(2500).fadeOut();
+            showMakeSpecificDiv(currentNHTSAMake); // Ensure correct links are displayed
+            return; // Exit here, no need to re-call NHTSA
+        }
+
+
         const make = getMakeFromVin(vinValue);
         if (make) {
             showMakeSpecificDiv(make);
-            $('#output').html(`Displaying links for identified make: <strong>${make}</strong>.`);
-            $('#outputbox').fadeIn().delay(2500).fadeOut();
+            // Changed this output message slightly to indicate local identification for a moment
+            $('#output').html(`Displaying links for identified make (local): <strong>${make}</strong>.`);
+            $('#outputbox').fadeIn(); // Keep it visible for a moment before NHTSA takes over or fades out
+            // The fadeOut will be handled by NHTSA call's success/error, or if NHTSA is skipped.
         } else {
-            $('#output').html(`<strong>Notice:</strong> Make not identified for this VIN. Showing general & common research links.`);
-            $('#outputbox').fadeIn().delay(3500).fadeOut();
-            updateDisplay('ALL');
+            $('#output').html(`<strong>Notice:</strong> Make not identified locally for this VIN. Fetching NHTSA data...`);
+            $('#outputbox').fadeIn(); // Keep it visible for a moment before NHTSA takes over or fades out
+            updateDisplay('ALL'); // Show all/common links while fetching
         }
 
-        // NHTSA data fetch is already triggered by handleVinInput if 17 digits are typed.
-        // Calling it here again would be redundant if user types 17 digits then clicks.
-        // However, if user pastes 17 digits and clicks, handleVinInput might not have fired for the 17th char.
-        // So, it's safer to keep it here as well, or add a flag to prevent double calls.
-        // For now, keeping it for robustness.
+        // Always trigger NHTSA data fetch if it hasn't been fetched for this VIN yet
+        // The success/error of getNHTSADataByVIN will manage the final outputbox state.
         if (typeof getNHTSADataByVIN === "function") {
             getNHTSADataByVIN(vinValue);
         } else {
             console.warn("getNHTSADataByVIN function is not defined. NHTSA data will not be fetched on submit.");
+            $('#output').html(`<strong>Error:</strong> VIN decoding service not available.`);
+            $('#outputbox').fadeIn().delay(5000).fadeOut(); // Fade out error message
         }
     };
 
@@ -475,7 +487,7 @@ $(document).ready(function () {
     document.body.addEventListener('click', (event) => {
         // Only start the timer if it's not already running (countdown is null or cleared)
         // and the click is directly on the body (not on an interactive element)
-        if (event.target === document.body && !countdown) { // <--- ADDED: `&& !countdown` to prevent multiple timers
+        if (event.target === document.body && !countdown) {
             startCountdown();
         }
     });
@@ -490,7 +502,7 @@ $(document).ready(function () {
             var carmaxUrl = "https://www.carmax.com/cars" +
                 (document.getElementById("iyear").value ? "/" + document.getElementById("iyear").value : "") +
                 (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
-                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
+                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").replace(/ & /g, "-and-").replace(/ /g, "-") : "") + // Corrected: use .replace on imodel
                 (document.getElementById("itrim").value ? "/" + document.getElementById("itrim").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
                 (tcyl ? "/" + tcyl : "") +
                 (favorite.length > 0 ? "/" + favorite.join("/") : "") +
@@ -723,18 +735,35 @@ $(document).ready(function () {
 
     // --- NHTSA Data Fetching Function (Restored original $.ajax structure) ---
     window.getNHTSADataByVIN = function(vinToQuery) {
+        // Prevent duplicate NHTSA calls for the same VIN, especially when typing and submitting quickly
         if (vinToQuery === lastVinFetched) {
-            console.log("NHTSA data for " + vinToQuery + " already fetched or being fetched.");
-            return; // Avoid refetching for the same VIN immediately
+            console.log("NHTSA data for " + vinToQuery + " already fetched or being fetched. Showing identified links and fading out message.");
+            // If the data was already fetched and make identified, just display the quick message and fade it out
+            if (currentNHTSAMake) {
+                $('#output').html(`Displaying links for identified make: <strong>${currentNHTSAMake}</strong>.`);
+                $('#outputbox').fadeIn().delay(2500).fadeOut();
+                showMakeSpecificDiv(currentNHTSAMake); // Ensure correct links are displayed
+            } else {
+                $('#output').html(`<strong>Notice:</strong> No specific make identified for ${vinToQuery}. Showing general links.`);
+                $('#outputbox').fadeIn().delay(3500).fadeOut();
+                updateDisplay('ALL');
+            }
+            return; // Exit as we don't need to re-fetch
         }
-        lastVinFetched = vinToQuery;
+        lastVinFetched = vinToQuery; // Store the VIN as being fetched
 
         if (!vinToQuery) {
             console.error('No VIN provided to getNHTSADataByVIN');
             $('#txt_results').val('Error: No VIN provided for NHTSA lookup.');
+            $('#output').html(`<strong>Error:</strong> No VIN provided for NHTSA lookup.`); // Clear output message for no VIN
+            $('#outputbox').fadeIn().delay(3000).fadeOut(); // Fade out the error message
             return;
         }
+
+        // Display initial fetching message for NHTSA
         $('#txt_results').val(`Fetching NHTSA data for VIN: ${vinToQuery}...`);
+        $('#output').html(`Attempting to decode VIN: <strong>${vinToQuery}</strong> using NHTSA...`);
+        $('#outputbox').stop().fadeIn(); // Ensure it's visible while fetching
 
         $.ajax({
             url: "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVINValuesBatch/",
@@ -762,13 +791,18 @@ $(document).ready(function () {
                     };
 
                     updateInputFields(displayData); // Original helper
-                    if (document.getElementById("output")) document.getElementById("output").innerText = formatOutputText(displayData); // Original helper
-                    if (document.getElementById("outputbox")) document.getElementById("outputbox").style.display = 'block';
+                    // The outputbox message will now be a success message, then fade out
+                    $('#output').html(`VIN decoded: <strong>${displayData.aYear} ${displayData.aMake} ${displayData.aModel}</strong>.`);
+                    $('#outputbox').fadeIn().delay(2500).fadeOut(); // Fade out successful decode message
 
                     displayNHTSAResults(result); // Original helper to populate txt_results and update display by make
                 } else {
+                    // No results from NHTSA
                     if (document.getElementById("txt_results")) document.getElementById("txt_results").value = `No detailed results from NHTSA for VIN: ${vinToQuery}. Message: ${result.Message || 'Unknown error.'}`;
                     currentNHTSAMake = '';
+                    $('#output').html(`<strong>Notice:</strong> No detailed NHTSA data found for ${vinToQuery}. Showing general links.`); // Message for no results
+                    $('#outputbox').fadeIn().delay(3500).fadeOut(); // Fade out no results message
+                    updateDisplay('ALL'); // Fallback to ALL if no specific make found by NHTSA
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -776,6 +810,9 @@ $(document).ready(function () {
                 console.error(thrownError);
                 if (document.getElementById("txt_results")) document.getElementById("txt_results").value = 'Could not retrieve data from NHTSA for VIN: ' + vinToQuery + '. Please check the VIN or try again later.\nDetails: Status ' + xhr.status + ' - ' + (thrownError || xhr.responseText);
                 currentNHTSAMake = ''; // Reset make if NHTSA call fails
+                $('#output').html(`<strong>Error:</strong> Failed to fetch NHTSA data for ${vinToQuery}. Check VIN or network.`); // Error message
+                $('#outputbox').fadeIn().delay(5000).fadeOut(); // Fade out error message
+                updateDisplay('ALL'); // Fallback to ALL if NHTSA call fails
             }
         });
     };
@@ -809,6 +846,8 @@ $(document).ready(function () {
         if (param_data.Results[0] && param_data.Results[0].Make) {
             console.log(`Manufacturer found using NHTSA data: ` + param_data.Results[0].Make);
             updateDisplay(param_data.Results[0].Make); // This is the v7 updateDisplay
+        } else {
+            updateDisplay('ALL'); // If NHTSA make is not found or null, revert to ALL/general links
         }
     }
     // --- End Original Helper functions for NHTSA display ---
