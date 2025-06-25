@@ -473,6 +473,8 @@ $(document).ready(function () {
 
     // --- MODIFIED: Event listener for body click to start countdown ---
     document.body.addEventListener('click', (event) => {
+        // Only start the timer if it's not already running (countdown is null or cleared)
+        // and the click is directly on the body (not on an interactive element)
         if (event.target === document.body && !countdown) { // <--- ADDED: `&& !countdown` to prevent multiple timers
             startCountdown();
         }
