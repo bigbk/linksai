@@ -19,7 +19,7 @@ $(document).ready(function () {
     });
 
     // --- Store the original page title ---
-    const originalPageTitle = document.title;
+    const originalPageTitle = document.title; // <--- ADDED: To store the initial title
 
     // --- VIN Decoding Logic ---
     const wmiToMake = {
@@ -225,6 +225,8 @@ $(document).ready(function () {
     }
 
     function isAuthorized(callback) {
+        // FIXME: This is a placeholder authorization function and always returns true. Implement actual user authorization logic if required.
+        // Placeholder authorization - replace with actual logic if needed
         console.warn("Using placeholder authorization. Implement actual check in isAuthorized().");
         callback(true);
     }
@@ -250,6 +252,7 @@ $(document).ready(function () {
     function openWindowWithVin(urlPattern) {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
             if (isValidAndAuthorized && checkedVin) {
+                // Replace placeholder in URL pattern with actual VIN
                 window.open(urlPattern.replace('VIN_PLACEHOLDER', checkedVin).replace(/\$\{vin\}/g, checkedVin), '_blank');
             }
         });
@@ -277,24 +280,34 @@ $(document).ready(function () {
         document.getElementById('timerDisplay').textContent = timerText;
 
         // Update browser tab title
-        document.title = `(${timerText}) ${originalPageTitle}`;
+        document.title = `(${timerText}) ${originalPageTitle}`; // <--- MODIFIED: to include timer in tab title
     }
 
     function startCountdown() {
+        // Cancel any existing countdown
         clearInterval(countdown);
+
+        // Set new end time
         endTime = Date.now() + duration;
+
+        // Show timer display
         document.getElementById('timerDisplay').style.display = 'block';
-        updateTimerDisplay(duration); // Initial update immediately
+
+        // Update immediately
+        updateTimerDisplay(duration);
+
+        // Start new interval
         countdown = setInterval(() => {
             const timeLeft = endTime - Date.now();
+
             if (timeLeft <= 0) {
                 clearInterval(countdown);
                 document.getElementById('timerDisplay').textContent = '0:00';
-                document.title = `(Time Up!) ${originalPageTitle}`; // Update title to "Time Up!"
+                document.title = `(Time Up!) ${originalPageTitle}`; // <--- MODIFIED: Update title to "Time Up!"
                 alert('Time is up!');
                 document.getElementById('timerDisplay').style.display = 'none';
-                setTimeout(() => {
-                    document.title = originalPageTitle; // Revert to original title after a short delay
+                setTimeout(() => { // <--- ADDED: To revert title after a short delay
+                    document.title = originalPageTitle;
                 }, 3000); // Revert after 3 seconds
             } else {
                 updateTimerDisplay(timeLeft);
@@ -358,19 +371,10 @@ $(document).ready(function () {
         }
     };
 
-    // Helper to get make from local WMI map
-    function getMakeFromLocalWMI(vin) {
-        if (typeof vin !== 'string' || vin.length < 3) {
-            return null;
-        }
-        const wmi = vin.substring(0, 3).toUpperCase();
-        return wmiToMake[wmi] || null;
-    }
-
     window.handleVinInput = function() {
         const vinValue = $('#VINbar').val().trim().toUpperCase();
         const commonDivId = makeToDivId['COMMON'];
-        $('#general_links_div').removeClass('d-none'); // Always ensure general links are visible
+        $('#general_links_div').removeClass('d-none');
 
         if (vinValue.length === 0) {
             updateDisplay('ALL');
@@ -378,27 +382,33 @@ $(document).ready(function () {
             $('#output').text('');
             $('#outputbox').hide();
             currentNHTSAMake = '';
-            lastVinFetched = ''; // Reset last fetched VIN
             return;
         }
 
-        // --- Immediate feedback using local WMI map ---
         if (vinValue.length >= 3) {
-            const localMake = getMakeFromLocalWMI(vinValue);
-            if (localMake) {
-                showMakeSpecificDiv(localMake); // Show specific links based on local map
-                $('#identifiedMake').text(`Identified Make (local): ${localMake} (Type full VIN for NHTSA data)`);
+            const make = getMakeFromVin(vinValue);
+            if (make) {
+                showMakeSpecificDiv(make);
             } else {
-                $('#identifiedMake').text(`Typing VIN: ${vinValue.substring(0, Math.min(vinValue.length, 3))}... (Make not identified locally)`);
-                // If local make not found or less than 3 chars, ensure general/common links are shown
-                updateDisplay('ALL');
+                $('#identifiedMake').text(`Typing VIN: ${vinValue.substring(0,3)}... (Make not yet identified)`);
+                allMakeDivIds.forEach(id => {
+                    if (id !== commonDivId) {
+                        $('#' + id).addClass('d-none');
+                    }
+                });
+                if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); }
             }
         } else {
             $('#identifiedMake').text('Enter at least 3 characters of VIN...');
-            updateDisplay('ALL');
+            allMakeDivIds.forEach(id => {
+                if (id !== commonDivId) {
+                    $('#' + id).addClass('d-none');
+                }
+            });
+            if (commonDivId) { $('#' + commonDivId).removeClass('d-none'); }
         }
 
-        // --- Trigger NHTSA fetch when 17 digits are entered ---
+        // **Automatically fetch NHTSA data when 17 digits are entered**
         if (vinValue.length === 17) {
             if (typeof getNHTSADataByVIN === "function") {
                 getNHTSADataByVIN(vinValue);
@@ -421,20 +431,36 @@ $(document).ready(function () {
             return;
         }
 
-        // When "Submit VIN" is clicked or Enter is pressed, explicitly fetch NHTSA data.
-        // The NHTSA success/error callback will handle the final display update.
+        const make = getMakeFromVin(vinValue);
+        if (make) {
+            showMakeSpecificDiv(make);
+            $('#output').html(`Displaying links for identified make: <strong>${make}</strong>.`);
+            $('#outputbox').fadeIn().delay(2500).fadeOut();
+        } else {
+            $('#output').html(`<strong>Notice:</strong> Make not identified for this VIN. Showing general & common research links.`);
+            $('#outputbox').fadeIn().delay(3500).fadeOut();
+            updateDisplay('ALL');
+        }
+
+        // NHTSA data fetch is already triggered by handleVinInput if 17 digits are typed.
+        // Calling it here again would be redundant if user types 17 digits then clicks.
+        // However, if user pastes 17 digits and clicks, handleVinInput might not have fired for the 17th char.
+        // So, it's safer to keep it here as well, or add a flag to prevent double calls.
+        // For now, keeping it for robustness.
         if (typeof getNHTSADataByVIN === "function") {
-            // Display an initial message while fetching
-            $('#output').html(`Attempting to decode VIN: <strong>${vinValue}</strong> using NHTSA...`);
-            $('#outputbox').fadeIn();
             getNHTSADataByVIN(vinValue);
         } else {
             console.warn("getNHTSADataByVIN function is not defined. NHTSA data will not be fetched on submit.");
-            $('#output').html(`<strong>Error:</strong> VIN decoding service not available.`);
-            $('#outputbox').fadeIn();
-            updateDisplay('ALL'); // Fallback
         }
     };
+
+    function getMakeFromVin(vin) {
+        if (typeof vin !== 'string' || vin.length < 3) {
+            return null;
+        }
+        const wmi = vin.substring(0, 3).toUpperCase();
+        return wmiToMake[wmi] || null;
+    }
 
     // --- Event Listeners ---
     $('#btn_submit').on('click', processVinAndDisplay);
@@ -446,15 +472,11 @@ $(document).ready(function () {
     });
 
     // --- MODIFIED: Event listener for body click to start countdown ---
-    // Added a check to prevent starting if the timer is already running
     document.body.addEventListener('click', (event) => {
-        // Only start the timer if it's not already running (countdown is null or cleared)
-        // and the click is directly on the body (not on an interactive element)
-        if (event.target === document.body && !countdown) {
+        if (event.target === document.body && !countdown) { // <--- ADDED: `&& !countdown` to prevent multiple timers
             startCountdown();
         }
     });
-
 
     if (document.getElementById("kmxbutton")) {
         document.getElementById("kmxbutton").onclick = function () {
@@ -527,6 +549,7 @@ $(document).ready(function () {
         if (makeForBrochure !== "" && makeForBrochure !== 'undefined') {
             openWindowWithVin("http://www.auto-brochures.com/" + makeForBrochure + ".html");
         } else {
+            // Fallback to the main auto-brochures page if make is not identified
             openWindowWithVin("http://www.auto-brochures.com/");
         }
     };
@@ -562,9 +585,9 @@ $(document).ready(function () {
     window.fordwiki = function () { openWindowWithVin(awsserv + "/ford?vin=VIN_PLACEHOLDER"); };
     window.gmlink = function () { openWindowWithVin2("https://windowsticker-prod.aws.manheim.com/showGmWs?auctionID=&workOrderNumber=7055030&sblu=11546249&vin=VIN_PLACEHOLDER"); };
     window.gmlink2 = function () {
-        const vin = getVinOrAlert();
+        const vin = getVinOrAlert(); // Retrieve VIN using existing helper
         if (!vin) {
-            return;
+            return; // Exit if no valid VIN
         }
 
         const modifiedVin = vin;
@@ -572,7 +595,7 @@ $(document).ready(function () {
             const buf = new ArrayBuffer(str.length * 2);
             const view = new DataView(buf);
             for (let i = 0; i < str.length; i++) {
-                view.setUint16(i * 2, str.charCodeAt(i), true);
+                view.setUint16(i * 2, str.charCodeAt(i), true); // little-endian
             }
             return new Uint8Array(buf);
         }
@@ -585,14 +608,15 @@ $(document).ready(function () {
     };
 
     window.honda2 = function () { openWindowWithVin(awsserv + "/honda?vin=VIN_PLACEHOLDER"); };
-    window.acura = function () { openWindowWithVin(`${awsserv}/acura?vin=VIN_PLACEHOLDER`); };
+    window.acura = function () { openWindowWithVin(awsserv + "/acura?vin=VIN_PLACEHOLDER"); };
 
-    window.hyunwiki = function () { openWindowWithVin(`${awsserv}/hyundai/?model=Venue&vin=VIN_PLACEHOLDER`); };
+    window.hyunwiki = function () { openWindowWithVin(awsserv + "/hyundai/?model=Venue&vin=VIN_PLACEHOLDER"); };
 
     window.infiniti = function() {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
             if (isValidAndAuthorized && checkedVin) {
                 window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
+                // Removed setTimeout and second window.open call
             }
         });
     };
@@ -617,6 +641,7 @@ $(document).ready(function () {
     window.manheimsearch = function() { openWindowWithVin("https://www.manheim.com/members/powersearch/keywordSearchResults.do?searchTerms=VIN_PLACEHOLDER"); };
     window.maserati = function() { openWindowWithVin2("https://www.herbchambers.com/api/legacy/pse/windowsticker/maserati?country=US&language=en&vin=VIN_PLACEHOLDER"); };
 
+    // Mazda: Retain v7 logic
     window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable."); };
     window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
 
@@ -626,6 +651,7 @@ $(document).ready(function () {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
             if (isValidAndAuthorized && checkedVin) {
                 window.open("https://www.oemstickers.com/WindowSticker.php?vin=" + checkedVin, '_blank');
+                // Removed setTimeout and second window.open call
             }
         });
     };
@@ -717,50 +743,47 @@ $(document).ready(function () {
                 console.log("NHTSA Result:", result);
                 if (result && result.Results && result.Results.length > 0) {
                     var vehicleData = result.Results[0];
-                    // --- IMPORTANT: Use NHTSA's Make as the authoritative source ---
-                    currentNHTSAMake = vehicleData.Make || '';
-                    if (currentNHTSAMake) {
-                        updateInputFields(vehicleData); // Update input fields with NHTSA data
-                        updateDisplay(currentNHTSAMake); // Show specific links based on NHTSA Make
-                        $('#output').html(`VIN decoded: <strong>${vehicleData.ModelYear} ${currentNHTSAMake} ${vehicleData.Model}</strong> (from NHTSA).`);
-                    } else {
-                        // If NHTSA doesn't return a make, fall back to general links
-                        updateDisplay('ALL');
-                        $('#output').html(`<strong>Notice:</strong> NHTSA did not identify a specific make for this VIN. Showing general links.`);
-                    }
+                    currentNHTSAMake = vehicleData.Make || ''; // Ensure it's an empty string if null/undefined
+                    var displayData = {
+                        aYear: vehicleData.ModelYear || "",
+                        aMake: vehicleData.Make || "",
+                        aModel: vehicleData.Model || "",
+                        aSeries: vehicleData.Series || "",
+                        aTrim: vehicleData.Trim || "",
+                        aDisp: vehicleData.DisplacementL ? parseFloat(vehicleData.DisplacementL).toFixed(1) + "L" : "",
+                        aFuel: vehicleData.FuelTypePrimary || "",
+                        aCyl: vehicleData.EngineCylinders ? vehicleData.EngineCylinders + "cyl" : "",
+                        aDrive: vehicleData.DriveType || "",
+                        aDoor: vehicleData.Doors ? vehicleData.Doors + "D" : "",
+                        aCab: vehicleData.BodyCabType || "",
+                        aBody: vehicleData.BodyClass || ""
+                    };
 
-                    // Always update the raw NHTSA results text area
-                    displayNHTSAResults(result);
+                    updateInputFields(displayData); // Original helper
+                    if (document.getElementById("output")) document.getElementById("output").innerText = formatOutputText(displayData); // Original helper
+                    if (document.getElementById("outputbox")) document.getElementById("outputbox").style.display = 'block';
 
+                    displayNHTSAResults(result); // Original helper to populate txt_results and update display by make
                 } else {
-                    $('#txt_results').val(`No detailed results from NHTSA for VIN: ${vinToQuery}. Message: ${result.Message || 'Unknown error.'}`);
+                    if (document.getElementById("txt_results")) document.getElementById("txt_results").value = `No detailed results from NHTSA for VIN: ${vinToQuery}. Message: ${result.Message || 'Unknown error.'}`;
                     currentNHTSAMake = '';
-                    $('#output').html(`<strong>Notice:</strong> No detailed NHTSA data for this VIN. Showing general links.`);
-                    updateDisplay('ALL'); // Fallback if NHTSA has no results
                 }
-                // Fade out the output message after a short delay
-                $('#outputbox').stop().fadeIn().delay(3500).fadeOut();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.error('Error fetching NHTSA data: ' + xhr.status);
                 console.error(thrownError);
-                $('#txt_results').val('Could not retrieve data from NHTSA for VIN: ' + vinToQuery + '. Please check the VIN or try again later.\nDetails: Status ' + xhr.status + ' - ' + (thrownError || xhr.responseText));
+                if (document.getElementById("txt_results")) document.getElementById("txt_results").value = 'Could not retrieve data from NHTSA for VIN: ' + vinToQuery + '. Please check the VIN or try again later.\nDetails: Status ' + xhr.status + ' - ' + (thrownError || xhr.responseText);
                 currentNHTSAMake = ''; // Reset make if NHTSA call fails
-                $('#output').html(`<strong>Error:</strong> Could not fetch NHTSA data for VIN: ${vinToQuery}. Check VIN or network.`);
-                $('#outputbox').stop().fadeIn().delay(5000).fadeOut();
-                updateDisplay('ALL'); // Fallback if NHTSA call fails
             }
         });
     };
 
     // --- Original Helper functions for NHTSA display ---
-    // Renamed 'data' parameter to 'vehicleData' for clarity within this function
-    function updateInputFields(vehicleData) {
-        if (document.getElementById("iyear")) document.getElementById("iyear").value = vehicleData.ModelYear || "";
-        if (document.getElementById("imake")) document.getElementById("imake").value = vehicleData.Make || "";
-        if (document.getElementById("imodel")) document.getElementById("imodel").value = vehicleData.Model || "";
-        // Safely extract cylinders, ensuring it's a string and removing 'cyl' if present
-        if (document.getElementById("icyl")) document.getElementById("icyl").value = String(vehicleData.EngineCylinders || '').replace('cyl','');
+    function updateInputFields(data) {
+        if (document.getElementById("iyear")) document.getElementById("iyear").value = data.aYear;
+        if (document.getElementById("imake")) document.getElementById("imake").value = data.aMake;
+        if (document.getElementById("imodel")) document.getElementById("imodel").value = data.aModel;
+        if (document.getElementById("icyl")) document.getElementById("icyl").value = data.aCyl.replace('cyl',''); // Remove 'cyl' for input
     }
 
     function formatOutputText(data) {
@@ -771,7 +794,7 @@ $(document).ready(function () {
         var output_text = "";
         param_data.Results.forEach(function(result) {
             for (var prop in result) {
-                if (result.hasOwnProperty(prop) && result[prop] !== "" && result[prop] !== null) {
+                if (result.hasOwnProperty(prop) && result[prop] !== "" && result[prop] !== null) { // Check for null too
                     output_text += `${prop}: ${result[prop]}\n`;
                 }
             }
@@ -780,11 +803,13 @@ $(document).ready(function () {
         if (document.getElementById("txt_results")) document.getElementById("txt_results").value = output_text;
         if (document.getElementById("nhtsa_data")) document.getElementById("nhtsa_data").style.display = 'block';
 
-        // The updateDisplay logic based on NHTSA.Make is now handled directly in getNHTSADataByVIN success.
-        // This ensures the NHTSA data is the single source of truth for the final make display.
+        // Update display based on Make from NHTSA
+        if (param_data.Results[0] && param_data.Results[0].Make) {
+            console.log(`Manufacturer found using NHTSA data: ` + param_data.Results[0].Make);
+            updateDisplay(param_data.Results[0].Make); // This is the v7 updateDisplay
+        }
     }
     // --- End Original Helper functions for NHTSA display ---
 
-    // Initial display on page load
     updateDisplay('ALL');
 });
