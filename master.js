@@ -18,6 +18,9 @@ $(document).ready(function () {
         console.log('particles.json loaded - callback');
     });
 
+    // --- Store the original page title ---
+    const originalPageTitle = document.title;
+
     // --- VIN Decoding Logic ---
     const wmiToMake = {
         // Volkswagen Group
@@ -263,24 +266,36 @@ $(document).ready(function () {
             }
         });
     }
+
+    // --- MODIFIED: updateTimerDisplay to also update document.title ---
     function updateTimerDisplay(timeRemaining) {
         const minutes = Math.floor(timeRemaining / 60000);
         const seconds = Math.floor((timeRemaining % 60000) / 1000);
-        document.getElementById('timerDisplay').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        const timerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+        // Update on-page display
+        document.getElementById('timerDisplay').textContent = timerText;
+
+        // Update browser tab title
+        document.title = `(${timerText}) ${originalPageTitle}`;
     }
 
     function startCountdown() {
         clearInterval(countdown);
         endTime = Date.now() + duration;
         document.getElementById('timerDisplay').style.display = 'block';
-        updateTimerDisplay(duration);
+        updateTimerDisplay(duration); // Initial update immediately
         countdown = setInterval(() => {
             const timeLeft = endTime - Date.now();
             if (timeLeft <= 0) {
                 clearInterval(countdown);
                 document.getElementById('timerDisplay').textContent = '0:00';
+                document.title = `(Time Up!) ${originalPageTitle}`; // Update title to "Time Up!"
                 alert('Time is up!');
                 document.getElementById('timerDisplay').style.display = 'none';
+                setTimeout(() => {
+                    document.title = originalPageTitle; // Revert to original title after a short delay
+                }, 3000); // Revert after 3 seconds
             } else {
                 updateTimerDisplay(timeLeft);
             }
@@ -430,11 +445,16 @@ $(document).ready(function () {
         }
     });
 
+    // --- MODIFIED: Event listener for body click to start countdown ---
+    // Added a check to prevent starting if the timer is already running
     document.body.addEventListener('click', (event) => {
-        if (event.target === document.body) {
+        // Only start the timer if it's not already running (countdown is null or cleared)
+        // and the click is directly on the body (not on an interactive element)
+        if (event.target === document.body && !countdown) {
             startCountdown();
         }
     });
+
 
     if (document.getElementById("kmxbutton")) {
         document.getElementById("kmxbutton").onclick = function () {
