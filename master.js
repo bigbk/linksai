@@ -1,4 +1,4 @@
-// VIN Research Hub - master.js 1
+// VIN Research Hub - master.js
 // This script handles VIN decoding, dynamic content display, and other interactive functionalities.
 // This script relies on the external NHTSA API (vpic.nhtsa.dot.gov) for VIN decoding. Its availability and performance can affect functionality.
 
@@ -280,7 +280,7 @@ $(document).ready(function () {
         document.getElementById('timerDisplay').textContent = timerText;
 
         // Update browser tab title
-        document.title = `(${timerText}) ${originalPageTitle}`; // <--- MODIFIED: to include timer in tab title
+        document.title = `(${timerText}) ${originalPageTitle}`;
     }
 
     function startCountdown() {
@@ -303,12 +303,13 @@ $(document).ready(function () {
             if (timeLeft <= 0) {
                 clearInterval(countdown);
                 document.getElementById('timerDisplay').textContent = '0:00';
-                document.title = `(Time Up!) ${originalPageTitle}`; // <--- MODIFIED: Update title to "Time Up!"
+                document.title = `(Time Up!) ${originalPageTitle}`;
                 alert('Time is up!');
                 document.getElementById('timerDisplay').style.display = 'none';
-                setTimeout(() => { // <--- ADDED: To revert title after a short delay
+                setTimeout(() => {
                     document.title = originalPageTitle;
-                }, 3000); // Revert after 3 seconds
+                }, 3000);
+                countdown = null; // <--- ADDED: Reset countdown variable when timer finishes
             } else {
                 updateTimerDisplay(timeLeft);
             }
@@ -447,7 +448,7 @@ $(document).ready(function () {
                 // After the temporary message fades out, ensure the persistent data from last successful fetch is visible
                 if (window.lastSuccessfulOutputText) { // Check if we stored the last successful output
                      $('#output').html(window.lastSuccessfulOutputText);
-                     // Make the outputbox visible and fully opaque again
+                     // Use jQuery's show() which sets display: block, then ensure full opacity
                      $('#outputbox').stop().show().css('opacity', 1); // <--- FIXED THIS LINE
                 } else {
                      $('#outputbox').hide(); // If no persistent text, hide the box
@@ -501,9 +502,9 @@ $(document).ready(function () {
 
     // --- MODIFIED: Event listener for body click to start countdown ---
     document.body.addEventListener('click', (event) => {
-        // Only start the timer if it's not already running (countdown is null or cleared)
-        // and the click is directly on the body (not on an interactive element)
-        if (event.target === document.body && !countdown) {
+        // The startCountdown function already handles clearing any existing timer.
+        // So, we don't need to check `!countdown` here.
+        if (event.target === document.body) { // <--- FIXED THIS LINE: Removed `&& !countdown`
             startCountdown();
         }
     });
