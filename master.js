@@ -1,4 +1,4 @@
-// VIN Research Hub - master.js 3
+// VIN Research Hub - master.js 2
 // This script handles VIN decoding, dynamic content display, and other interactive functionalities.
 // This script relies on the external NHTSA API (vpic.nhtsa.dot.gov) for VIN decoding. Its availability and performance can affect functionality.
 
@@ -383,7 +383,7 @@ $(document).ready(function () {
             $('#outputbox').hide();
             currentNHTSAMake = '';
             // --- NEW: Also clear lastVinFetched when VIN input is cleared ---
-            lastVinFetched = '';
+            lastVinFetched = ''; // Ensures a fresh NHTSA call if the same VIN is re-entered later
             return;
         }
 
@@ -433,7 +433,8 @@ $(document).ready(function () {
             return;
         }
 
-        // If VIN is valid and matches the last fetched VIN, just show the message and fade out, don't re-fetch NHTSA
+        // If VIN is valid and matches the last fetched VIN, and NHTSA data was successful,
+        // then just show a quick message and fade out, don't re-fetch NHTSA.
         if (vinValue === lastVinFetched && currentNHTSAMake) {
             $('#output').html(`Displaying links for identified make: <strong>${currentNHTSAMake}</strong> (data already retrieved).`);
             $('#outputbox').fadeIn().delay(2500).fadeOut();
@@ -446,9 +447,9 @@ $(document).ready(function () {
         if (make) {
             showMakeSpecificDiv(make);
             // Changed this output message slightly to indicate local identification for a moment
-            $('#output').html(`Displaying links for identified make (local): <strong>${make}</strong>.`);
+            $('#output').html(`Displaying links for identified make (local): <strong>${make}</strong>. Fetching NHTSA details...`);
             $('#outputbox').fadeIn(); // Keep it visible for a moment before NHTSA takes over or fades out
-            // The fadeOut will be handled by NHTSA call's success/error, or if NHTSA is skipped.
+            // The final state (persistent data or fade out) will be handled by getNHTSADataByVIN.
         } else {
             $('#output').html(`<strong>Notice:</strong> Make not identified locally for this VIN. Fetching NHTSA data...`);
             $('#outputbox').fadeIn(); // Keep it visible for a moment before NHTSA takes over or fades out
@@ -502,7 +503,7 @@ $(document).ready(function () {
             var carmaxUrl = "https://www.carmax.com/cars" +
                 (document.getElementById("iyear").value ? "/" + document.getElementById("iyear").value : "") +
                 (document.getElementById("imake").value ? "/" + document.getElementById("imake").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
-                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").replace(/ & /g, "-and-").replace(/ /g, "-") : "") + // Corrected: use .replace on imodel
+                (document.getElementById("imodel").value ? "/" + document.getElementById("imodel").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") + // Corrected: use .replace on imodel
                 (document.getElementById("itrim").value ? "/" + document.getElementById("itrim").value.replace(/ & /g, "-and-").replace(/ /g, "-") : "") +
                 (tcyl ? "/" + tcyl : "") +
                 (favorite.length > 0 ? "/" + favorite.join("/") : "") +
@@ -671,7 +672,7 @@ $(document).ready(function () {
     };
     window.nissantrm = function() { openWindowWithVin("https://www.nissanusa.com/recalls-vin/#/#/Results/VIN_PLACEHOLDER"); };
     window.porwiki = function() { openWindowWithVin("https://vinanalytics.com/car/VIN_PLACEHOLDER/VIN_PLACEHOLDER.pdf"); };
-    window.subarusticker = function() { openWindowWithVin2(`https://windowsticker.subaru.com/customerMonroneyLabel/pdf?vin=VIN_PLACEHOLDER&jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Nzg1MzYwMDEsImlzcyI6InN1YmFydSIsImF1ZCI6InNob3dtYXgiLCJlbnYiOiJwcm9kIiwid3MiOiJ3aW5kb3dTdGlja2VyL3IifQ.i6582N-cIJqcTGswegYQZUFCQLA_OlXUoI6E9ATcIdM`); };
+    window.subarusticker = function() { openWindowWithVin2(`https://windowsticker.subaru.com/customerMonroneyLabel/pdf?vin=VIN_PLACEHOLDER&jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Nzg1MzYwMDEsImlzcyI6InN1YmFydSIsImF1ZCI6InNob3dtYXgiLCJlbnYiOiJwcm9kIiwid3MiOiJ3aW5kb3dTdGlja2VyL3IifQ.i6582N-cIJqcTGswegYZUFCQLA_OlXUoI6E9ATcIdM`); };
     window.subaru = function() { openWindowWithVin("https://www.subaru.com/owners/vehicle-resources.html?model=VIN_PLACEHOLDER"); };
     window.subaru2 = function () { openWindowWithVin(awsserv + "/subaru?vin=VIN_PLACEHOLDER"); };
 
@@ -737,11 +738,16 @@ $(document).ready(function () {
     window.getNHTSADataByVIN = function(vinToQuery) {
         // Prevent duplicate NHTSA calls for the same VIN, especially when typing and submitting quickly
         if (vinToQuery === lastVinFetched) {
-            console.log("NHTSA data for " + vinToQuery + " already fetched or being fetched. Showing identified links and fading out message.");
+            console.log("NHTSA data for " + vinToQuery + " already fetched. Displaying identified links and fading out message.");
             // If the data was already fetched and make identified, just display the quick message and fade it out
             if (currentNHTSAMake) {
-                $('#output').html(`Displaying links for identified make: <strong>${currentNHTSAMake}</strong>.`);
-                $('#outputbox').fadeIn().delay(2500).fadeOut();
+                $('#output').html(formatOutputText({ // Use formatOutputText for the brief message
+                    aYear: $('#iyear').val() || '',
+                    aMake: $('#imake').val() || '',
+                    aModel: $('#imodel').val() || '',
+                    aSeries: '', aTrim: '', aDisp: '', aFuel: '', aCyl: '', aDrive: '', aDoor: '', aCab: '', aBody: ''
+                }));
+                $('#outputbox').fadeIn().delay(3500).fadeOut(); // Fade out the message
                 showMakeSpecificDiv(currentNHTSAMake); // Ensure correct links are displayed
             } else {
                 $('#output').html(`<strong>Notice:</strong> No specific make identified for ${vinToQuery}. Showing general links.`);
@@ -791,9 +797,14 @@ $(document).ready(function () {
                     };
 
                     updateInputFields(displayData); // Original helper
-                    // The outputbox message will now be a success message, then fade out
-                    $('#output').html(`VIN decoded: <strong>${displayData.aYear} ${displayData.aMake} ${displayData.aModel}</strong>.`);
-                    $('#outputbox').fadeIn().delay(2500).fadeOut(); // Fade out successful decode message
+                    // --- MODIFIED: Use formatOutputText and make it persistent (no fadeOut here) ---
+                    if (document.getElementById("output")) {
+                        document.getElementById("output").innerText = formatOutputText(displayData);
+                    }
+                    if (document.getElementById("outputbox")) {
+                        document.getElementById("outputbox").style.display = 'block'; // Ensure it's visible
+                        // Removed fadeOut() from here so this message persists
+                    }
 
                     displayNHTSAResults(result); // Original helper to populate txt_results and update display by make
                 } else {
@@ -847,7 +858,7 @@ $(document).ready(function () {
             console.log(`Manufacturer found using NHTSA data: ` + param_data.Results[0].Make);
             updateDisplay(param_data.Results[0].Make); // This is the v7 updateDisplay
         } else {
-            updateDisplay('ALL'); // If NHTSA make is not found or null, revert to ALL/general links
+             updateDisplay('ALL'); // Added: If NHTSA make is not found or null, revert to ALL/general links
         }
     }
     // --- End Original Helper functions for NHTSA display ---
