@@ -1,6 +1,7 @@
 --- Latest Updates ---
 
 [2025-06-25] - Carried timer to tab title.
+[2025-06-25] - Fixed submit button issue when NHTSA was already retrieved.
 [2025-06-18] - Fixed dropdown menus.
 [2025-06-10] - Refreshed Photos and Photos Wholesale.
 [2025-06-10] - Added countdown timer.
