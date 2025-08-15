@@ -1,5 +1,6 @@
 --- Latest Updates ---
 
+[2025-08-04] - Fixed Toyota Equipment Listing link.
 [2025-06-25] - Carried timer to tab title.
 [2025-06-25] - Fixed submit button issue when NHTSA was already retrieved.
 [2025-06-18] - Fixed dropdown menus.
