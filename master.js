@@ -334,6 +334,7 @@ function updateTimerDisplay(timeRemaining) {
     document.title = `(${displayText}) ${originalPageTitle}`;
 }
 
+
 function startCountdown() {
     clearInterval(countdown);
     timerExpired = false;
@@ -349,6 +350,7 @@ function startCountdown() {
         if (timeLeft <= 0 && !timerExpired) {
             timerExpired = true;
             alert('Time is up!');
+            clearInterval(countdown); // <-- Stops the timer after user clicks OK
         }
     }, 1000);
 }
