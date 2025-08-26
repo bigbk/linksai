@@ -323,6 +323,7 @@ let timerExpired = false;
 
 
 
+
 function updateTimerDisplay(timeRemaining) {
     const isExpired = timeRemaining < 0;
     const absTime = Math.abs(timeRemaining);
@@ -349,7 +350,12 @@ function startCountdown() {
 
         if (timeLeft <= 0 && !timerExpired) {
             timerExpired = true;
-            alert('Time is up!');
+
+            // Let timer continue updating overtime
+            setTimeout(() => {
+                alert('Time is up!');
+                startCountdown(); // Reset timer after alert is dismissed
+            }, 0);
         }
     }, 1000);
 }
