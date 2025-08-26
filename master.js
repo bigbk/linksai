@@ -271,51 +271,85 @@ $(document).ready(function () {
     }
 
     // --- MODIFIED: updateTimerDisplay to also update document.title ---
-    function updateTimerDisplay(timeRemaining) {
-        const minutes = Math.floor(timeRemaining / 60000);
-        const seconds = Math.floor((timeRemaining % 60000) / 1000);
-        const timerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+//    function updateTimerDisplay(timeRemaining) {
+//        const minutes = Math.floor(timeRemaining / 60000);
+//        const seconds = Math.floor((timeRemaining % 60000) / 1000);
+//        const timerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
         // Update on-page display
-        document.getElementById('timerDisplay').textContent = timerText;
+//        document.getElementById('timerDisplay').textContent = timerText;
 
         // Update browser tab title
-        document.title = `(${timerText}) ${originalPageTitle}`;
-    }
+//        document.title = `(${timerText}) ${originalPageTitle}`;
+//    }
 
-    function startCountdown() {
-        // Cancel any existing countdown
-        clearInterval(countdown);
+//    function startCountdown() {
+//        // Cancel any existing countdown
+//        clearInterval(countdown);
 
         // Set new end time
-        endTime = Date.now() + duration;
+//        endTime = Date.now() + duration;
 
         // Show timer display
-        document.getElementById('timerDisplay').style.display = 'block';
+//        document.getElementById('timerDisplay').style.display = 'block';
 
         // Update immediately
-        updateTimerDisplay(duration);
+//        updateTimerDisplay(duration);
 
         // Start new interval
-        countdown = setInterval(() => {
-            const timeLeft = endTime - Date.now();
+//        countdown = setInterval(() => {
+//            const timeLeft = endTime - Date.now();
 
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                document.getElementById('timerDisplay').textContent = '0:00';
-                document.title = `(Time Up!) ${originalPageTitle}`;
-                alert('Time is up!');
-                document.getElementById('timerDisplay').style.display = 'none';
-                setTimeout(() => {
-                    document.title = originalPageTitle;
-                }, 3000);
-                countdown = null; // <--- ADDED: Reset countdown variable when timer finishes
-            } else {
-                updateTimerDisplay(timeLeft);
-            }
-        }, 1000);
-    }
-    // --- END: Original Helper Functions ---
+//            if (timeLeft <= 0) {
+//                clearInterval(countdown);
+//                document.getElementById('timerDisplay').textContent = '0:00';
+//                document.title = `(Time Up!) ${originalPageTitle}`;
+//                alert('Time is up!');
+//                document.getElementById('timerDisplay').style.display = 'none';
+//                setTimeout(() => {
+//                    document.title = originalPageTitle;
+//                }, 3000);
+//                countdown = null; // <--- ADDED: Reset countdown variable when timer finishes
+//            } else {
+//                updateTimerDisplay(timeLeft);
+//            }
+//        }, 1000);
+//    }
+//    // --- END: Original Helper Functions ---
+
+function updateTimerDisplay(timeRemaining) {
+    const isExpired = timeRemaining < 0;
+    const absTime = Math.abs(timeRemaining);
+    const minutes = Math.floor(absTime / 60000);
+    const seconds = Math.floor((absTime % 60000) / 1000);
+    const timerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    const displayText = isExpired ? `+${timerText}` : timerText;
+
+    // Update on-page display
+    document.getElementById('timerDisplay').textContent = displayText;
+
+    // Update browser tab title
+    document.title = `(${displayText}) ${originalPageTitle}`;
+}
+
+function startCountdown() {
+    clearInterval(countdown);
+    endTime = Date.now() + duration;
+
+    document.getElementById('timerDisplay').style.display = 'block';
+    updateTimerDisplay(duration);
+
+    countdown = setInterval(() => {
+        const timeLeft = endTime - Date.now();
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft <= 0 && !timerExpired) {
+            timerExpired = true;
+            alert('Time is up!');
+        }
+    }, 1000);
+}
 
 
     // --- Core Display Functions ---
