@@ -8,9 +8,13 @@ $(document).ready(function () {
     var piserv = "https://73.39.163.6/";
     var awsserv = "http://3.135.192.197";
 
-    let countdown;
+
+let countdown = null;
+let endTime = null;
+
+let timerExpired = false;
+
     const duration = 390 * 1000; // 6 minutes 30 seconds in milliseconds
-    let endTime;
 
     let currentNHTSAMake = '';
     var lastVinFetched = ''; // Added to prevent duplicate NHTSA calls
@@ -317,24 +321,22 @@ $(document).ready(function () {
 //    }
 //    // --- END: Original Helper Functions ---
 
+
 function updateTimerDisplay(timeRemaining) {
     const isExpired = timeRemaining < 0;
     const absTime = Math.abs(timeRemaining);
     const minutes = Math.floor(absTime / 60000);
     const seconds = Math.floor((absTime % 60000) / 1000);
     const timerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
     const displayText = isExpired ? `+${timerText}` : timerText;
 
-    // Update on-page display
     document.getElementById('timerDisplay').textContent = displayText;
-
-    // Update browser tab title
     document.title = `(${displayText}) ${originalPageTitle}`;
 }
 
 function startCountdown() {
     clearInterval(countdown);
+    timerExpired = false;
     endTime = Date.now() + duration;
 
     document.getElementById('timerDisplay').style.display = 'block';
