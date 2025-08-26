@@ -322,6 +322,7 @@ let timerExpired = false;
 //    // --- END: Original Helper Functions ---
 
 
+
 function updateTimerDisplay(timeRemaining) {
     const isExpired = timeRemaining < 0;
     const absTime = Math.abs(timeRemaining);
@@ -333,7 +334,6 @@ function updateTimerDisplay(timeRemaining) {
     document.getElementById('timerDisplay').textContent = displayText;
     document.title = `(${displayText}) ${originalPageTitle}`;
 }
-
 
 function startCountdown() {
     clearInterval(countdown);
@@ -350,7 +350,6 @@ function startCountdown() {
         if (timeLeft <= 0 && !timerExpired) {
             timerExpired = true;
             alert('Time is up!');
-            clearInterval(countdown); // <-- Stops the timer after user clicks OK
         }
     }, 1000);
 }
