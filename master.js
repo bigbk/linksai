@@ -350,12 +350,7 @@ function startCountdown() {
 
         if (timeLeft <= 0 && !timerExpired) {
             timerExpired = true;
-
-            // Let timer continue updating overtime
-            setTimeout(() => {
-                alert('Time is up!');
-                startCountdown(); // Reset timer after alert is dismissed
-            }, 0);
+            alert('Time is up!');
         }
     }, 1000);
 }
