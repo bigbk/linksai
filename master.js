@@ -653,6 +653,7 @@ function startCountdown() {
     };
     window.fordwiki = function () { openWindowWithVin(awsserv + "/ford?vin=VIN_PLACEHOLDER"); };
     window.gmlink = function () { openWindowWithVin2("https://windowsticker-prod.aws.manheim.com/showGmWs?auctionID=&workOrderNumber=7055030&sblu=11546249&vin=VIN_PLACEHOLDER"); };
+    window.gmlink1 = function () { openWindowWithVin2("https://cws.gm.com/vs-cws/vehshop/v2/vehicle/windowsticker?vin=VIN_PLACEHOLDER"); };
     window.gmlink2 = function () {
         const vin = getVinOrAlert(); // Retrieve VIN using existing helper
         if (!vin) {
