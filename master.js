@@ -769,7 +769,7 @@ function startCountdown() {
     };
 
 
-    window.volvosticker = function() { openWindowWithVin("https://volvocars.niello.com/api/legacy/pse/windowsticker/volvo?vin="); };
+    window.volvosticker = function() { openWindowWithVin("https://volvocars.niello.com/api/legacy/pse/windowsticker/volvo?vin=VIN_PLACEHOLDER&accountId=asburykoonsvolvocarswhitemarshvcna&isCPO=false"); };
 
     window.vwaudilane = function () { openWindowWithVin2("http://windowsticker-prod.awsmdotcom.manheim.com/windowsticker/VIN_PLACEHOLDER/4905414"); };
     window.hitcher = function() {
