@@ -715,7 +715,7 @@ function startCountdown() {
     window.mazdabtn2 = function() { alert("Mazda alternate window sticker link is currently unavailable."); };
     window.mazdabtn = function() { const vin = getVinOrAlert(); if(vin) { alert("Mazda dealer inventory sticker link needs specific dealer portal. Searching Google."); window.open('https://www.google.com/search?q=mazda+dealer+inventory+window+sticker+' + vin, '_blank'); } };
 
-    window.mitsbtn = function() { openWindowWithVin2("https://www.yorkmitsubishi.com/api/OEMProgramsCommon/MitsubishiWindowStickerUrl?vin=VIN_PLACEHOLDER"); };
+    window.mitsbtn = function() { openWindowWithVin2("https://www.quirkmitsubishiofbangor.com/api/OEMProgramsCommon/MitsubishiWindowStickerUrl?vin=VIN_PLACEHOLDER"); };
 
     window.nissan = function() {
         vincheckin(function(isValidAndAuthorized, checkedVin) {
