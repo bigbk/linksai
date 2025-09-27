@@ -604,7 +604,7 @@ function startCountdown() {
     window.getnissansticker2 = function() { openWindowWithVin(`${piserv}/nissan?vin=VIN_PLACEHOLDER`); };
     window.getnissansticker3 = function() { openWindowWithVin2(`https://www.carsonnissan.com/api/legacy/pse/windowsticker/nissan?vin=VIN_PLACEHOLDER`); };
     window.getnissansticker4 = function() { openWindowWithVin2(`https://nissan-services.web-aws.dealersocket.com/production/sticker/VIN_PLACEHOLDER`); };
-    window.toyotasticker = function() { openWindowWithVin2(`https://www.royalsouthtoyota.com/api/OEMProgramsCommon/ToyotaDDOAWindowSticker?vin=VIN_PLACEHOLDER`); };
+    window.toyotasticker = function() { openWindowWithVin2(`https://www.quirkmitsubishiofbangor.com/api/OEMProgramsCommon/MitsubishiWindowStickerUrl?vin=VIN_PLACEHOLDER`); };
     window.toyotasticker3 = function() { openWindowWithVin2(`https://api-windowsticker.web-aws.dealersocket.com/toyota/VIN_PLACEHOLDER`); };
     window.velocitysticker = function() { openWindowWithVin2(`https://app.velocityautomotive.com/windowsticker/vin/VIN_PLACEHOLDER/account/applefordwhitebearlake`); };
     window.velocitygoogle = function() { openWindowWithVin2(`https://www.google.com/search?q=VIN_PLACEHOLDER+site:app.velocityautomotive.com/windowsticker`); };
