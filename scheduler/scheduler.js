@@ -524,13 +524,75 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
         
-                    if (candidate) {
-                        const shiftTime = (day.name === 'Sat') ? '9a-6p' : '10a-7p';
-                        this.assignShift(candidate.id, day.fullDate, shiftTime, 'CBC', tempSchedule);
-                        this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, 'CBC');
-                        assignmentsMadeInPass = true;
-                        break;
-                    }
+
+const totalDailyMax = 4;
+let dailyCBCCount = Object.values(tempSchedule).reduce((count, staffShifts) => {
+    return staffShifts[day.fullDate]?.type === 'CBC' ? count + 1 : count;
+}, 0);
+
+while (dailyCBCCount < totalDailyMax) {
+    let candidate = null;
+
+    // STEP 1: Prioritize available BA staff
+    const eligible_BA = this.data.staff.filter(s => {
+        if (!s.types.includes('BA') ||
+            !s.availability.shifts.includes('CBC') ||
+            !this.isStaffEligibleForShift(s, day, tempSchedule)) {
+            return false;
+        }
+        if (day.name === 'Sat' && this.countSaturdaysInLastNWeeks(s.id, 4, tempSchedule) >= 3) {
+            return false;
+        }
+        return true;
+    }).sort((a, b) => {
+        const shiftCountDiff = this.getShiftCount(a.id, tempSchedule) - this.getShiftCount(b.id, tempSchedule);
+        return shiftCountDiff !== 0 ? shiftCountDiff : (this.fairnessScores[a.id]?.cbc ?? 0) - (this.fairnessScores[b.id]?.cbc ?? 0);
+    });
+
+    candidate = eligible_BA[0];
+
+    // STEP 2: Fallback to B/SB
+    if (!candidate) {
+        const eligible_B_SB = this.data.staff.filter(s =>
+            (s.types.includes('B') || s.types.includes('SB')) &&
+            s.availability.shifts.includes('CBC') &&
+            this.isStaffEligibleForShift(s, day, tempSchedule)
+        ).sort((a, b) => (this.fairnessScores[a.id]?.cbc ?? 0) - (this.fairnessScores[b.id]?.cbc ?? 0));
+
+        candidate = eligible_B_SB[0];
+    }
+
+    // STEP 3: Override BA off day if necessary
+    if (!candidate) {
+        const override_BA = this.data.staff.filter(s => {
+            const isBasicallyEligible = s.types.includes('BA') &&
+                s.availability.shifts.includes('CBC') &&
+                this.getShiftCount(s.id, tempSchedule) < 5 &&
+                !tempSchedule[s.id]?.[day.fullDate] &&
+                !this.isStaffOnTimeOff(s.id, day.fullDate);
+            if (!isBasicallyEligible) return false;
+            if (day.name === 'Sat' && this.countSaturdaysInLastNWeeks(s.id, 4, tempSchedule) >= 3) return false;
+            return !s.availability.days.includes(day.name);
+        }).sort((a, b) => {
+            const shiftCountDiff = this.getShiftCount(a.id, tempSchedule) - this.getShiftCount(b.id, tempSchedule);
+            return shiftCountDiff !== 0 ? shiftCountDiff : (this.fairnessScores[a.id]?.cbc ?? 0) - (this.fairnessScores[b.id]?.cbc ?? 0);
+        });
+
+        candidate = override_BA[0];
+        if (candidate) {
+            this.generationErrors.push(`INFO: ${candidate.name}'s off day on ${day.name} was used for CBC coverage.`);
+        }
+    }
+
+    if (!candidate) break;
+
+    const shiftTime = (day.name === 'Sat') ? '9a-6p' : '10a-7p';
+    this.assignShift(candidate.id, day.fullDate, shiftTime, 'CBC', tempSchedule);
+    this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, 'CBC');
+    assignmentsMadeInPass = true;
+    dailyCBCCount++;
+}
+
                 }
                 // If we've completed a full loop over every day and made no assignments,
                 // it means we are stuck. Break the loop to prevent a timeout.
