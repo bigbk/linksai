@@ -76,6 +76,10 @@ document.addEventListener('alpine:init', () => {
                 });
                 defaultShiftRules[shiftType] = { days: [], min_max: minMax };
             });
+
+            // Special setup for Offer shifts
+            defaultShiftRules['Offer'].daily_requirements = {};
+            this.daysOfWeek.forEach(day => { defaultShiftRules['Offer'].daily_requirements[day] = 0; });
             
             const defaultStoreHours = {};
             this.daysOfWeek.forEach(day => {
@@ -91,6 +95,18 @@ document.addEventListener('alpine:init', () => {
                 time_off: [],
                 schedules: {},
                 store_hours: defaultStoreHours
+            };
+
+            this.data.advanced_rules = {
+                cbc: {
+                    dailyMax: 4,
+                    dayPriority: ['Sat', 'Fri', 'Mon'],
+                    allowBAOverride: true
+                },
+                apm: {
+                    saturdayClosingPenalty: 2
+                },
+                minClosingShifts: 1
             };
         },
         
@@ -113,6 +129,12 @@ document.addEventListener('alpine:init', () => {
                 if (!this.data.shift_rules[shiftType].min_max) {
                     this.data.shift_rules[shiftType].min_max = {};
                 }
+                // Special validation for Offer shift daily requirements
+                if (shiftType === 'Offer' && !this.data.shift_rules[shiftType].daily_requirements) {
+                    this.data.shift_rules[shiftType].daily_requirements = {};
+                    this.daysOfWeek.forEach(day => { this.data.shift_rules[shiftType].daily_requirements[day] = 0; });
+                }
+
                 this.staffTypes.forEach(staffType => {
                     if (!this.data.shift_rules[shiftType].min_max[staffType]) {
                         this.data.shift_rules[shiftType].min_max[staffType] = { min: null, max: null };
@@ -121,6 +143,18 @@ document.addEventListener('alpine:init', () => {
             });
             if(!this.data.time_off) this.data.time_off = [];
             if(!this.data.schedules) this.data.schedules = {};
+
+            // Validate advanced rules
+            if (!this.data.advanced_rules) {
+                this.data.advanced_rules = {};
+            }
+            const defaults = this.setupDefaultData.advanced_rules || { cbc: { dailyMax: 4, dayPriority: ['Sat', 'Fri', 'Mon'], allowBAOverride: true }, apm: { saturdayClosingPenalty: 2 } };
+            if (!this.data.advanced_rules.cbc) this.data.advanced_rules.cbc = defaults.cbc;
+            if (!this.data.advanced_rules.apm) this.data.advanced_rules.apm = defaults.apm;
+            if (this.data.advanced_rules.apm.minClosingShifts === undefined) this.data.advanced_rules.apm.minClosingShifts = 1;
+            if (typeof this.data.advanced_rules.cbc.dayPriority === 'string') { // Handle old data format if needed
+                this.data.advanced_rules.cbc.dayPriority = this.data.advanced_rules.cbc.dayPriority.split(',').map(s => s.trim());
+            }
         },
 
         // =================================================================================
@@ -293,31 +327,35 @@ document.addEventListener('alpine:init', () => {
         updateShiftFromInput(event, staffId, fullDate) {
             const inputValue = event.target.value.trim();
             const weekKey = this.weekDates[0].fullDate;
-
-            if (!this.data.schedules[weekKey][staffId]) {
-                this.data.schedules[weekKey][staffId] = {};
-            }
-
+        
+            // Ensure the nested objects exist on both the persistent data and the reactive view model
+            if (!this.data.schedules[weekKey][staffId]) this.data.schedules[weekKey][staffId] = {};
+            if (!this.schedule[staffId]) this.schedule[staffId] = {};
+        
             if (inputValue === '') {
+                // Delete from both data sources
                 delete this.data.schedules[weekKey][staffId][fullDate];
+                delete this.schedule[staffId][fullDate];
             } else {
                 const match = inputValue.match(/([^()]+)\s*\(([^)]+)\)/);
+                let newShift;
                 if (match) {
-                    this.data.schedules[weekKey][staffId][fullDate] = {
+                    newShift = {
                         time: match[1].trim(),
                         type: match[2].trim().toUpperCase(),
                         locked: this.schedule[staffId]?.[fullDate]?.locked || false
                     };
                 } else {
-                    // Handle cases with no type, e.g., "8a-5p" or "OFF"
-                    this.data.schedules[weekKey][staffId][fullDate] = {
+                    newShift = {
                         time: inputValue,
                         type: inputValue.toUpperCase() === 'OFF' ? 'OFF' : 'Manual',
                         locked: this.schedule[staffId]?.[fullDate]?.locked || false
                     };
                 }
+                // Update both the persistent data and the reactive view model directly
+                this.data.schedules[weekKey][staffId][fullDate] = { ...newShift };
+                this.schedule[staffId][fullDate] = { ...newShift };
             }
-            this.schedule = { ...this.data.schedules[weekKey] }; // Force UI update
         },
 
         // =================================================================================
@@ -372,11 +410,17 @@ document.addEventListener('alpine:init', () => {
                 case 'BAAA': case 'BAAA Preview': case 'MNJ': case 'MPA':
                     this.generateByDayAndRole(shiftType, tempSchedule);
                     break;
+                case 'Offer':
+                    this.generateOfferShifts(tempSchedule);
+                    break;
                 case 'CBC':
                     this.generateCbcShifts(tempSchedule);
                     break;
                 case 'Lane VCA':
                     this.generateLaneVcaShifts(tempSchedule);
+                    break;
+                case 'Training':
+                    this.generateTrainingShifts(tempSchedule);
                     break;
                 case 'Lane':
                     this.generateLaneShifts(tempSchedule);
@@ -440,11 +484,80 @@ document.addEventListener('alpine:init', () => {
                 }
             });
         },
+
+        generateOfferShifts(tempSchedule) {
+            this.generationErrors.push("Generating Offer shifts...");
+            const offerRules = this.data.shift_rules['Offer'];
+            if (!offerRules || !offerRules.daily_requirements) {
+                this.generationErrors.push("Error: 'Offer' shift rules are not configured correctly.");
+                return;
+            }
+
+            this.weekDates.forEach(day => {
+                const requiredCount = offerRules.daily_requirements[day.name] || 0;
+                if (requiredCount === 0) return;
+
+                let assignedCount = Object.values(tempSchedule).reduce((count, staffShifts) => {
+                    return staffShifts[day.fullDate]?.type === 'Offer' ? count + 1 : count;
+                }, 0);
+
+                while (assignedCount < requiredCount) {
+                    const candidatePool = this.data.staff.filter(staff =>
+                        (staff.types.includes('B') || staff.types.includes('SB') || staff.types.includes('APM')) &&
+                        staff.availability.shifts.includes('Offer') &&
+                        this.isStaffEligibleForShift(staff, day, tempSchedule)
+                    );
+
+                    if (candidatePool.length === 0) {
+                        this.generationErrors.push(`Warning: Could not find an eligible candidate for Offer shift on ${day.name}.`);
+                        break; // Stop trying for this day if no one is available
+                    }
+                    const candidate = this.selectRandomFromWeightedPool(this.createWeightedPool(candidatePool, 'total'));
+                    this.assignShift(candidate.id, day.fullDate, '10a-7p', 'Offer', tempSchedule);
+                    assignedCount++;
+                }
+            });
+        },
         
+        generateTrainingShifts(tempSchedule) {
+            this.generationErrors.push("Generating Training shifts...");
+
+            // Iterate through all staff members
+            this.data.staff.forEach(staff => {
+                // Check if staff is eligible for Training shifts at all
+                if (!staff.availability.shifts.includes('Training')) {
+                    return; // continue to next staff member
+                }
+
+                // Loop to fill remaining shifts up to 5
+                while (this.getShiftCount(staff.id, tempSchedule) < 5) {
+                    let shiftAssignedInPass = false;
+
+                    // Find an available day for this staff member
+                    for (const day of this.weekDates) {
+                        if (this.isStaffEligibleForShift(staff, day, tempSchedule)) {
+                            this.assignShift(staff.id, day.fullDate, '9a-5p', 'Training', tempSchedule);
+                            this.generationErrors.push(`Assigned Training shift to ${staff.name} on ${day.name}.`);
+                            this.updateFairnessScoreOnAssignment(staff.id, day, '9a-5p', 'Training');
+                            shiftAssignedInPass = true;
+                            break; // Exit day loop to re-evaluate the while condition
+                        }
+                    }
+
+                    // If a full pass over the days yields no assignment, stop for this staff member.
+                    if (!shiftAssignedInPass) break;
+                }
+            });
+        },
+
         generateCbcShifts(tempSchedule) {
             this.generationErrors.push("Generating CBC shifts...");
             const cbcRules = this.data.shift_rules['CBC'];
-            const dayPriority = { 'Sat': 0, 'Fri': 1, 'Mon': 2 };
+            const dayPriorityOrder = this.data.advanced_rules.cbc.dayPriority;
+            const dayPriority = dayPriorityOrder.reduce((acc, day, index) => {
+                acc[day] = index;
+                return acc;
+            }, {});
             const sortedDays = [...this.weekDates]
                 .filter(d => cbcRules.days.includes(d.name))
                 .sort((a, b) => (dayPriority[a.name] ?? 99) - (dayPriority[b.name] ?? 99));
@@ -461,7 +574,7 @@ document.addEventListener('alpine:init', () => {
                 }
         
                 for (const day of sortedDays) {
-                    const totalDailyMax = 4;
+                    const totalDailyMax = this.data.advanced_rules.cbc.dailyMax;
                     const dailyCBCCount = Object.values(tempSchedule).reduce((count, staffShifts) => {
                         return staffShifts[day.fullDate]?.type === 'CBC' ? count + 1 : count;
                     }, 0);
@@ -502,7 +615,7 @@ document.addEventListener('alpine:init', () => {
                     }
         
                     // --- STEP 3: If still no one, override a BA's off day if necessary ---
-                    if (!candidate) {
+                    if (!candidate && this.data.advanced_rules.cbc.allowBAOverride) {
                         const override_BA = this.data.staff.filter(s => {
                             const isBasicallyEligible = s.types.includes('BA') &&
                                 s.availability.shifts.includes('CBC') &&
@@ -529,7 +642,7 @@ document.addEventListener('alpine:init', () => {
                         this.assignShift(candidate.id, day.fullDate, shiftTime, 'CBC', tempSchedule);
                         this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, 'CBC');
                         assignmentsMadeInPass = true;
-                        break;
+                        // By removing 'break', we allow the loop to continue to the next day in the same pass.
                     }
                 }
                 // If we've completed a full loop over every day and made no assignments,
@@ -537,7 +650,7 @@ document.addEventListener('alpine:init', () => {
                 if (totalPasses > sortedDays.length && !assignmentsMadeInPass) {
                     break;
                 }
-            } while (assignmentsMadeInPass || totalPasses <= sortedDays.length);
+            } while (assignmentsMadeInPass);
         },
         
         generateLaneVcaShifts(tempSchedule) {
@@ -639,9 +752,9 @@ document.addEventListener('alpine:init', () => {
 
             // --- Phase 2: Schedule remaining APM shifts ---
             apmStaff.forEach(apm => {
-                // 1. Assign exactly one closing shift to each APM based on fairness.
-                const hasPreassignedCloser = this.checkApmCloserInSchedule(tempSchedule, apm.id);
-                if (!hasPreassignedCloser) {
+                // 1. Assign closing shifts to meet the minimum requirement.
+                let assignedClosers = this.countApmClosingShifts(tempSchedule, apm.id);
+                while (assignedClosers < this.data.advanced_rules.apm.minClosingShifts) {
                     const potentialDays = this.weekDates
                         .filter(day => this.isStaffEligibleForShift(apm, day, tempSchedule) && apm.availability.shifts.includes('Lane'))
                         .map(day => {
@@ -649,7 +762,7 @@ document.addEventListener('alpine:init', () => {
                             let cost = this.fairnessScores[apm.id]?.byDay[day.name]?.closing || 0;
                             // Add a heavy penalty for Saturday closes based on 4-week history.
                             if (day.name === 'Sat') {
-                                cost += (this.fairnessScores[apm.id]?.saturday || 0) * 2; // Add significant weight to recent Saturday work
+                                cost += (this.fairnessScores[apm.id]?.saturday || 0) * this.data.advanced_rules.apm.saturdayClosingPenalty;
                             }
                             return { day, cost };
                         })
@@ -663,8 +776,11 @@ document.addEventListener('alpine:init', () => {
                             this.assignShift(apm.id, bestDay.fullDate, closerShiftTime, 'Lane', tempSchedule);
                             this.updateFairnessScoreOnAssignment(apm.id, bestDay, closerShiftTime, 'Lane');
                             this.generationErrors.push(`Assigned priority closing shift to APM ${apm.name} on ${bestDay.name}.`);
+                            assignedClosers++;
+                        } else {
+                            break; // Could not find a valid day
                         }
-                    }
+                    } else break; // No potential days left
                 }
         
                 // 2. Fill remaining APM days with opening shifts.
@@ -964,10 +1080,10 @@ document.addEventListener('alpine:init', () => {
 
             const offsiteTypes = ['BAAA', 'BAAA Preview', 'MNJ', 'MPA'];
 
-            if (shift.type === 'Offer') return 'bg-green-100';
-            if (shift.type === 'CBC') return 'bg-blue-100';
-            if (shift.type === 'Training') return 'bg-red-100';
-            if (offsiteTypes.includes(shift.type)) return 'bg-gray-200';
+            if (shift.type === 'Offer') return 'bg-green-200';
+            if (shift.type === 'CBC') return 'bg-blue-200';
+            if (shift.type === 'Training') return 'bg-red-200';
+            if (offsiteTypes.includes(shift.type)) return 'bg-gray-300';
 
             return '';
         },
@@ -1162,6 +1278,22 @@ document.addEventListener('alpine:init', () => {
                     return shift.time === closerShiftTime;
                 });
             });
+        },
+
+        countApmClosingShifts(scheduleContext, staffId) {
+            const staffSchedule = scheduleContext[staffId];
+            if (!staffSchedule) return 0;
+            
+            let count = 0;
+            for (const date in staffSchedule) {
+                const shift = staffSchedule[date];
+                const dayName = this.daysOfWeek[new Date(date+'T00:00:00').getDay()];
+                const hours = this.data.store_hours[dayName];
+                if (!hours || !hours.close) continue;
+                const closerShiftTime = `${this.formatTime(hours.close - 9)}-${this.formatTime(hours.close)}`;
+                if (shift.time === closerShiftTime) count++;
+            }
+            return count;
         },
 
         countRecentCloses(staffId, scheduleContext = null) {
