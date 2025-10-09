@@ -751,7 +751,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             // --- Phase 2: Schedule remaining APM shifts ---
-            apmStaff.forEach(apm => {
+            for (const apm of apmStaff) {
                 // 1. Assign closing shifts to meet the minimum requirement.
                 let assignedClosers = this.countApmClosingShifts(tempSchedule, apm.id);
                 while (assignedClosers < this.data.advanced_rules.apm.minClosingShifts) {
@@ -796,7 +796,7 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 });
-            });
+            }
         
             // --- Phase 3: General Lane Scheduling (for B, SB) ---
             const laneDays = this.weekDates.filter(day => laneRules.days.includes(day.name));
