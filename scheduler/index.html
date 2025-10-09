@@ -44,6 +44,7 @@
                 <button @click="activeTab = 'timeoff'" :class="{'active': activeTab === 'timeoff'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Time Off & Requests</button>
                 <button @click="activeTab = 'browse'" :class="{'active': activeTab === 'browse'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Browse Schedules</button>
                 <button @click="activeTab = 'import_export'" :class="{'active': activeTab === 'import_export'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Import/Export</button>
+                <button @click="activeTab = 'advanced_rules'" :class="{'active': activeTab === 'advanced_rules'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Advanced Rules</button>
             </div>
         </nav>
 
@@ -289,14 +290,27 @@
                                         </template>
                                     </div>
                                 </div>
-                                <div>
+                                <!-- Standard Min/Max rules for all shifts EXCEPT Offer -->
+                                <div x-show="shiftType !== 'Offer'">
                                     <p class="label mb-2">Min/Max Staff Requirements</p>
                                     <div class="space-y-2">
                                         <template x-for="st in staffTypes" :key="st">
                                             <div class="grid grid-cols-3 items-center gap-2">
                                                 <label class="font-medium" x-text="st"></label>
-                                                <input type="number" min="0" class="input text-center" placeholder="Min" x-model.number="data.shift_rules[shiftType].min_max[st].min">
-                                                <input type="number" min="0" class="input text-center" placeholder="Max" x-model.number="data.shift_rules[shiftType].min_max[st].max">
+                                                <input type="number" min="0" class="input text-center" placeholder="Min" x-model.number="data.shift_rules[shiftType].min_max[st].min" :disabled="!data.shift_rules[shiftType]">
+                                                <input type="number" min="0" class="input text-center" placeholder="Max" x-model.number="data.shift_rules[shiftType].min_max[st].max" :disabled="!data.shift_rules[shiftType]">
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <!-- Special daily requirements for Offer shifts -->
+                                <div x-show="shiftType === 'Offer'">
+                                    <p class="label mb-2">Number of Shifts Required Per Day</p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                        <template x-for="day in daysOfWeek" :key="day">
+                                            <div class="flex flex-col">
+                                                <label class="font-medium text-sm" x-text="day"></label>
+                                                <input type="number" min="0" class="input text-center" placeholder="0" x-model.number="data.shift_rules['Offer'].daily_requirements[day]">
                                             </div>
                                         </template>
                                     </div>
@@ -416,6 +430,54 @@
                             </tbody>
                          </table>
                     </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'advanced_rules'" x-cloak>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Advanced Generation Rules</h2>
+                        <div class="flex items-center gap-4">
+                            <span x-show="saveStatus" x-text="saveStatus" class="text-green-600 font-medium" x-transition></span>
+                            <button @click="saveDataToLocalStorage()" class="btn btn-primary">Save Rules</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" x-if="data.advanced_rules">
+                        <!-- CBC Rules -->
+                        <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+                            <h3 class="font-bold text-lg">CBC Generation</h3>
+                            <div>
+                                <label class="label">Max CBC Shifts per Day</label>
+                                <input type="number" class="input" x-model.number="data.advanced_rules.cbc.dailyMax">
+                            </div>
+                            <div>
+                                <label class="label">Day Priority (comma-separated)</label>
+                                <input type="text" class="input" :value="data.advanced_rules.cbc.dayPriority.join(', ')" @change="data.advanced_rules.cbc.dayPriority = $event.target.value.split(',').map(s => s.trim())">
+                                <p class="text-xs text-gray-500 mt-1">Generator prioritizes days from left to right.</p>
+                            </div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" x-model="data.advanced_rules.cbc.allowBAOverride">
+                                <span>Allow using a BA's day off for CBC (last resort)</span>
+                            </label>
+                        </div>
+
+                        <!-- Lane/APM Rules -->
+                        <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+                            <h3 class="font-bold text-lg">Lane / APM Generation</h3>
+                            <div>
+                                <label class="label">APM Saturday Closing Penalty</label>
+                                <input type="number" step="0.1" class="input" x-model.number="data.advanced_rules.apm.saturdayClosingPenalty">
+                                <p class="text-xs text-gray-500 mt-1">Higher number makes Saturday closing for APMs less likely if they've worked recent Saturdays.</p>
+                            </div>
+                            <div>
+                                <label class="label">APM Min Closing Shifts per Week</label>
+                                <input type="number" min="0" max="5" class="input" x-model.number="data.advanced_rules.apm.minClosingShifts">
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
 
