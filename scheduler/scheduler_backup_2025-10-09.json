@@ -1,0 +1,1015 @@
+{
+  "staff": [
+    {
+      "id": 5,
+      "name": "vca1",
+      "types": [
+        "VCA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "name": "vca2",
+      "types": [
+        "VCA"
+      ],
+      "availability": {
+        "days": [
+          "Sat",
+          "Fri",
+          "Wed",
+          "Thu",
+          "Mon",
+          "Tue"
+        ],
+        "shifts": [
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "name": "vca3",
+      "types": [
+        "VCA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "name": "vca4",
+      "types": [
+        "VCA"
+      ],
+      "availability": {
+        "days": [
+          "Sat",
+          "Fri",
+          "Thu",
+          "Wed",
+          "Tue",
+          "Mon"
+        ],
+        "shifts": [
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "name": "buyer1",
+      "types": [
+        "B",
+        "VCA",
+        "BAAA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "MNJ",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "name": "buyer2",
+      "types": [
+        "B",
+        "VCA",
+        "BAAA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "MNJ",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "name": "buyer3",
+      "types": [
+        "B",
+        "VCA",
+        "MNJ"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Wed",
+          "Tue",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "BAA",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "name": "buyer4",
+      "types": [
+        "VCA",
+        "B",
+        "MNJ"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Sat",
+          "Fri",
+          "Thu",
+          "Wed",
+          "Tue"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "BAA",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "name": "apm",
+      "types": [
+        "APM",
+        "SB",
+        "B",
+        "VCA",
+        "BAAA Preview",
+        "BAAA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "MPA"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "name": "pm",
+      "types": [
+        "PM"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": []
+      }
+    },
+    {
+      "id": 15,
+      "name": "sb1",
+      "types": [
+        "SB",
+        "B",
+        "VCA",
+        "MPA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "name": "sb2",
+      "types": [
+        "SB",
+        "B",
+        "VCA",
+        "MPA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "name": "sb3",
+      "types": [
+        "SB",
+        "B",
+        "VCA",
+        "MPA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane",
+          "Lane VCA",
+          "CBC"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "name": "vca5",
+      "types": [
+        "VCA"
+      ],
+      "availability": {
+        "days": [
+          "Sun",
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "Lane VCA"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "name": "ba",
+      "types": [
+        "BA"
+      ],
+      "availability": {
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat"
+        ],
+        "shifts": [
+          "CBC"
+        ]
+      }
+    }
+  ],
+  "shift_rules": {
+    "Offer": {
+      "days": [],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "CBC": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": 1,
+          "max": null
+        },
+        "B": {
+          "min": 1,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "BAA": {
+      "days": [
+        "Wed"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "MNJ": {
+      "days": [
+        "Wed"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": 3,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "MPA": {
+      "days": [
+        "Fri"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": 3,
+          "max": null
+        }
+      }
+    },
+    "Remote": {
+      "days": [],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "Training": {
+      "days": [],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "Lane": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": 2,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "Lane VCA": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "BAAA": {
+      "days": [
+        "Thu"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": 3,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "BAAA Preview": {
+      "days": [
+        "Wed"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": 2,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      }
+    }
+  },
+  "time_off": [
+    {
+      "id": 1759982152282,
+      "staffId": 9,
+      "staffName": "buyer1",
+      "startDate": "2025-10-09",
+      "endDate": "2025-10-10",
+      "requestType": "Off"
+    },
+    {
+      "id": 1759982170139,
+      "staffId": 11,
+      "staffName": "buyer3",
+      "startDate": "2025-10-07",
+      "endDate": "2025-10-07",
+      "requestType": "8-5"
+    }
+  ],
+  "schedules": {
+    "2025-10-05": {
+      "1": {},
+      "2": {},
+      "3": {},
+      "4": {},
+      "5": {},
+      "6": {},
+      "7": {},
+      "8": {},
+      "9": {
+        "2025-10-08": {
+          "time": "10a-7p",
+          "type": "CBC",
+          "locked": true
+        },
+        "2025-10-09": {
+          "time": "OFF",
+          "type": "OFF",
+          "locked": true
+        },
+        "2025-10-10": {
+          "time": "OFF",
+          "type": "OFF",
+          "locked": true
+        }
+      },
+      "10": {
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "BAAA",
+          "locked": false
+        }
+      },
+      "11": {
+        "2025-10-07": {
+          "time": "8a-5p",
+          "type": "Pre-Asn",
+          "locked": true
+        },
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "MNJ",
+          "locked": false
+        }
+      },
+      "12": {
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "MNJ",
+          "locked": false
+        }
+      },
+      "13": {
+        "2025-10-07": {
+          "time": "7a-4p",
+          "type": "BAAA PREVIEW",
+          "locked": false
+        },
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "BAAA",
+          "locked": false
+        }
+      },
+      "15": {
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "MPA",
+          "locked": false
+        }
+      },
+      "16": {
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "MPA",
+          "locked": false
+        }
+      },
+      "17": {
+        "2025-10-08": {
+          "time": "7a-4p",
+          "type": "MPA",
+          "locked": false
+        }
+      },
+      "18": {}
+    },
+    "2025-10-06": {
+      "5": {},
+      "6": {},
+      "7": {},
+      "8": {},
+      "9": {},
+      "10": {},
+      "11": {},
+      "12": {},
+      "13": {},
+      "15": {},
+      "17": {},
+      "18": {},
+      "19": {}
+    }
+  },
+  "store_hours": {
+    "Sun": {
+      "open": 6,
+      "close": 6,
+      "text": "6a-6a"
+    },
+    "Mon": {
+      "open": 8,
+      "close": 21,
+      "text": "8a-9p"
+    },
+    "Tue": {
+      "open": 8,
+      "close": 21,
+      "text": "8a-9p"
+    },
+    "Wed": {
+      "open": 8,
+      "close": 21,
+      "text": "8a-9p"
+    },
+    "Thu": {
+      "open": 8,
+      "close": 21,
+      "text": "8a-9p"
+    },
+    "Fri": {
+      "open": 8,
+      "close": 21,
+      "text": "8a-9p"
+    },
+    "Sat": {
+      "open": 9,
+      "close": 21,
+      "text": "9a-9p"
+    }
+  }
+}
