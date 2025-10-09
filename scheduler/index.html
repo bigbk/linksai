@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standalone Scheduler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Libraries for PDF and Image Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-link { transition: all 0.2s ease-in-out; }
+        .nav-link.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        [x-cloak] { display: none !important; }
+        .label { font-weight: 500; color: #374151; }
+        .input { border-radius: 0.375rem; border: 1px solid #D1D5DB; padding: 0.5rem 0.75rem; width: 100%; }
+        .btn { border-radius: 0.375rem; padding: 0.5rem 1rem; font-weight: 600; text-align: center; }
+        .btn-primary { background-color: #2563EB; color: white; }
+        .btn-primary:hover { background-color: #1D4ED8; }
+        .btn-secondary { background-color: #e5e7eb; color: #374151; }
+        .btn-danger { background-color: #dc2626; color: white; }
+    </style>
+    <script src="./scheduler.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100 text-gray-800" x-data="schedulerApp()" x-init="init()">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Scheduling Tool</h1>
+            <p class="text-gray-500">Manage staff, shifts, and generate schedules. All data is saved in your browser and can be exported at the end.</p>
+        </header>
+
+        <nav class="bg-white rounded-lg shadow-sm mb-8">
+            <div class="flex border-b border-gray-200 flex-wrap">
+                <button @click="activeTab = 'schedule'" :class="{'active': activeTab === 'schedule'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Schedule Generation</button>
+                <button @click="activeTab = 'staff'" :class="{'active': activeTab === 'staff'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Staff & Availability</button>
+                <button @click="activeTab = 'shifts'" :class="{'active': activeTab === 'shifts'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Shift Rules</button>
+                <button @click="activeTab = 'timeoff'" :class="{'active': activeTab === 'timeoff'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Time Off & Requests</button>
+                <button @click="activeTab = 'browse'" :class="{'active': activeTab === 'browse'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Browse Schedules</button>
+                <button @click="activeTab = 'import_export'" :class="{'active': activeTab === 'import_export'}" class="nav-link px-6 py-3 border-b-2 border-transparent hover:bg-gray-50">Import/Export</button>
+            </div>
+        </nav>
+
+        <main>
+            <div x-show="activeTab === 'schedule'" x-cloak>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                        <h2 class="text-2xl font-semibold">Generate Schedule</h2>
+                        <div class="flex items-center gap-4">
+                            <span x-show="saveStatus" x-text="saveStatus" class="text-green-600 font-medium" x-transition></span>
+                            <button @click="importAndLockRequests()" class="btn btn-secondary">Import & Lock Requests</button>
+                            <button @click="saveDataToLocalStorage()" class="btn btn-primary">Save Changes</button>
+                            <button @click="clearSchedule()" class="btn btn-danger">Clear All Unlocked</button>
+                        </div>
+                        <div class="w-full flex justify-end items-center gap-2 mt-4">
+                            <span class="text-sm text-gray-600">Export this view:</span>
+                            <button @click="exportScheduleAs('csv', 'schedule-table-container')" class="btn btn-primary text-xs px-3 py-1">CSV</button>
+                            <button @click="exportScheduleAs('jpg', 'schedule-table-container')" class="btn btn-secondary text-xs px-3 py-1">JPG</button>
+                            <button @click="exportScheduleAs('pdf', 'schedule-table-container')" class="btn btn-secondary text-xs px-3 py-1">PDF</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                       <button @click="changeWeek(-1, 'current')" class="btn btn-secondary">&larr; Previous</button>
+                       <span class="text-lg font-medium w-48 text-center" x-text="getWeekDisplay('current')"></span>
+                       <button @click="changeWeek(1, 'current')" class="btn btn-secondary">Next &rarr;</button>
+                    </div>
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h3 class="font-semibold mb-2 text-gray-700">Generate by Shift Type (in order):</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="shiftType in shiftTypes" :key="shiftType">
+                                 <button @click="generateSchedule(shiftType)" class="btn btn-primary" x-text="shiftType"></button>
+                            </template>
+                        </div>
+                    </div>
+                    <div x-show="generationErrors.length > 0" class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-md" x-cloak>
+                        <h4 class="font-bold">Generation Log & Warnings:</h4>
+                        <ul class="list-disc list-inside mt-2 max-h-40 overflow-y-auto"><template x-for="error in generationErrors"><li x-text="error"></li></template></ul>
+                   </div>
+                   <div class="overflow-x-auto" id="schedule-table-container">
+                        <table class="min-w-full bg-white border border-gray-200" id="schedule-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="py-3 px-4 border-b text-left font-semibold text-gray-600">Staff Member</th>
+                                    <template x-for="day in weekDates" :key="day.fullDate">
+                                        <th class="py-3 px-4 border-b text-center font-semibold text-gray-600">
+                                            <span x-text="day.name"></span>
+                                            <div class="text-sm text-gray-500" x-text="day.date"></div>
+                                            <div class="mt-1">
+                                                <input type="text" class="input text-center text-xs p-1 w-24"
+                                                    x-model="data.store_hours[day.name].text"
+                                                    @blur="parseHours(day.name)">
+                                            </div>
+                                        </th>
+                                    </template>
+                                    <th class="py-3 px-4 border-b text-center font-semibold text-gray-600">Tally (Last 5 Wks)</th>
+                                    <th class="py-3 px-4 border-b text-center font-semibold text-gray-600">Fairness Score (4 Wks)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="staffMember in sortedStaff" :key="staffMember.id">
+                                     <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b font-medium" 
+                                            :class="{'text-red-600 font-bold': staffMember.availability.days.length > 0 && getShiftCount(staffMember.id) < 5}"
+                                            x-text="staffMember.name + ' (' + (staffMember.types ? staffMember.types.join(', ') : '') + ')'"></td>
+                                        <template x-for="day in weekDates" :key="day.fullDate">
+                                            <td class="py-3 px-4 border-b text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <input type="text" 
+                                                        class="w-full p-1 border rounded-md" 
+                                                        placeholder="-"
+                                                        :class="getShiftCellClass(staffMember.id, day.fullDate)"
+                                                        :value="formatShiftForDisplay(staffMember.id, day.fullDate)"
+                                                        @blur="updateShiftFromInput($event, staffMember.id, day.fullDate)"
+                                                        @keydown.enter.prevent="$event.target.blur()">
+                                                    <button @click="toggleShiftLock(staffMember.id, day.fullDate)" class="text-gray-400 hover:text-blue-500" :class="{'text-blue-600': schedule[staffMember.id]?.[day.fullDate]?.locked}" title="Lock Shift">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </template>
+                                        <td class="py-3 px-4 border-b text-xs text-gray-600">
+                                            <div>
+                                                <div>Sat: <span class="font-semibold" x-text="getRollingTally(staffMember.id).saturdays"></span></div>
+                                                <div>Fri Close: <span class="font-semibold" x-text="getRollingTally(staffMember.id).friCloses"></span></div>
+                                                <div>Total Close: <span class="font-semibold" x-text="getRollingTally(staffMember.id).closes"></span></div>
+                                                <div>CBC: <span class="font-semibold" x-text="getRollingTally(staffMember.id).cbc"></span></div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 border-b text-xs text-gray-500">
+                                            <div x-show="fairnessScores[staffMember.id]">
+                                                <div>Close Score: <span class="font-semibold" x-text="fairnessScores[staffMember.id]?.closing.toFixed(1)"></span></div>
+                                                <div>Open Score: <span class="font-semibold" x-text="fairnessScores[staffMember.id]?.opening.toFixed(1)"></span></div>
+                                                <div>CBC Score: <span class="font-semibold" x-text="fairnessScores[staffMember.id]?.cbc.toFixed(1)"></span></div>
+                                            </div>
+                                        </td>
+                                     </tr>
+                                </template>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-gray-100 font-bold border-t-2 border-gray-300">
+                                    <td class="py-2 px-4">Daily Tally</td>
+                                    <template x-for="day in weekDates" :key="day.fullDate">
+                                        <td class="py-2 px-4 text-center text-xs">
+                                            <div>
+                                                <div>Open: <span x-text="getDailyTally(day.fullDate, day.name).open" class="font-normal"></span></div>
+                                                <div>Mid: <span x-text="getDailyTally(day.fullDate, day.name).mid" class="font-normal"></span></div>
+                                                <div>Close: <span x-text="getDailyTally(day.fullDate, day.name).close" class="font-normal"></span></div>
+                                                <div>CBC: <span x-text="getDailyTally(day.fullDate, day.name).cbc" class="font-normal"></span></div>
+                                                <div>Offsite: <span x-text="getDailyTally(day.fullDate, day.name).offsite" class="font-normal"></span></div>
+                                            </div>
+                                        </td>
+                                    </template>
+                                    <td class="py-2 px-4"></td>
+                                    <td class="py-2 px-4"></td> </tr>
+                            </tfoot>
+                        </table>
+                   </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'staff'" x-cloak>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Manage Staff & Availability</h2>
+                        <div class="flex items-center gap-4">
+                            <span x-show="saveStatus" x-text="saveStatus" class="text-green-600 font-medium" x-transition></span>
+                            <button @click="saveDataToLocalStorage()" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-1">
+                            <h3 class="text-lg font-medium mb-3">Add New Staff</h3>
+                            <form @submit.prevent="addStaff()" class="space-y-4">
+                                <div>
+                                    <label for="staffName" class="label">Name</label>
+                                    <input type="text" id="staffName" x-model="newStaffName" class="input" placeholder="e.g., Brock Carter">
+                                </div>
+                                <div>
+                                    <label class="label">Role(s)</label>
+                                    <div class="mt-2 flex flex-wrap gap-x-4 gap-y-2 p-2 border rounded-md bg-white">
+                                        <template x-for="st in staffTypes" :key="st">
+                                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                                <input type="checkbox" :value="st" x-model="newStaffTypes">
+                                                <span x-text="st"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full">Add Staff</button>
+                            </form>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h3 class="text-lg font-medium mb-3">Current Staff</h3>
+                             <div class="space-y-3">
+                                 <template x-for="staff in sortedStaff" :key="staff.id">
+                                      <div class="bg-gray-50 p-4 rounded-lg">
+                                         <div class="flex justify-between items-start">
+                                             <div class="flex-grow">
+                                                 <template x-if="editingStaffId !== staff.id">
+                                                     <p class="font-semibold" x-text="staff.name"></p>
+                                                 </template>
+                                                 <template x-if="editingStaffId === staff.id">
+                                                     <input type="text" x-model="staff.name" class="input font-semibold" @keydown.enter="editingStaffId = null; saveDataToLocalStorage()" @blur="editingStaffId = null; saveDataToLocalStorage()" x-init="$nextTick(() => $el.focus())">
+                                                 </template>
+                                                 <div class="mt-2">
+                                                      <p class="label text-sm mb-1">Roles</p>
+                                                      <div class="flex flex-wrap gap-x-3 gap-y-1">
+                                                          <template x-for="st in staffTypes" :key="st">
+                                                               <label class="flex items-center gap-1.5 cursor-pointer text-sm">
+                                                                   <input type="checkbox" :value="st" x-model="staff.types">
+                                                                   <span x-text="st"></span>
+                                                               </label>
+                                                          </template>
+                                                      </div>
+                                                 </div>
+                                             </div>
+                                             <div class="flex items-center gap-2 flex-shrink-0 ml-4">
+                                                 <template x-if="editingStaffId !== staff.id">
+                                                     <button @click="editingStaffId = staff.id" class="btn btn-secondary text-xs px-2 py-1">Edit</button>
+                                                 </template>
+                                                 <template x-if="editingStaffId === staff.id">
+                                                     <button @click="editingStaffId = null; saveDataToLocalStorage()" class="btn btn-primary text-xs px-2 py-1">Done</button>
+                                                 </template>
+                                                 <button @click="deleteStaff(staff.id)" class="btn-danger rounded-full w-8 h-8 flex items-center justify-center">&times;</button>
+                                             </div>
+                                         </div>
+                                         <div class="mt-4">
+                                             <p class="label mb-2">Availability</p>
+                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                 <div>
+                                                     <p class="text-sm font-medium">Days</p>
+                                                     <div class="flex flex-wrap gap-2 mt-1">
+                                                         <template x-for="day in daysOfWeek">
+                                                             <label class="flex items-center gap-1 text-sm">
+                                                                 <input type="checkbox" :value="day" x-model="staff.availability.days">
+                                                                 <span x-text="day"></span>
+                                                             </label>
+                                                         </template>
+                                                     </div>
+                                                 </div>
+                                                 <div>
+                                                     <p class="text-sm font-medium">Shift Types</p>
+                                                     <div class="flex flex-wrap gap-2 mt-1">
+                                                         <template x-for="shift in shiftTypes">
+                                                             <label class="flex items-center gap-1 text-sm">
+                                                                 <input type="checkbox" :value="shift" x-model="staff.availability.shifts">
+                                                                 <span x-text="shift"></span>
+                                                             </label>
+                                                         </template>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                      </div>
+                                 </template>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div x-show="activeTab === 'shifts'" x-cloak>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Shift Rules</h2>
+                        <div class="flex items-center gap-4">
+                            <span x-show="saveStatus" x-text="saveStatus" class="text-green-600 font-medium" x-transition></span>
+                            <button @click="saveDataToLocalStorage()" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <template x-for="shiftType in shiftTypes" :key="shiftType">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h3 class="font-bold text-lg mb-3" x-text="shiftType"></h3>
+                                <div class="mb-4">
+                                    <p class="label mb-2">Applies to Days</p>
+                                    <div class="flex flex-wrap gap-x-4 gap-y-2">
+                                        <template x-for="day in daysOfWeek" :key="day">
+                                            <label class="flex items-center gap-1.5">
+                                                <input type="checkbox" :value="day" x-model="data.shift_rules[shiftType].days">
+                                                <span x-text="day"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="label mb-2">Min/Max Staff Requirements</p>
+                                    <div class="space-y-2">
+                                        <template x-for="st in staffTypes" :key="st">
+                                            <div class="grid grid-cols-3 items-center gap-2">
+                                                <label class="font-medium" x-text="st"></label>
+                                                <input type="number" min="0" class="input text-center" placeholder="Min" x-model.number="data.shift_rules[shiftType].min_max[st].min">
+                                                <input type="number" min="0" class="input text-center" placeholder="Max" x-model.number="data.shift_rules[shiftType].min_max[st].max">
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'timeoff'" x-cloak>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Approved Requests</h2>
+                        <div class="flex items-center gap-4">
+                            <span x-show="saveStatus" x-text="saveStatus" class="text-green-600 font-medium" x-transition></span>
+                            <button @click="saveDataToLocalStorage()" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-1">
+                            <h3 class="text-lg font-medium mb-3">Add Request</h3>
+                            <form @submit.prevent="addTimeOff()" class="space-y-4">
+                                <div>
+                                    <label class="label" for="timeoff-staff">Staff Member</label>
+                                    <select id="timeoff-staff" x-model="timeoff.staffId" class="input">
+                                        <option value="" disabled>Choose an associate...</option>
+                                        <template x-for="staff in sortedStaff"><option :value="staff.id" x-text="staff.name"></option></template>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="label" for="timeoff-start">Start Date</label>
+                                    <input type="date" id="timeoff-start" x-model="timeoff.startDate" class="input">
+                                </div>
+                                <div x-show="timeoff.requestType === 'Off'">
+                                    <label class="label" for="timeoff-end">End Date</label>
+                                    <input type="date" id="timeoff-end" x-model="timeoff.endDate" class="input">
+                                </div>
+                                <div>
+                                    <label class="label" for="timeoff-request-type">Request Type</label>
+                                    <select id="timeoff-request-type" x-model="timeoff.requestType" class="input">
+                                        <option value="Off">Day Off (allows date range)</option>
+                                        <option value="8-5">8a-5p</option>
+                                        <option value="9-6">9a-6p</option>
+                                        <option value="10-7">10a-7p</option>
+                                        <option value="11-8">11a-8p</option>
+                                        <option value="12-9">12p-9p</option>
+                                        <option value="CBC">CBC</option>
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1" x-show="timeoff.requestType !== 'Off'">End date will be same as start date.</p>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full">Add Request</button>
+                            </form>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h3 class="text-lg font-medium mb-3">Scheduled Requests</h3>
+                            <div class="space-y-2">
+                                <template x-if="data.time_off.length === 0">
+                                    <p class="text-gray-500">No requests have been added.</p>
+                                </template>
+                                <template x-for="t in data.time_off" :key="t.id">
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md">
+                                        <div>
+                                            <p class="font-semibold" x-text="t.staffName"></p>
+                                            <p class="text-sm text-gray-600" x-text="t.startDate === t.endDate ? `${t.startDate}: ${t.requestType}` : `${t.startDate} to ${t.endDate}: ${t.requestType}`"></p>
+                                        </div>
+                                        <button @click="removeTimeOff(t.id)" class="btn-danger rounded-full w-8 h-8 flex items-center justify-center">&times;</button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div x-show="activeTab === 'browse'" x-cloak>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-semibold mb-4">Browse Past Schedules</h2>
+                     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                        <div class="flex items-center gap-4">
+                            <button @click="changeWeek(-1, 'browse')" class="btn btn-secondary">&larr; Previous</button>
+                            <span class="text-lg font-medium w-48 text-center" x-text="getWeekDisplay('browse')"></span>
+                            <button @click="changeWeek(1, 'browse')" class="btn btn-secondary">Next &rarr;</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Export this view:</span>
+                            <button @click="exportScheduleAs('csv', 'browse-table-container')" class="btn btn-primary text-xs px-3 py-1">CSV</button>
+                            <button @click="exportScheduleAs('jpg', 'browse-table-container')" class="btn btn-secondary text-xs px-3 py-1">JPG</button>
+                            <button @click="exportScheduleAs('pdf', 'browse-table-container')" class="btn btn-secondary text-xs px-3 py-1">PDF</button>
+                        </div>
+                    </div>
+                    <div x-show="!getBrowseSchedule()" class="text-center py-8 text-gray-500">
+                         <p>No schedule found for this week.</p>
+                    </div>
+                    <div x-show="getBrowseSchedule()" class="overflow-x-auto" id="browse-table-container">
+                         <table class="min-w-full bg-white border border-gray-200" id="browse-table">
+                             <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="py-3 px-4 border-b text-left font-semibold text-gray-600">Staff Member</th>
+                                    <template x-for="day in browseWeekDates" :key="day.fullDate">
+                                        <th class="py-3 px-4 border-b text-center font-semibold text-gray-600">
+                                            <span x-text="day.name"></span>
+                                            <div class="text-sm text-gray-500" x-text="day.date"></div>
+                                        </th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="staffMember in sortedStaff" :key="staffMember.id">
+                                     <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 border-b font-medium" x-text="staffMember.name + ' (' + (staffMember.types ? staffMember.types.join(', ') : '') + ')'"></td>
+                                        <template x-for="day in browseWeekDates" :key="day.fullDate">
+                                            <td class="py-3 px-4 border-b text-center" x-text="getBrowseSchedule()?.[staffMember.id]?.[day.fullDate] ? `${getBrowseSchedule()[staffMember.id][day.fullDate].time} (${getBrowseSchedule()[staffMember.id][day.fullDate].type})` : '-' "></td>
+                                        </template>
+                                     </tr>
+                                </template>
+                            </tbody>
+                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'import_export'" x-cloak>
+                <div class="bg-white p-6 rounded-lg shadow-sm space-y-8">
+                    <div>
+                        <h2 class="text-2xl font-semibold mb-4">Import Time Off & Requests</h2>
+                        <p class="mb-2 text-gray-600">Select a CSV file to import requests. The file must have the following columns in order: <code class="bg-gray-200 p-1 rounded">staffName,startDate,endDate,requestType</code>.</p>
+                        <p class="text-xs text-gray-500 mb-4">Example: John Smith,2025-12-25,2025-12-25,Off</p>
+                        <input type="file" @change="importRequestsFromCSV" accept=".csv" class="input">
+                    </div>
+                    <hr>
+                    <div>
+                        <h2 class="text-2xl font-semibold mb-4">Data Backup & Restore</h2>
+                        <p class="mb-4 text-gray-600">Export all staff, rules, and schedules to a single JSON file. You can use this file to restore your data on another computer or browser.</p>
+                        <div class="flex items-center gap-4">
+                            <button @click="exportAllData()" class="btn btn-primary">Export All Data (JSON)</button>
+                            <button @click="$refs.importDataInput.click()" class="btn btn-secondary">Import Data (JSON)</button>
+                            <input type="file" x-ref="importDataInput" @change="importAllData" accept=".json" class="hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
