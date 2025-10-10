@@ -519,36 +519,29 @@ document.addEventListener('alpine:init', () => {
             });
         },
         
-        generateTrainingShifts(tempSchedule) {
-            this.generationErrors.push("Generating Training shifts...");
+generateTrainingShifts(tempSchedule) {
+    this.generationErrors.push("Generating Training shifts...");
 
-            // Iterate through all staff members
-            this.data.staff.forEach(staff => {
-                // Check if staff is eligible for Training shifts at all
-                if (!staff.availability.shifts.includes('Training')) {
-                    return; // continue to next staff member
-                }
+    // Loop through each day of the week
+    for (const day of this.weekDates) {
+        // Loop through each staff member
+        for (const staff of this.data.staff) {
+            // Check if staff is eligible for Training shifts
+            if (!staff.availability.shifts.includes('Training')) continue;
 
-                // Loop to fill remaining shifts up to 5
-                while (this.getShiftCount(staff.id, tempSchedule) < 5) {
-                    let shiftAssignedInPass = false;
+            // Check if the shift is already assigned
+            if (tempSchedule[staff.id]?.[day.fullDate]) continue;
 
-                    // Find an available day for this staff member
-                    for (const day of this.weekDates) {
-                        if (this.isStaffEligibleForShift(staff, day, tempSchedule)) {
-                            this.assignShift(staff.id, day.fullDate, '9a-5p', 'Training', tempSchedule);
-                            this.generationErrors.push(`Assigned Training shift to ${staff.name} on ${day.name}.`);
-                            this.updateFairnessScoreOnAssignment(staff.id, day, '9a-5p', 'Training');
-                            shiftAssignedInPass = true;
-                            break; // Exit day loop to re-evaluate the while condition
-                        }
-                    }
+            // Check if staff is eligible for this day
+            if (!this.isStaffEligibleForShift(staff, day, tempSchedule)) continue;
 
-                    // If a full pass over the days yields no assignment, stop for this staff member.
-                    if (!shiftAssignedInPass) break;
-                }
-            });
-        },
+            // Assign Training shift
+            this.assignShift(staff.id, day.fullDate, '9a-5p', 'Training', tempSchedule);
+            this.generationErrors.push(`Assigned Training shift to ${staff.name} on ${day.name}.`);
+            this.updateFairnessScoreOnAssignment(staff.id, day, '9a-5p', 'Training');
+        }
+    }
+},
 
         generateCbcShifts(tempSchedule) {
             this.generationErrors.push("Generating CBC shifts...");
