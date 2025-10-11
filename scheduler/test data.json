@@ -156,7 +156,7 @@
         "shifts": [
           "Lane",
           "Lane VCA",
-          "BAA",
+          "BAAA",
           "CBC",
           "Remote",
           "Offer",
@@ -185,7 +185,7 @@
         "shifts": [
           "Lane",
           "Lane VCA",
-          "BAA",
+          "BAAA",
           "CBC",
           "Remote",
           "Offer",
@@ -439,520 +439,154 @@
         "Sat"
       ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       },
       "daily_requirements": {
-        "Sun": 0,
-        "Mon": 2,
-        "Tue": 2,
-        "Wed": 2,
-        "Thu": 2,
-        "Fri": 2,
-        "Sat": 2
+        "Sun": 0, "Mon": 2, "Tue": 2, "Wed": 2, "Thu": 2, "Fri": 2, "Sat": 2
       }
     },
     "CBC": {
-      "days": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat"
-      ],
+      "days": [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": 1,
-          "max": null
-        },
-        "B": {
-          "min": 1,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
-      }
-    },
-    "BAA": {
-      "days": [
-        "Wed"
-      ],
-      "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": 1, "max": null },
+        "B": { "min": 1, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "MNJ": {
-      "days": [
-        "Wed"
-      ],
+      "days": [ "Wed" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": 4,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": 4, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "MPA": {
-      "days": [
-        "Fri"
-      ],
+      "days": [ "Fri" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": 3,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": 3, "max": null }
       }
     },
     "Remote": {
       "days": [],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "Training": {
       "days": [],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "Lane": {
-      "days": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat"
-      ],
+      "days": [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": 2,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": 2, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "Lane VCA": {
-      "days": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat"
-      ],
+      "days": [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "BAAA": {
-      "days": [
-        "Thu"
-      ],
+      "days": [ "Thu" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": 4,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": null,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": 4, "max": null },
+        "BAAA Preview": { "min": null, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     },
     "BAAA Preview": {
-      "days": [
-        "Wed"
-      ],
+      "days": [ "Wed" ],
       "min_max": {
-        "PM": {
-          "min": null,
-          "max": null
-        },
-        "APM": {
-          "min": null,
-          "max": null
-        },
-        "SB": {
-          "min": null,
-          "max": null
-        },
-        "B": {
-          "min": null,
-          "max": null
-        },
-        "VCA": {
-          "min": null,
-          "max": null
-        },
-        "BA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA": {
-          "min": null,
-          "max": null
-        },
-        "BAAA Preview": {
-          "min": 2,
-          "max": null
-        },
-        "MNJ": {
-          "min": null,
-          "max": null
-        },
-        "MPA": {
-          "min": null,
-          "max": null
-        }
+        "PM": { "min": null, "max": null },
+        "APM": { "min": null, "max": null },
+        "SB": { "min": null, "max": null },
+        "B": { "min": null, "max": null },
+        "VCA": { "min": null, "max": null },
+        "BA": { "min": null, "max": null },
+        "BAAA": { "min": null, "max": null },
+        "BAAA Preview": { "min": 2, "max": null },
+        "MNJ": { "min": null, "max": null },
+        "MPA": { "min": null, "max": null }
       }
     }
   },
@@ -968,1314 +602,356 @@
   ],
   "schedules": {
     "2025-10-05": {
-      "1": {},
-      "2": {},
-      "3": {},
-      "4": {},
+      "1": {}, "2": {}, "3": {}, "4": {},
       "5": {
-        "2025-10-08": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-08": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-09": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-10": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "6": {
-        "2025-10-11": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-11": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-06": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-07": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-09": { "time": "9a-6p", "type": "Lane VCA", "locked": false }
       },
       "7": {
-        "2025-10-06": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-06": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-07": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-08": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-09": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-10": { "time": "9a-6p", "type": "Lane VCA", "locked": false }
       },
       "8": {
-        "2025-10-07": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-07": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-10": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-06": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-08": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-11": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "9": {
-        "2025-10-09": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-09": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-10": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-11": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "10": {
-        "2025-10-08": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "9a-5p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-08": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-09": { "time": "9a-5p", "type": "BAAA", "locked": false },
+        "2025-10-10": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "Offer", "locked": false },
+        "2025-10-11": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "11": {
-        "2025-10-10": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-10": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-08": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-11": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "12": {
-        "2025-10-10": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-10": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-08": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-09": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-11": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "13": {
-        "2025-10-11": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "OFF",
-          "type": "OFF",
-          "locked": true
-        }
+        "2025-10-11": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-06": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-07": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-08": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-09": { "time": "OFF", "type": "OFF", "locked": true }
       },
       "14": {},
       "15": {
-        "2025-10-07": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-07": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-10": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-11": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-09": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "16": {
-        "2025-10-06": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-06": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-10": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-09": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "17": {
-        "2025-10-10": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-09": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-10": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-09": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "18": {
-        "2025-10-09": {
-          "time": "12p-9p",
-          "type": "LANE VCA",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-09": { "time": "12p-9p", "type": "LANE VCA", "locked": false },
+        "2025-10-10": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-11": { "time": "11a-8p", "type": "Lane VCA", "locked": false }
       },
       "19": {},
       "20": {
-        "2025-10-09": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-11": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-09": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-08": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-11": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-10": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "21": {
-        "2025-10-11": {
-          "time": "9a-6p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-10": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-08": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-06": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-07": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-11": { "time": "9a-6p", "type": "Lane", "locked": false },
+        "2025-10-10": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-08": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-06": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-07": { "time": "10a-7p", "type": "CBC", "locked": false }
       }
-    },
-    "2025-10-06": {
-      "5": {},
-      "6": {},
-      "7": {},
-      "8": {},
-      "9": {},
-      "10": {},
-      "11": {},
-      "12": {},
-      "13": {},
-      "14": {},
-      "15": {},
-      "16": {},
-      "17": {},
-      "18": {},
-      "19": {},
-      "20": {},
-      "21": {}
     },
     "2025-10-12": {
       "5": {
-        "2025-10-16": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-16": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-17": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-15": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "6": {
-        "2025-10-13": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-13": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-14": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-15": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-16": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-17": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "7": {
-        "2025-10-14": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-14": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-13": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-15": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-16": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-17": { "time": "9a-6p", "type": "Lane VCA", "locked": false }
       },
       "8": {
-        "2025-10-13": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-13": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-18": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-14": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-16": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-17": { "time": "11a-8p", "type": "Lane VCA", "locked": false }
       },
       "9": {
-        "2025-10-16": {
-          "time": "9a-5p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "BAAA Preview",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-16": { "time": "9a-5p", "type": "BAAA", "locked": false },
+        "2025-10-15": { "time": "9a-5p", "type": "BAAA Preview", "locked": false },
+        "2025-10-17": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "Offer", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "10": {
-        "2025-10-17": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        }
+        "2025-10-17": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-16": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-18": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-15": { "time": "12p-9p", "type": "Lane", "locked": false }
       },
       "11": {
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-15": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-17": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-18": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-16": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "12": {
-        "2025-10-16": {
-          "time": "9a-5p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-16": { "time": "9a-5p", "type": "BAAA", "locked": false },
+        "2025-10-15": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-13": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-17": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-18": { "time": "9a-6p", "type": "CBC", "locked": false }
       },
       "13": {
-        "2025-10-17": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        }
+        "2025-10-17": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-13": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-14": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-15": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-16": { "time": "8a-5p", "type": "Lane", "locked": false }
       },
       "15": {
-        "2025-10-17": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-17": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-14": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-16": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-15": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "16": {
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "9a-6p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-15": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-17": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-18": { "time": "9a-6p", "type": "Lane", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-16": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "17": {
-        "2025-10-16": {
-          "time": "9a-5p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "BAAA Preview",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "9a-5p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-16": { "time": "9a-5p", "type": "BAAA", "locked": false },
+        "2025-10-15": { "time": "9a-5p", "type": "BAAA Preview", "locked": false },
+        "2025-10-17": { "time": "9a-5p", "type": "MPA", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "18": {
-        "2025-10-15": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-15": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-18": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "20": {
-        "2025-10-16": {
-          "time": "9a-5p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-13": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-16": { "time": "9a-5p", "type": "BAAA", "locked": false },
+        "2025-10-15": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-18": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-17": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-13": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "21": {
-        "2025-10-15": {
-          "time": "9a-5p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-18": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-14": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-16": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-17": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-15": { "time": "9a-5p", "type": "MNJ", "locked": false },
+        "2025-10-18": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-14": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-16": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-17": { "time": "10a-7p", "type": "CBC", "locked": false }
       }
     },
     "2025-09-28": {
       "5": {
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-09-29": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-01": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "Lane VCA", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "6": {
-        "2025-09-30": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-09-30": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-01": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-09-29": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-02": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-03": { "time": "9a-6p", "type": "Lane VCA", "locked": false }
       },
       "7": {
-        "2025-09-29": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "9a-6p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-09-29": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-09-30": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-01": { "time": "9a-6p", "type": "Lane VCA", "locked": false },
+        "2025-10-02": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-03": { "time": "11a-8p", "type": "Lane VCA", "locked": false }
       },
       "8": {
-        "2025-10-02": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "11a-8p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "10a-7p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-02": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-09-29": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-09-30": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-01": { "time": "11a-8p", "type": "Lane VCA", "locked": false },
+        "2025-10-04": { "time": "10a-7p", "type": "Lane VCA", "locked": false }
       },
       "9": {
-        "2025-10-02": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "9a-5p",
-          "type": "BAAA Preview",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-02": { "time": "7:45a-2p", "type": "BAAA", "locked": false },
+        "2025-10-01": { "time": "9a-5p", "type": "BAAA Preview", "locked": false },
+        "2025-10-03": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-04": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "10": {
-        "2025-10-03": {
-          "time": "7:15a-3p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        }
+        "2025-10-03": { "time": "7:15a-3p", "type": "MPA", "locked": false },
+        "2025-09-30": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-04": { "time": "10a-7p", "type": "Offer", "locked": false },
+        "2025-10-01": { "time": "12p-9p", "type": "Lane", "locked": false }
       },
       "11": {
-        "2025-10-01": {
-          "time": "8a-2p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-01": { "time": "8a-2p", "type": "MNJ", "locked": false },
+        "2025-10-03": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-04": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "12": {
-        "2025-10-02": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "8a-2p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-02": { "time": "7:45a-2p", "type": "BAAA", "locked": false },
+        "2025-10-01": { "time": "8a-2p", "type": "MNJ", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "13": {
-        "2025-10-03": {
-          "time": "7:15a-3p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        }
+        "2025-10-03": { "time": "7:15a-3p", "type": "MPA", "locked": false },
+        "2025-09-29": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-09-30": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-01": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-02": { "time": "8a-5p", "type": "Lane", "locked": false }
       },
       "15": {
-        "2025-10-03": {
-          "time": "7:15a-3p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "8a-5p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-03": { "time": "7:15a-3p", "type": "MPA", "locked": false },
+        "2025-09-29": { "time": "8a-5p", "type": "Lane", "locked": false },
+        "2025-10-04": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-01": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "16": {
-        "2025-10-01": {
-          "time": "8a-2p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-01": { "time": "8a-2p", "type": "MNJ", "locked": false },
+        "2025-10-04": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "17": {
-        "2025-10-02": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "9a-5p",
-          "type": "BAAA Preview",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "7:15a-3p",
-          "type": "MPA",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-02": { "time": "7:45a-2p", "type": "BAAA", "locked": false },
+        "2025-10-01": { "time": "9a-5p", "type": "BAAA Preview", "locked": false },
+        "2025-10-03": { "time": "7:15a-3p", "type": "MPA", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "18": {
-        "2025-10-03": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "12p-9p",
-          "type": "Lane VCA",
-          "locked": false
-        }
+        "2025-10-03": { "time": "12p-9p", "type": "Lane VCA", "locked": false },
+        "2025-10-04": { "time": "12p-9p", "type": "Lane VCA", "locked": false }
       },
       "19": {
-        "2025-10-04": {
-          "time": "9a-6p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        }
+        "2025-10-04": { "time": "9a-6p", "type": "CBC", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-10-02": { "time": "10a-7p", "type": "CBC", "locked": false }
       },
       "20": {
-        "2025-10-02": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        },
-        "2025-10-01": {
-          "time": "8a-2p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-29": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-02": { "time": "7:45a-2p", "type": "BAAA", "locked": false },
+        "2025-10-01": { "time": "8a-2p", "type": "MNJ", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-29": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "Offer", "locked": false }
       },
       "21": {
-        "2025-10-01": {
-          "time": "8a-2p",
-          "type": "MNJ",
-          "locked": false
-        },
-        "2025-10-02": {
-          "time": "12p-9p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-04": {
-          "time": "9a-6p",
-          "type": "Lane",
-          "locked": false
-        },
-        "2025-10-03": {
-          "time": "10a-7p",
-          "type": "CBC",
-          "locked": false
-        },
-        "2025-09-30": {
-          "time": "10a-7p",
-          "type": "Offer",
-          "locked": false
-        }
+        "2025-10-01": { "time": "8a-2p", "type": "MNJ", "locked": false },
+        "2025-10-02": { "time": "12p-9p", "type": "Lane", "locked": false },
+        "2025-10-04": { "time": "9a-6p", "type": "Lane", "locked": false },
+        "2025-10-03": { "time": "10a-7p", "type": "CBC", "locked": false },
+        "2025-09-30": { "time": "10a-7p", "type": "Offer", "locked": false }
       }
     },
     "2025-09-21": {
       "9": {
-        "2025-09-25": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        }
+        "2025-09-25": { "time": "7:45a-2p", "type": "BAAA", "locked": false }
       },
       "12": {
-        "2025-09-25": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        }
+        "2025-09-25": { "time": "7:45a-2p", "type": "BAAA", "locked": false }
       },
       "17": {
-        "2025-09-25": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        }
+        "2025-09-25": { "time": "7:45a-2p", "type": "BAAA", "locked": false }
       },
       "20": {
-        "2025-09-25": {
-          "time": "7:45a-2p",
-          "type": "BAAA",
-          "locked": false
-        }
+        "2025-09-25": { "time": "7:45a-2p", "type": "BAAA", "locked": false }
       }
     }
   },
   "store_hours": {
-    "Sun": {
-      "open": 6,
-      "close": 6,
-      "text": "6a-6a"
-    },
-    "Mon": {
-      "open": 8,
-      "close": 21,
-      "text": "8a-9p"
-    },
-    "Tue": {
-      "open": 8,
-      "close": 21,
-      "text": "8a-9p"
-    },
-    "Wed": {
-      "open": 8,
-      "close": 21,
-      "text": "8a-9p"
-    },
-    "Thu": {
-      "open": 8,
-      "close": 21,
-      "text": "8a-9p"
-    },
-    "Fri": {
-      "open": 8,
-      "close": 21,
-      "text": "8a-9p"
-    },
-    "Sat": {
-      "open": 9,
-      "close": 21,
-      "text": "9a-9p"
-    }
+    "Sun": { "open": 6, "close": 6, "text": "6a-6a" },
+    "Mon": { "open": 8, "close": 21, "text": "8a-9p" },
+    "Tue": { "open": 8, "close": 21, "text": "8a-9p" },
+    "Wed": { "open": 8, "close": 21, "text": "8a-9p" },
+    "Thu": { "open": 8, "close": 21, "text": "8a-9p" },
+    "Fri": { "open": 8, "close": 21, "text": "8a-9p" },
+    "Sat": { "open": 9, "close": 21, "text": "9a-9p" }
   },
   "advanced_rules": {
     "cbc": {
       "dailyMax": 4,
-      "dayPriority": [
-        "Sat",
-        "Fri",
-        "Mon"
-      ],
+      "dayPriority": [ "Sat", "Fri", "Mon" ],
       "allowBAOverride": true
     },
     "apm": {
@@ -2283,31 +959,11 @@
       "minClosingShifts": 1
     },
     "day_priority": {
-      "cbc": {
-        "Sun": 7,
-        "Mon": 3,
-        "Tue": 4,
-        "Wed": 6,
-        "Thu": 5,
-        "Fri": 2,
-        "Sat": 1
-      },
-      "lane": {
-        "Sun": 7,
-        "Mon": 3,
-        "Tue": 4,
-        "Wed": 6,
-        "Thu": 5,
-        "Fri": 2,
-        "Sat": 1
-      }
+      "cbc": { "Sun": 7, "Mon": 3, "Tue": 4, "Wed": 6, "Thu": 5, "Fri": 2, "Sat": 1 },
+      "lane": { "Sun": 7, "Mon": 3, "Tue": 4, "Wed": 6, "Thu": 5, "Fri": 2, "Sat": 1 }
     },
     "vca_shift_priority": {
-      "10-7": 1,
-      "11-8": 4,
-      "12-9": 2,
-      "9-6": 3,
-      "8-5": 0
+      "10-7": 1, "11-8": 4, "12-9": 2, "9-6": 3, "8-5": 0
     },
     "default_shift_hours": {
       "Offer": "10a-7p",
