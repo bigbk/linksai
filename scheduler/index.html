@@ -173,7 +173,7 @@
                             <tbody>
                                 <template :key="staffMember.id" x-for="staffMember in sortedStaff">
                                     <tr class="hover:bg-gray-50">
-                                        <td :class="{'text-red-600 font-bold': staffMember.availability.days.length > 0 && getShiftCount(staffMember.id) < 5}"
+                                        <td :class="{'text-red-600 font-bold': staffMember.availability.shifts.length > 0 && getShiftCount(staffMember.id) < 5}"
                                             :title="staffMember.types ? staffMember.types.join(', ') : ''"
                                             class="py-3 px-4 border-b font-medium" x-text="staffMember.name">
                                         </td>
@@ -340,16 +340,14 @@
                                         </div>
                                         <div class="mt-4">
                                             <p class="label mb-2">Availability</p>
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <p class="text-sm font-medium">Days</p>
-                                                    <div class="flex flex-wrap gap-2 mt-1">
-                                                        <template x-for="day in daysOfWeek">
-                                                            <label class="flex items-center gap-1 text-sm">
-                                                                <input :value="day" type="checkbox"
-                                                                    x-model="staff.availability.days" />
-                                                                <span x-text="day"></span>
-                                                            </label>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                                                <div class="space-y-2">
+                                                    <p class="text-sm font-medium">Available Hours per Day</p>
+                                                    <template :key="day" x-for="day in daysOfWeek">
+                                                        <div class="grid grid-cols-3 items-center gap-2">
+                                                            <label class="text-sm" x-text="day"></label>
+                                                            <input @blur="saveDataToLocalStorage()" class="input text-xs p-1" placeholder="e.g., 9a" type="text" x-model="staff.availability.hours[day].start" />
+                                                            <input @blur="saveDataToLocalStorage()" class="input text-xs p-1" placeholder="e.g., 5p" type="text" x-model="staff.availability.hours[day].end" />
                                                         </template>
                                                     </div>
                                                 </div>
@@ -401,31 +399,27 @@
                                     </div>
                                 </div>
                                 <!-- Standard Min/Max rules for all shifts EXCEPT Offer -->
-                                <div x-show="systemName !== 'Offer'">
+                                <div x-show="systemName !== 'Offer' && systemName !== 'Lane VCA'">
                                     <p class="label mb-2">Min/Max Staff Requirements</p>
                                     <div class="space-y-2">
                                         <template :key="roleSystemName" x-for="roleSystemName in staffTypes">
                                             <div class="grid grid-cols-3 items-center gap-2">
                                                 <label class="font-medium" x-text="getRoleName(roleSystemName)"></label>
-                                                <input :disabled="!data.shift_rules[systemName]"
-                                                    class="input text-center" min="0" placeholder="Min" type="number"
-                                                    x-model.number="data.shift_rules[systemName].min_max[roleSystemName].min" />
-                                                <input :disabled="!data.shift_rules[systemName]"
-                                                    class="input text-center" min="0" placeholder="Max" type="number"
-                                                    x-model.number="data.shift_rules[systemName].min_max[roleSystemName].max" />
+                                                <input :disabled="!data.shift_rules[systemName]" class="input text-center" min="0" placeholder="Min" type="number" x-model.number="data.shift_rules[systemName].min_max[roleSystemName].min" />
+                                                <input :disabled="!data.shift_rules[systemName]" class="input text-center" min="0" placeholder="Max" type="number" x-model.number="data.shift_rules[systemName].min_max[roleSystemName].max" />
                                             </div>
                                         </template>
                                     </div>
                                 </div>
                                 <!-- Special daily requirements for Offer shifts -->
-                                <div x-show="systemName === 'Offer'">
+                                <div x-show="systemName === 'Offer' || systemName === 'Lane VCA'">
                                     <p class="label mb-2">Number of Shifts Required Per Day</p>
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         <template :key="day" x-for="day in daysOfWeek">
                                             <div class="flex flex-col">
                                                 <label class="font-medium text-sm" x-text="day"></label>
                                                 <input class="input text-center" min="0" placeholder="0" type="number"
-                                                    x-model.number="data.shift_rules['Offer'].daily_requirements[day]" />
+                                                    x-model.number="data.shift_rules[systemName].daily_requirements[day]" />
                                             </div>
                                         </template>
                                     </div>
