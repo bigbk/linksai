@@ -84,6 +84,12 @@ document.addEventListener('alpine:init', () => {
                 defaultShiftRules["Offer"].daily_requirements[day] = 0;
             });
 
+            // Special setup for Lane VCA shifts
+            defaultShiftRules["Lane VCA"].daily_requirements = {};
+            this.daysOfWeek.forEach((day) => {
+                defaultShiftRules["Lane VCA"].daily_requirements[day] = 0;
+            });
+
             const defaultStoreHours = {};
             this.daysOfWeek.forEach((day) => {
                 defaultStoreHours[day] = { text: "9a-9p", open: 9, close: 21 };
@@ -163,6 +169,14 @@ document.addEventListener('alpine:init', () => {
                         this.data.shift_rules[shiftType].daily_requirements[day] = 0;
                     });
                 }
+                // Special validation for Lane VCA shift daily requirements
+                if (
+                    shiftType === "Lane VCA" &&
+                    !this.data.shift_rules[shiftType].daily_requirements
+                ) {
+                    this.data.shift_rules[shiftType].daily_requirements = {};
+                    this.daysOfWeek.forEach(day => this.data.shift_rules[shiftType].daily_requirements[day] = 0);
+                }
 
                 this.staffTypes.forEach((staffType) => {
                     if (!this.data.shift_rules[shiftType].min_max[staffType]) {
@@ -176,7 +190,13 @@ document.addEventListener('alpine:init', () => {
             if (!this.data.staff) this.data.staff = [];
             this.data.staff.forEach((staff) => {
                 if (!staff.availability) {
-                    staff.availability = { days: [], shifts: [] };
+                    staff.availability = { hours: {}, shifts: [] };
+                }
+                // Migration from old 'days' array to new 'hours' object
+                if (staff.availability.days && !staff.availability.hours) {
+                    staff.availability.hours = {};
+                    this.daysOfWeek.forEach(day => staff.availability.hours[day] = { start: '', end: '' });
+                    delete staff.availability.days;
                 }
             });
             if (!this.data.time_off) this.data.time_off = [];
@@ -254,7 +274,11 @@ document.addEventListener('alpine:init', () => {
                     id: Date.now(),
                     name: this.newStaffName.trim(),
                     types: this.newStaffTypes,
-                    availability: { days: [], shifts: [] },
+                    availability: {
+                        hours: this.daysOfWeek.reduce((acc, day) => {
+                            acc[day] = { start: '', end: '' };
+                            return acc;
+                        }, {}), shifts: [] },
                 });
                 this.newStaffName = "";
                 this.newStaffTypes = [];
@@ -370,20 +394,25 @@ document.addEventListener('alpine:init', () => {
                      * @param {'current' | 'browse'} type - The type of week to calculate.
                      */
                     calculateWeekDates(type) {
+                        console.log(`[calculateWeekDates] for '${type}' starting with date:`, type === "current" ? this.currentDate : this.browseDate);
                         let date = type === "current" ? this.currentDate : this.browseDate;
                         const dayOfWeek = date.getDay(); // Sunday = 0, Saturday = 6
                         const newDates = [];
                         for (let i = 0; i < 7; i++) {
-                            const d = new Date(date);
-                            d.setDate(d.getDate() - dayOfWeek + i);
-                            const month = d.getMonth() + 1;
-                            const day = d.getDate();
+                            // Create a new date in UTC to avoid timezone-related off-by-one errors.
+                            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+                            d.setUTCDate(d.getUTCDate() - dayOfWeek + i);
+
+                            const month = d.getUTCMonth() + 1;
+                            const day = d.getUTCDate();
+
                             newDates.push({
                                 name: this.daysOfWeek[i],
                                 date: `${month}/${day}`,
-                                fullDate: d.toISOString().split("T")[0],
+                                fullDate: d.toISOString().split('T')[0],
                             });
                         }
+                        console.log(`[calculateWeekDates] for '${type}' calculated dates:`, JSON.parse(JSON.stringify(newDates)));
                         if (type === "current") {
                             this.weekDates = newDates;
                             this.schedule = this.data.schedules[this.weekDates[0].fullDate] || {};
@@ -398,8 +427,14 @@ document.addEventListener('alpine:init', () => {
                      * @param {'current' | 'browse'} type - The view to change.
                      */
                     changeWeek(direction, type) {
-                        let date = type === "current" ? this.currentDate : this.browseDate;
-                        date.setDate(date.getDate() + 7 * direction);
+                        console.group(`[changeWeek] for '${type}'`);
+                        const oldDate = type === "current" ? this.currentDate : this.browseDate;
+                        console.log('Old date:', oldDate);
+                        const newDate = new Date(oldDate);
+                        newDate.setUTCDate(newDate.getUTCDate() + 7 * direction);
+                        if (type === "current") this.currentDate = newDate;
+                        else this.browseDate = newDate;
+                        console.log('New date:', newDate);
                         this.calculateWeekDates(type);
                         if (type === "current") this.calculateFairnessScores(); // Recalculate when week changes
                     },
@@ -562,55 +597,68 @@ document.addEventListener('alpine:init', () => {
                          * @param {boolean} [showMessage=true] - Whether to show a confirmation message in the log.
                          */
                         importAndLockRequests(showMessage = true) {
+                            console.groupCollapsed(`[importAndLockRequests] showMessage: ${showMessage}`);
                             if (!this.data.time_off) return;
-
-                            const weekKey = this.weekDates[0].fullDate;
-                            if (!this.data.schedules[weekKey]) {
-                                this.data.schedules[weekKey] = {};
+                            const currentViewWeekKey = this.weekDates[0]?.fullDate;
+                            if (!currentViewWeekKey) {
+                                console.warn("`importAndLockRequests` called before `weekDates` was initialized. Aborting.");
+                                console.groupEnd();
+                                return;
                             }
+                            console.log(`Current view's week key: ${currentViewWeekKey}`);
 
                             // First, clear all existing locked shifts that were created from requests.
                             // This ensures that deleting a request and re-importing cleans up the schedule.
-                            for (const staffId in this.data.schedules[weekKey]) {
-                                for (const date in this.data.schedules[weekKey][staffId]) {
-                                    const shift = this.data.schedules[weekKey][staffId][date];
-                                    // A shift is considered from a request if it's locked and is either 'OFF'
-                                    // or a specific time request type (like '8-5', '9-6', etc.).
-                                    const isRequestType = shift.type === 'OFF' || this.formatRequestTime(shift.type) !== shift.type;
+                            for (const weekKey in this.data.schedules) {
+                                for (const staffId in this.data.schedules[weekKey]) {
+                                    for (const date in this.data.schedules[weekKey][staffId]) {
+                                        const shift = this.data.schedules[weekKey][staffId][date];
+                                        const isRequestType = shift.type === 'OFF' || this.formatRequestTime(shift.type) !== shift.type;
 
-                                    if (shift.locked && isRequestType) {
-                                        delete this.data.schedules[weekKey][staffId][date];
+                                        if (shift.locked && isRequestType) {
+                                            console.log(`  -> Clearing old request shift for staff ${staffId} on ${date} in week ${weekKey}`);
+                                            delete this.data.schedules[weekKey][staffId][date];
+                                        }
                                     }
                                 }
                             }
 
                             let importCount = 0;
                             this.data.time_off.forEach((request) => {
+                                console.log(`Processing request for ${request.staffName} from ${request.startDate} to ${request.endDate}`);
                                 const startDate = new Date(request.startDate + "T00:00:00");
                                 const endDate = new Date(request.endDate + "T00:00:00");
-
-                                for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+ 
+                                // Correctly loop through the date range without modifying the iterator in the condition.
+                                // This is the robust way to prevent date mutation issues.
+                                const diffTime = Math.abs(endDate - startDate);
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include the end date
+                                for (let i = 0; i < diffDays; i++) {
+                                    const d = new Date(startDate);
+                                    d.setDate(d.getDate() + i);
                                     const dateStr = d.toISOString().split("T")[0];
                                     const requestWeekKey = this.getWeekKeyForDate(dateStr);
-
-                                    if (requestWeekKey === weekKey) {
-                                        if (!this.data.schedules[weekKey][request.staffId]) {
-                                            this.data.schedules[weekKey][request.staffId] = {};
-                                        }
-                                        const shiftType =
-                                            request.requestType === "Off" ? "OFF" : request.requestType;
-                                        const shiftTime =
-                                            request.requestType === "Off"
-                                                ? "OFF"
-                                                : this.formatRequestTime(request.requestType);
-
-                                        this.data.schedules[weekKey][request.staffId][dateStr] = {
-                                            time: shiftTime,
-                                            type: shiftType,
-                                            locked: true,
-                                        };
-                                        importCount++;
+                                    console.log(`  -> Date: ${dateStr}, Week Key: ${requestWeekKey}`);
+ 
+                                    // Always use the calculated requestWeekKey to ensure data integrity,
+                                    // regardless of the currently viewed week.
+                                    if (!this.data.schedules[requestWeekKey]) {
+                                        this.data.schedules[requestWeekKey] = {};
+                                        console.log(`  -> Initialized new schedule object for week ${requestWeekKey}`);
                                     }
+                                    if (!this.data.schedules[requestWeekKey][request.staffId]) {
+                                        this.data.schedules[requestWeekKey][request.staffId] = {};
+                                    }
+
+                                    const shiftType =
+                                        request.requestType === "Off" ? "OFF" : request.requestType;
+                                    const shiftTime =
+                                        request.requestType === "Off"
+                                            ? "OFF"
+                                            : this.formatRequestTime(request.requestType);
+                                    console.log(`    -> Locking shift '${shiftTime} (${shiftType})' for staff ${request.staffId} on ${dateStr}`);
+                                    this.data.schedules[requestWeekKey][request.staffId][dateStr] = { time: shiftTime, type: shiftType, locked: true };
+                                    importCount++;
                                 }
                             });
 
@@ -690,11 +738,12 @@ document.addEventListener('alpine:init', () => {
                                 // Find an available day for this specific staff member
                                 const availableDays = this.weekDates.filter(day =>
                                     shiftRule.days.includes(day.name) &&
-                                    this.isStaffEligibleForShift(staff, day, tempSchedule)
+                                    this.isStaffEligibleForShift(staff, day, "9a-5p", tempSchedule) // Use a default time for this check
                                 );
 
                                 if (availableDays.length > 0) {
                                     // Simple assignment: pick the first available day.
+                                    // The shift time will be adjusted by assignShift if needed.
                                     // More complex logic (like fairness) could be added here if needed.
                                     const dayToAssign = availableDays[0];                                    const shiftTime = this.data.advanced_rules.default_shift_hours[shiftType] || "9a-5p";
 
@@ -732,9 +781,9 @@ document.addEventListener('alpine:init', () => {
                                     return;
                                 }
 
-                                this.weekDates.forEach((day) => {
+                                for (const day of this.weekDates) {
                                     const requiredCount = offerRules.daily_requirements[day.name] || 0;
-                                    if (requiredCount === 0) return;
+                                    if (requiredCount === 0) continue;
 
                                     let assignedCount = Object.values(tempSchedule).reduce(
                                         (count, staffShifts) => {
@@ -754,7 +803,7 @@ document.addEventListener('alpine:init', () => {
                                             (staff) =>
                                                 staff.types.some(t => eligibleRoles.includes(t)) &&
                                                 staff.availability.shifts.includes("Offer") &&
-                                                this.isStaffEligibleForShift(staff, day, tempSchedule)
+                                                this.isStaffEligibleForShift(staff, day, this.data.advanced_rules.default_shift_hours["Offer"] || "10a-7p", tempSchedule)
                                         );
 
                                         if (candidatePool.length === 0) {
@@ -770,11 +819,67 @@ document.addEventListener('alpine:init', () => {
                                         if (candidate) {
                                             const shiftTime = this.data.advanced_rules.default_shift_hours["Offer"] || "10a-7p";
                                             this.assignShift(candidate.id, day.fullDate, shiftTime, "Offer", tempSchedule);
-                                            this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, "Offer");
                                             assignedCount++;
+                                            this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, "Offer");
+                                            continue; // Move to the next required shift
                                         }
                                     }
-                                });
+
+                                    // If we still haven't met the required count, try flipping existing shifts.
+                                    if (assignedCount < requiredCount) {
+                                        this.generationErrors.push(`Warning: No free staff for Offer on ${day.name}. Attempting to flip a shift.`);
+
+                                        // --- Flip Priority 1: A closing B or SB ---
+                                        const hours = this.data.store_hours[day.name];
+                                        if (hours && hours.close) {
+                                            const closerShiftTime = `${this.formatTime(hours.close - 9)}-${this.formatTime(hours.close)}`;
+                                            const closingStaffEntry = Object.entries(tempSchedule).find(([staffId, shifts]) => {
+                                                const staff = this.data.staff.find(s => s.id == staffId);
+                                                return shifts[day.fullDate]?.time === closerShiftTime &&
+                                                    shifts[day.fullDate]?.type === "Lane" &&
+                                                    staff && (staff.types.includes("B") || staff.types.includes("SB"));
+                                            });
+
+                                            if (closingStaffEntry) {
+                                                const [staffIdToFlip] = closingStaffEntry;
+                                                const staffToFlip = this.data.staff.find(s => s.id == staffIdToFlip);
+                                                console.log(`[Offer] Flipping closer ${staffToFlip.name} on ${day.name} to an Offer shift.`);
+                                                this.generationErrors.push(`Flipped closer ${staffToFlip.name} on ${day.name} to an Offer shift.`);
+                                                tempSchedule[staffIdToFlip][day.fullDate].type = "Offer"; // Only change the type
+                                                assignedCount++;
+                                                continue; // Move to the next required shift
+                                            }
+                                        }
+
+                                        // --- Flip Priority 2: An opening shift (non-APM) ---
+                                        if (assignedCount < requiredCount && hours && hours.open) {
+                                            const openerShiftTime = `${this.formatTime(hours.open)}-${this.formatTime(hours.open + 9)}`;
+                                            const openingStaffEntry = Object.entries(tempSchedule).find(([staffId, shifts]) => {
+                                                const staff = this.data.staff.find(s => s.id == staffId);
+                                                return shifts[day.fullDate]?.time === openerShiftTime &&
+                                                    shifts[day.fullDate]?.type === "Lane" &&
+                                                    staff && !staff.types.includes("APM");
+                                            });
+
+                                            if (openingStaffEntry) {
+                                                const [staffIdToFlip] = openingStaffEntry;
+                                                const staffToFlip = this.data.staff.find(s => s.id == staffIdToFlip);
+                                                console.log(`[Offer] Flipping opener ${staffToFlip.name} on ${day.name} to an Offer shift.`);
+                                                this.generationErrors.push(`Flipped opener ${staffToFlip.name} on ${day.name} to an Offer shift.`);
+                                                tempSchedule[staffIdToFlip][day.fullDate].type = "Offer"; // Only change the type
+                                                assignedCount++;
+                                                continue; // Move to the next required shift
+                                            }
+                                        }
+                                    }
+
+                                    // After trying to fill the shifts for the day, validate the final count.
+                                    const finalAssignedCount = Object.values(tempSchedule).reduce((count, staffShifts) => (staffShifts[day.fullDate]?.type === "Offer" ? count + 1 : count), 0);
+
+                                    if (finalAssignedCount < requiredCount) {
+                                        this.generationErrors.push(`Warning for ${day.name}: Required ${requiredCount} Offer shifts, but only ${finalAssignedCount} could be assigned.`);
+                                    }
+                                }
                             },
 
                             /** Generator to fill remaining empty shifts with 'Training'. */
@@ -789,7 +894,7 @@ document.addEventListener('alpine:init', () => {
                                     while (this.getShiftCount(staff.id, tempSchedule) < 5) {
                                         // Find the first available day that doesn't have a shift yet
                                         const availableDay = this.weekDates.find(day =>
-                                            this.isStaffEligibleForShift(staff, day, tempSchedule)
+                                            this.isStaffEligibleForShift(staff, day, this.data.advanced_rules.default_shift_hours["Training"] || "9a-5p", tempSchedule)
                                         );
 
                                         if (availableDay) {
@@ -808,7 +913,8 @@ document.addEventListener('alpine:init', () => {
                             generateCbcShifts(tempSchedule) {
                                 console.log("Running generateCbcShifts");
                                 this.generationErrors.push("Generating CBC shifts...");
-                                const cbcRules = this.data.shift_rules["CBC"];                                const dayPriority = this.data.advanced_rules.day_priority.cbc;
+                                const cbcRules = this.data.shift_rules["CBC"];
+                                const dayPriority = this.data.advanced_rules.day_priority.cbc;
                                 const sortedDays = [...this.weekDates]
                                     .filter((d) => cbcRules.days.includes(d.name))
                                     .sort((a, b) => (dayPriority[a.name] ?? 99) - (dayPriority[b.name] ?? 99));
@@ -850,7 +956,7 @@ document.addEventListener('alpine:init', () => {
                                         candidatePool = this.data.staff.filter(s =>
                                             isBaOnly(s) &&
                                             s.availability.shifts.includes("CBC") &&
-                                            this.isStaffEligibleForShift(s, day, tempSchedule)
+                                            this.isStaffEligibleForShift(s, day, "10a-7p", tempSchedule) // Use a representative time
                                         );
                                         if (candidatePool.length > 0) {
                                             console.log(`[CBC] on [${day.name}]: Prioritizing BA-only pool.`);
@@ -862,7 +968,7 @@ document.addEventListener('alpine:init', () => {
                                                 candidatePool = this.data.staff.filter(s =>
                                                     s.types.includes("SB") &&
                                                     s.availability.shifts.includes("CBC") &&
-                                                    this.isStaffEligibleForShift(s, day, tempSchedule)
+                                                    this.isStaffEligibleForShift(s, day, "10a-7p", tempSchedule)
                                                 );
                                                 if (candidatePool.length > 0) {
                                                     console.log(`[CBC] on [${day.name}]: Prioritizing SB pool.`);
@@ -876,7 +982,7 @@ document.addEventListener('alpine:init', () => {
                                                 s.types.includes("BA") &&
                                                 !isBaOnly(s) && // Exclude BA-only, as they were already checked
                                                 s.availability.shifts.includes("CBC") &&
-                                                this.isStaffEligibleForShift(s, day, tempSchedule)
+                                                this.isStaffEligibleForShift(s, day, "10a-7p", tempSchedule)
                                             );
                                         }
 
@@ -885,7 +991,7 @@ document.addEventListener('alpine:init', () => {
                                             candidatePool = this.data.staff.filter(s =>
                                                 (s.types.includes("B") || s.types.includes("SB")) &&
                                                 s.availability.shifts.includes("CBC") &&
-                                                this.isStaffEligibleForShift(s, day, tempSchedule)
+                                                this.isStaffEligibleForShift(s, day, "10a-7p", tempSchedule)
                                             );
                                         }
 
@@ -909,71 +1015,73 @@ document.addEventListener('alpine:init', () => {
                             },
 
                             /** Generator for 'Lane VCA' shifts, targeting only staff with the single 'VCA' role. */
-                            generateLaneVcaShifts(tempSchedule) { // Refactored for fairness
+                            generateLaneVcaShifts(tempSchedule) {
                                 console.log("Running generateLaneVcaShifts");
                                 this.generationErrors.push("Generating Lane VCA shifts...");
                                 const laneVcaRules = this.data.shift_rules["Lane VCA"];
-                                if (!laneVcaRules || laneVcaRules.days.length === 0) {
+                                if (!laneVcaRules || !laneVcaRules.daily_requirements) {
                                     this.generationErrors.push("Error: 'Lane VCA' shift rules are not configured.");
                                     return;
                                 }
+                                const eligibleDays = this.weekDates
+                                    .filter(day => (laneVcaRules.daily_requirements[day.name] || 0) > 0)
+                                    .sort((a, b) => (this.data.advanced_rules.day_priority.lane[a.name] ?? 99) - (this.data.advanced_rules.day_priority.lane[b.name] ?? 99));
 
-                                const pureVcaStaff = this.data.staff.filter(s => s.types.length === 1 && s.types.includes("VCA"));
-                                if (pureVcaStaff.length === 0) {
-                                    console.log("No staff with only the 'VCA' role found.");
-                                    return;
-                                }
+                                // Define candidate pools in order of priority
+                                const isVcaOnly = (s) => s.types.length === 1 && s.types.includes("VCA");
+                                const isApmVca = (s) => s.types.includes("APM") && s.types.includes("VCA");
+                                const isOtherVca = (s) => s.types.includes("VCA") && !isVcaOnly(s) && !isApmVca(s);
 
-                                const eligibleDays = this.weekDates.filter(day => laneVcaRules.days.includes(day.name));
+                                const candidatePools = [
+                                    { name: "VCA-Only", staff: this.data.staff.filter(isVcaOnly) },
+                                    { name: "APM-VCA", staff: this.data.staff.filter(isApmVca) },
+                                    { name: "Other VCA", staff: this.data.staff.filter(isOtherVca) },
+                                ];
 
-                                // --- Phase 1: Assign all closing shifts first ---
-                                console.log("VCA Phase 1: Assigning closing shifts.");
-                                for (const day of eligibleDays) {
-                                    const hours = this.data.store_hours[day.name];
-                                    if (!hours || !hours.close) continue;
-                                    const closerShiftTime = `${this.formatTime(hours.close - 9)}-${this.formatTime(hours.close)}`;
-
-                                    // Check if a VCA closer is already assigned for this day. This allows a VCA to be a second closer alongside a B/SB.
-                                    const vcaCloserAssigned = pureVcaStaff.some(staff => tempSchedule[staff.id]?.[day.fullDate]?.time === closerShiftTime);
-
-                                    if (vcaCloserAssigned) continue;
-
-                                    const closerPool = pureVcaStaff.filter(staff => this.isStaffEligibleForShift(staff, day, tempSchedule));
-                                    if (closerPool.length > 0) {
-                                        const weightedPool = this.createWeightedPool(closerPool, "closing", day.name === "Sat");
-                                        const closer = this.selectRandomFromWeightedPool(weightedPool);                                        if (closer) {
-                                            this.assignShift(closer.id, day.fullDate, closerShiftTime, "Lane VCA", tempSchedule);
-                                            this.updateFairnessScoreOnAssignment(closer.id, day, closerShiftTime, "Lane VCA");
-                                        }
-                                    }
-                                }
-
-                                // --- Phase 2: Fill remaining shifts for all VCAs ---
-                                console.log("VCA Phase 2: Filling remaining shifts.");
-                                // Build the shift priority order from advanced rules
                                 const otherShiftTimes = Object.entries(this.data.advanced_rules.vca_shift_priority)
                                     .filter(([key, value]) => value > 0) // Filter out shifts with priority 0
                                     .sort(([, a], [, b]) => a - b) // Sort by priority number
                                     .map(([key]) => this.formatRequestTime(key)); // Format to '10a-7p' style
 
+                                for (const day of eligibleDays) {
+                                    const requiredCount = laneVcaRules.daily_requirements[day.name] || 0;
+                                    let assignedCount = Object.values(tempSchedule).filter(s => s[day.fullDate]?.type === "Lane VCA").length;
 
-                                for (const staff of pureVcaStaff) {
-                                    let potentialDaysForVca = eligibleDays.filter(day => this.isStaffEligibleForShift(staff, day, tempSchedule));
-                                    while (this.getShiftCount(staff.id, tempSchedule) < 5 && potentialDaysForVca.length > 0) {
-                                        const dayToTry = potentialDaysForVca.shift(); // Get and remove the first available day
-                                        if (!dayToTry) break;
+                                    const shiftTimesToTry = [
+                                        `${this.formatTime(this.data.store_hours[day.name].close - 9)}-${this.formatTime(this.data.store_hours[day.name].close)}`, // Closer is always highest priority
+                                        ...otherShiftTimes
+                                    ];
 
-                                        // Find an available shift time for that day
-                                        const availableShiftTime = otherShiftTimes.find(time =>
-                                            !Object.values(tempSchedule).some(s => s[dayToTry.fullDate]?.time === time)
-                                        );
+                                    // Loop until requirements are met or we can't assign more shifts
+                                    let pass = 0;
+                                    while(assignedCount < requiredCount && pass < 10) { // Safety break at 10 passes
+                                        let assignedInPass = false;
+                                        for (const shiftTime of shiftTimesToTry) {
+                                            if (assignedCount >= requiredCount) break;
 
-                                        if (availableShiftTime) {
-                                            this.assignShift(staff.id, dayToTry.fullDate, availableShiftTime, "Lane VCA", tempSchedule);
-                                            this.updateFairnessScoreOnAssignment(staff.id, dayToTry, availableShiftTime, "Lane VCA");
-                                        } else {
-                                            // If no shift time is available on this day, the loop will continue to the next potential day.
+                                            for (const pool of candidatePools) {
+                                                if (pool.staff.length === 0) continue;
+
+                                                const candidates = pool.staff.filter(staff => this.isStaffEligibleForShift(staff, day, shiftTime, tempSchedule));
+                                                if (candidates.length > 0) {
+                                                    const scoreType = shiftTime.includes('9p') ? 'closing' : 'total';
+                                                    const weightedPool = this.createWeightedPool(candidates, scoreType, day.name === "Sat");
+                                                    const candidate = this.selectRandomFromWeightedPool(weightedPool);
+                                                    if (candidate) {
+                                                        console.log(`VCA Scheduling on ${day.name} (Pass ${pass + 1}): Assigning ${shiftTime} to ${candidate.name} from pool "${pool.name}"`);
+                                                        this.assignShift(candidate.id, day.fullDate, shiftTime, "Lane VCA", tempSchedule);
+                                                        this.updateFairnessScoreOnAssignment(candidate.id, day, shiftTime, "Lane VCA");
+                                                        assignedCount++;
+                                                        assignedInPass = true;
+                                                        break; // Break from the pool loop once a candidate is found and assigned
+                                                    }
+                                                }
+                                            }
+                                            if (assignedInPass) break; // Break from shift time loop to restart priority
                                         }
+                                        pass++;
+                                        // If a full pass over all shift types and pools yields no assignment, break to prevent infinite loop
+                                        if (!assignedInPass) break;
                                     }
                                 }
                             },
@@ -1004,7 +1112,9 @@ document.addEventListener('alpine:init', () => {
                                 // Create a pool of all possible APM closing shifts for the week
                                 for (const apm of apmStaff) {
                                     for (const day of sortedLaneDays) {
-                                        if (this.isStaffEligibleForShift(apm, day, tempSchedule) && apm.availability.shifts.includes("Lane")) {
+                                        const hours = this.data.store_hours[day.name];
+                                        const closerShiftTime = `${this.formatTime(hours.close - 9)}-${this.formatTime(hours.close)}`;
+                                        if (this.isStaffEligibleForShift(apm, day, closerShiftTime, tempSchedule) && apm.availability.shifts.includes("Lane")) {
                                             const dayPriority = this.data.advanced_rules.day_priority.lane[day.name] ?? 7;
                                             const closingScore = this.fairnessScores[apm.id]?.closing || 0;
                                             const saturdayPenalty = (day.name === 'Sat') ? (this.fairnessScores[apm.id]?.saturday || 0) * this.data.advanced_rules.apm.saturdayClosingPenalty : 0;
@@ -1074,8 +1184,7 @@ document.addEventListener('alpine:init', () => {
                                     let closerPool = this.data.staff.filter(
                                         (staff) =>
                                             (staff.types.includes("APM") || staff.types.includes("SB") || staff.types.includes("B")) &&
-                                            staff.availability.shifts.includes("Lane") &&
-                                            this.isStaffEligibleForShift(staff, day, tempSchedule) &&
+                                            staff.availability.shifts.includes("Lane") && this.isStaffEligibleForShift(staff, day, closerShiftTime, tempSchedule) &&
                                             !isVcaOnly(staff) &&
                                             !hasClosingShift(staff.id)
                                     );
@@ -1086,8 +1195,7 @@ document.addEventListener('alpine:init', () => {
                                         closerPool = this.data.staff.filter(
                                             (staff) =>
                                                 (staff.types.includes("APM") || staff.types.includes("SB") || staff.types.includes("B")) &&
-                                                staff.availability.shifts.includes("Lane") &&
-                                                this.isStaffEligibleForShift(staff, day, tempSchedule) &&
+                                                staff.availability.shifts.includes("Lane") && this.isStaffEligibleForShift(staff, day, closerShiftTime, tempSchedule) &&
                                                 !isVcaOnly(staff)
                                         );
                                     }
@@ -1116,13 +1224,19 @@ document.addEventListener('alpine:init', () => {
                                 // --- Phase 3: Fill APM schedules with openers, prioritizing low-availability days ---
                                 console.log("Phase 3: Assigning APM opening shifts based on coverage needs.");
                                 const dayAvailability = this.weekDates.reduce((acc, day) => {
-                                    acc[day.name] = this.data.staff.filter(s => s.availability.days.includes(day.name)).length;
+                                    // Correctly check the new availability.hours structure. Blank means available.
+                                    acc[day.name] = this.data.staff.filter(s => s.availability?.hours?.[day.name]?.start || s.availability?.hours?.[day.name]?.end).length;
                                     return acc;
                                 }, {});
 
                                 for (const apm of apmStaff) {
+                                    // The opener shift time needs to be determined for each potential day inside the filter/loop.
                                     let potentialDaysForApm = this.weekDates
-                                            .filter(day => laneRules.days.includes(day.name) && this.isStaffEligibleForShift(apm, day, tempSchedule))
+                                            .filter(day => {
+                                                const hours = this.data.store_hours[day.name];
+                                                const openerShiftTime = `${this.formatTime(hours.open)}-${this.formatTime(hours.open + 9)}`;
+                                                return laneRules.days.includes(day.name) && this.isStaffEligibleForShift(apm, day, openerShiftTime, tempSchedule);
+                                            })
                                             .sort((a, b) => dayAvailability[a.name] - dayAvailability[b.name]); // Sort by least available day first
 
                                     while (this.getShiftCount(apm.id, tempSchedule) < 5 && potentialDaysForApm.length > 0) {
@@ -1154,7 +1268,7 @@ document.addEventListener('alpine:init', () => {
                                     const bsOpenerPool = this.data.staff.filter(staff =>
                                         (staff.types.includes("B") || staff.types.includes("SB")) &&
                                         staff.availability.shifts.includes("Lane") &&
-                                        this.isStaffEligibleForShift(staff, day, tempSchedule) &&
+                                        this.isStaffEligibleForShift(staff, day, openerShiftTime, tempSchedule) &&
                                         !isVcaOnly(staff)
                                     );
 
@@ -1516,16 +1630,97 @@ document.addEventListener('alpine:init', () => {
                              * @param {object} scheduleContext - The temporary schedule object.
                              * @returns {boolean}
                              */
-                            isStaffEligibleForShift(staff, day, scheduleContext) {
+                            isStaffEligibleForShift(staff, day, proposedShiftTime, scheduleContext) {
+                                console.groupCollapsed(`[isStaffEligibleForShift] Checking ${staff.name} for ${day.name} (${proposedShiftTime})`);
                                 const existingShift = scheduleContext[staff.id]?.[day.fullDate];
+                                const shiftCount = this.getShiftCount(staff.id, scheduleContext);
 
-                                return (
-                                    staff.availability.days.includes(day.name) &&
-                                    this.getShiftCount(staff.id, scheduleContext) < 5 &&
-                                    !existingShift &&
-                                    !this.isStaffOnTimeOff(staff.id, day.fullDate)
-                                );
+                                // --- Disqualifying Checks ---
+                                if (existingShift) {
+                                    console.log(` -> Ineligible: Already has a shift on this day.`);
+                                    console.groupEnd();
+                                    return false;
+                                }
+
+                                if (shiftCount >= 5) {
+                                    console.log(` -> Ineligible: Already has ${shiftCount} shifts this week.`);
+                                    console.groupEnd();
+                                    return false;
+                                }
+
+                                if (this.isStaffOnTimeOff(staff.id, day.fullDate)) {
+                                    console.log(` -> Ineligible: Has an approved time-off request.`);
+                                    console.groupEnd();
+                                    return false;
+                                }
+
+                                // New availability check
+                                const availability = this.getAdjustedShiftForAvailability(staff, day, proposedShiftTime);
+                                if (!availability.isAvailable) {
+                                    console.log(` -> Ineligible: Not available during the proposed shift time.`);
+                                    console.groupEnd();
+                                    return false;
+                                }
+                                console.log(` -> Eligible: All checks passed.`);
+                                console.groupEnd();
+                                return availability.isAvailable;
                             },
+
+                            /**
+                             * Checks staff availability for a proposed shift and returns an adjusted shift time.
+                             * @param {object} staff - The staff member object.
+                             * @param {object} day - The day object from `weekDates`.
+                             * @param {string} proposedShiftTime - The shift time to check, e.g., "9a-5p".
+                             * @returns {{isAvailable: boolean, adjustedTime: string}}
+                             */
+                            getAdjustedShiftForAvailability(staff, day, proposedShiftTime) {
+                                const availability = staff.availability?.hours?.[day.name];
+                                // If availability hours are blank for the day, assume they are available for the entire proposed shift.
+                                if (!availability || !availability.start || !availability.end) {
+                                    return { isAvailable: true, adjustedTime: proposedShiftTime };
+                                }
+
+                                const parseTime = (timeStr) => {
+                                    if (!timeStr) return NaN;
+                                    let hour = parseInt(timeStr.replace(/(a|p)m?/, ""));
+                                    if (isNaN(hour)) return NaN;
+                                    if (timeStr.includes("p") && hour !== 12) hour += 12;
+                                    if (timeStr.includes("a") && hour === 12) hour = 0; // Midnight case
+                                    return hour;
+                                };
+
+                                const availStart = parseTime(availability.start);
+                                const availEnd = parseTime(availability.end);
+
+                                const shiftParts = proposedShiftTime.split('-');
+                                if (shiftParts.length !== 2) return { isAvailable: false, adjustedTime: proposedShiftTime };
+
+                                let shiftStart = parseTime(shiftParts[0]);
+                                let shiftEnd = parseTime(shiftParts[1]);
+
+                                if (isNaN(availStart) || isNaN(availEnd) || isNaN(shiftStart) || isNaN(shiftEnd)) {
+                                    return { isAvailable: false, adjustedTime: proposedShiftTime };
+                                }
+
+                                // Calculate the new, overlapping shift time
+                                const newStart = Math.max(availStart, shiftStart);
+                                const newEnd = Math.min(availEnd, shiftEnd);
+
+                                // The shift is valid if the new duration is at least 1 hour
+                                if (newEnd > newStart) {
+                                    return {
+                                        isAvailable: true,
+                                        adjustedTime: `${this.formatTime(newStart)}-${this.formatTime(newEnd)}`
+                                    };
+                                }
+
+                                return { isAvailable: false, adjustedTime: proposedShiftTime };
+                            },
+
+
+
+
+
 
                             /**
                              * Checks if a staff member has an approved 'Off' request for a specific date.
@@ -1588,8 +1783,11 @@ document.addEventListener('alpine:init', () => {
                              * @param {object} scheduleContext - The temporary schedule object.
                              */
                             assignShift(staffId, fullDate, time, type, scheduleContext) {
+                                const staff = this.data.staff.find(s => s.id == staffId);
+                                const day = this.weekDates.find(d => d.fullDate === fullDate);
+                                const { adjustedTime } = this.getAdjustedShiftForAvailability(staff, day, time);
                                 if (!scheduleContext[staffId]) scheduleContext[staffId] = {};
-                                scheduleContext[staffId][fullDate] = { time, type, locked: false };
+                                scheduleContext[staffId][fullDate] = { time: adjustedTime, type, locked: false };
                             },
 
                             /**
@@ -1657,11 +1855,36 @@ document.addEventListener('alpine:init', () => {
                              * @returns {string} The YYYY-MM-DD string of the Sunday of that week.
                              */
                             getWeekKeyForDate(dateStr) {
-                                const date = new Date(dateStr + "T00:00:00");
-                                const dayOfWeek = date.getDay();
-                                date.setDate(date.getDate() - dayOfWeek);
-                                return date.toISOString().split("T")[0];
+                                // Use UTC dates to prevent timezone-related off-by-one errors.
+                                const [year, month, day] = dateStr.split('-').map(Number);
+                                const date = new Date(Date.UTC(year, month - 1, day));
+                                const dayOfWeek = date.getUTCDay(); // 0 for Sunday, 1 for Monday, etc.
+                                date.setUTCDate(date.getUTCDate() - dayOfWeek);
+                                return date.toISOString().split('T')[0];
                             },
+
+                            /**
+                             * Generates an array of week date objects for a given week's starting key.
+                             * @param {string} weekKey - The YYYY-MM-DD string of the Sunday of the week.
+                             * @returns {Array} An array of 7 day objects.
+                             */
+getWeekDatesFor(weekKey) {
+    // Create a pure UTC date object from the start-of-week key.
+    const startDate = new Date(weekKey + 'T00:00:00Z'); 
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate);
+        // Explicitly use setUTCDate() to modify the date in UTC.
+        d.setUTCDate(d.getUTCDate() + i); 
+        dates.push({
+            name: this.daysOfWeek[i],
+            // Use getUTCMonth() and getUTCDate() to get the correct values.
+            date: `${d.getUTCMonth() + 1}/${d.getUTCDate()}`,
+            fullDate: d.toISOString().split("T")[0]
+        });
+    }
+    return dates;
+},
 
                             // =================================================================================
                             // TALLY & COUNTING FUNCTIONS
@@ -1933,49 +2156,161 @@ document.addEventListener('alpine:init', () => {
                              * @param {string} tableContainerId - The ID of the div containing the table to export.
                              */
                             exportScheduleAs(format, tableContainerId) {
-                                const tableContainer = document.getElementById(tableContainerId);
+                                 const isBrowsePage = tableContainerId.includes("browse");
+                                 console.group(`[exportScheduleAs] format: ${format}, page: ${isBrowsePage ? 'Browse' : 'Schedule'}`);
  
-                                                        if (!tableContainer) {
-                                                            alert(`Could not find the element with ID '${tableContainerId}' to export.`);
-                                                            return;
-                                                        }
-
-                                                        // Determine which week display to use based on the container ID
-                                                        const weekType = tableContainerId.includes("browse") ? "browse" : "current";
-                                                        const weekDisplay = this.getWeekDisplay(weekType);
-                                                        const filename = `Schedule_${weekDisplay
-                                                            .replace(/ /g, "")
-                                                            .replace(/\//g, "-")}`;
-
-                                                        // Use html2canvas for image-based exports (JPG, PDF)
-                                                        if (format === "jpg" || format === "pdf") {
-                                                            // No timeout needed now that the button is on the same view as the table.
-                                                            html2canvas(tableContainer, {
-                                                                scale: 2,
-                                                                backgroundColor: "#ffffff",
-                                                            }).then((canvas) => {
-                                                                if (format === "jpg") {
-                                                                    const image = canvas.toDataURL("image/jpeg", 0.9);
-                                                                    const link = document.createElement("a");
-                                                                    link.href = image;
-                                                                    link.download = `${filename}.jpg`;
-                                                                    link.click();
-                                                                } else if (format === "pdf") {
-                                                                    const { jsPDF } = window.jspdf;
-                                                                    const imgData = canvas.toDataURL("image/png");
-                                                                    const pdf = new jsPDF({
-                                                                        orientation: "landscape",
-                                                                        unit: "px",
-                                                                        format: [canvas.width, canvas.height],
-                                                                    });
-                                                                    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-                                                                    pdf.save(`${filename}.pdf`);
-                                                                }
-                                                            });
-                                                        } else if (format === "csv") {
-                                                            this.exportTableToCSV(tableContainer.querySelector("table"), filename);
-                                                        }
-                                                    },
+                                 if (isBrowsePage && (format === 'pdf' || format === 'csv')) {
+                                     // --- Multi-week export logic for PDF and CSV from Browse page ---
+                                     const startWeekKey = this.browseWeekDates[0].fullDate;
+                                     const futureScheduleKeys = Object.keys(this.data.schedules)
+                                         .filter(key => key >= startWeekKey)
+                                         .sort();
+                                     console.log('Found future schedule keys:', futureScheduleKeys);
+ 
+                                     if (futureScheduleKeys.length === 0) {
+                                         alert("No schedules found for the current or future weeks to export.");
+                                         return;
+                                     }
+ 
+                                     // Use UTC dates to avoid timezone-related off-by-one errors.
+                                     const firstWeekKey = futureScheduleKeys[0];
+                                     const lastWeekKey = futureScheduleKeys[futureScheduleKeys.length - 1];
+                                     console.log(`[Export Debug] First week key: ${firstWeekKey}, Last week key: ${lastWeekKey}`);
+ 
+                                     const firstWeekStartDate = new Date(firstWeekKey + 'T00:00:00Z'); // Treat as UTC
+                                     const lastWeekEndDate = new Date(lastWeekKey + 'T00:00:00Z'); // Treat as UTC
+                                     lastWeekEndDate.setUTCDate(lastWeekEndDate.getUTCDate() + 6); // Add 6 days in UTC
+                                     console.log(`[Export Debug] First week start date (UTC): ${firstWeekStartDate.toISOString()}`);
+                                     console.log(`[Export Debug] Last week end date (UTC): ${lastWeekEndDate.toISOString()}`);
+ 
+                                     // Use getUTC... methods to get the correct date parts.
+                                     const filename = `Schedule_${firstWeekStartDate.getUTCMonth() + 1}-${firstWeekStartDate.getUTCDate()}_to_${lastWeekEndDate.getUTCMonth() + 1}-${lastWeekEndDate.getUTCDate()}`;
+                                     console.log('Generated filename:', filename);
+ 
+                                     if (format === 'pdf') {
+                                         const { jsPDF } = window.jspdf;
+                                         const pdf = new jsPDF({ orientation: "landscape", unit: "px" });
+                                         const processWeek = async (weekKey, isFirstPage) => {
+                                             const tempContainer = document.createElement('div');
+                                             tempContainer.style.position = 'absolute';
+                                             tempContainer.style.left = '-9999px';
+                                             tempContainer.style.width = '1200px';
+                                             document.body.appendChild(tempContainer);
+ 
+                                             const schedule = this.data.schedules[weekKey];
+                                             const weekDates = this.getWeekDatesFor(weekKey);
+                                             console.log(`  -> Processing PDF for week key ${weekKey} with dates:`, JSON.parse(JSON.stringify(weekDates)));
+                                             const weekDisplay = `${weekDates[0].date} - ${weekDates[6].date}`;
+ 
+                                             let tableHtml = `<h2 style="font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 1rem 0;">Week of ${weekDisplay}</h2>`;
+                                             tableHtml += `<table style="width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.875rem;">
+                                                 <thead style="background-color: #f9fafb;">
+                                                     <tr>
+                                                         <th style="padding: 0.75rem 1rem; border: 1px solid #e5e7eb; text-align: left;">Staff Member</th>
+                                                          ${weekDates.map(day => `<th style="padding: 0.75rem 1rem; border: 1px solid #e5e7eb;">${day.name}<br/><span style="font-size: 0.75rem; color: #6b7280;">${day.date}</span></th>`).join('')}
+                                                     </tr>
+                                                 </thead>
+                                                 <tbody>
+                                                     ${this.sortedStaff.map(staff => `
+                                                         <tr style="border-top: 1px solid #e5e7eb;">
+                                                             <td style="padding: 0.75rem 1rem; border: 1px solid #e5e7eb; font-weight: 500;">${staff.name}</td>
+                                                             ${weekDates.map(day => {
+                                                                 const shift = schedule?.[staff.id]?.[day.fullDate];
+                                                                 const shiftText = this.formatShiftForDisplay(staff.id, day.fullDate, schedule) || '-';
+                                                                 const colorClass = this.getShiftColorClass(shift);
+                                                                 const bgColor = colorClass ? `background-color: ${colorClass.replace('bg-green-200', '#dcfce7').replace('bg-blue-200', '#dbeafe').replace('bg-red-200', '#fee2e2').replace('bg-gray-300', '#e5e7eb')};` : '';
+                                                                 return `<td style="padding: 0.75rem 1rem; border: 1px solid #e5e7eb; text-align: center; ${bgColor}">${shiftText}</td>`;
+                                                             }).join('')}
+                                                         </tr>
+                                                     `).join('')}
+                                                 </tbody>
+                                             </table>`;
+                                             tempContainer.innerHTML = tableHtml;
+ 
+                                             const canvas = await html2canvas(tempContainer, { scale: 2, backgroundColor: "#ffffff" });
+                                             const imgData = canvas.toDataURL("image/png");
+                                             if (isFirstPage) {
+                                                 pdf.internal.pageSize.setWidth(canvas.width);
+                                                 pdf.internal.pageSize.setHeight(canvas.height);
+                                             } else {
+                                                 pdf.addPage([canvas.width, canvas.height], "landscape");
+                                             }
+                                             pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+                                             document.body.removeChild(tempContainer);
+                                         };
+ 
+                                         (async () => {
+                                             for (let i = 0; i < futureScheduleKeys.length; i++) {
+                                                 await processWeek(futureScheduleKeys[i], i === 0);
+                                             }
+                                             pdf.save(`${filename}.pdf`);
+                                         })();
+ 
+                                     } else if (format === 'csv') {
+                                         let csv = [];
+                                         futureScheduleKeys.forEach(weekKey => {
+                                             const schedule = this.data.schedules[weekKey];
+                                             const weekDates = this.getWeekDatesFor(weekKey);
+                                             console.log(`  -> Processing CSV for week key ${weekKey} with dates:`, JSON.parse(JSON.stringify(weekDates)));
+                                             const weekDisplay = `Week of ${weekDates[0].date} - ${weekDates[6].date}`;
+                                             csv.push(weekDisplay);
+ 
+                                             const header = ['Staff Member', ...weekDates.map(day => `${day.name} ${day.date}`)];
+                                             csv.push(header.join(','));
+ 
+                                             this.sortedStaff.forEach(staff => {
+                                                 const row = [staff.name];
+                                                 weekDates.forEach(day => {
+                                                     const shiftText = this.formatShiftForDisplay(staff.id, day.fullDate, schedule) || '';
+                                                     row.push(`"${shiftText.replace(/"/g, '""')}"`);
+                                                 });
+                                                 csv.push(row.join(','));
+                                             });
+                                             csv.push(''); // Add a blank line between weeks
+                                         });
+ 
+                                         const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+                                         const link = document.createElement("a");
+                                         link.href = URL.createObjectURL(csvFile);
+                                         link.download = `${filename}.csv`;
+                                         link.click();
+                                         URL.revokeObjectURL(link.href);
+                                     }
+ 
+                                 } else {
+                                     // --- Original logic for single-week JPG or any export from the main Schedule page ---
+                                     const tableContainer = document.getElementById(tableContainerId);
+                                     if (!tableContainer) {
+                                         alert(`Could not find the element with ID '${tableContainerId}' to export.`);
+                                         return;
+                                     }
+ 
+                                     const weekType = isBrowsePage ? "browse" : "current";
+                                     const weekDisplay = this.getWeekDisplay(weekType);
+                                     const filename = `Schedule_${weekDisplay.replace(/ /g, "").replace(/\//g, "-")}`;
+ 
+                                     if (format === "jpg" || format === "pdf") {
+                                         html2canvas(tableContainer, { scale: 2, backgroundColor: "#ffffff" }).then((canvas) => {
+                                             if (format === "jpg") {
+                                                 const image = canvas.toDataURL("image/jpeg", 0.9);
+                                                 const link = document.createElement("a");
+                                                 link.href = image;
+                                                 link.download = `${filename}.jpg`;
+                                                 link.click();
+                                             } else if (format === "pdf") {
+                                                 const { jsPDF } = window.jspdf;
+                                                 const imgData = canvas.toDataURL("image/png");
+                                                 const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width, canvas.height] });
+                                                 pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+                                                 pdf.save(`${filename}.pdf`);
+                                             }
+                                         });
+                                     } else if (format === "csv") {
+                                         this.exportTableToCSV(tableContainer.querySelector("table"), filename);
+                                     }
+                                 }
+                                 console.groupEnd();
+                             },
 
                                                     /**
                                                      * Helper function to convert an HTML table to a CSV string and trigger a download.
