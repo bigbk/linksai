@@ -1,0 +1,807 @@
+{
+  "shift_rules": {
+    "Offer": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sun": 0,
+        "Mon": 2,
+        "Tue": 2,
+        "Wed": 2,
+        "Thu": 2,
+        "Fri": 2,
+        "Sat": 2,
+        "Monday": 2,
+        "Tuesday": 2,
+        "Wednesday": 2,
+        "Thursday": 2,
+        "Friday": 2,
+        "Saturday": 2
+      }
+    },
+    "CBC": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Wednesday",
+        "Monday",
+        "Tuesday",
+        "Thursday",
+        "Saturday",
+        "Friday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": 1,
+          "max": null
+        },
+        "B": {
+          "min": 1,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "MNJ": {
+      "days": [
+        "Wed",
+        "Wednesday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": 4,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 5,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "MPA": {
+      "days": [
+        "Fri",
+        "Friday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": 3,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 3,
+        "Saturday": 0
+      }
+    },
+    "Remote": {
+      "days": [],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Training": {
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Saturday",
+        "Friday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Lane": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Monday",
+        "Friday",
+        "Saturday",
+        "Tuesday",
+        "Thursday",
+        "Wednesday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": 1,
+          "max": null
+        },
+        "B": {
+          "min": 1,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Lane VCA": {
+      "days": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sun": 0,
+        "Mon": 4,
+        "Tue": 4,
+        "Wed": 4,
+        "Thu": 4,
+        "Fri": 4,
+        "Sat": 4,
+        "Monday": 4,
+        "Tuesday": 4,
+        "Wednesday": 4,
+        "Thursday": 4,
+        "Friday": 4,
+        "Saturday": 4,
+        "Sunday": 0
+      }
+    },
+    "BAAA": {
+      "days": [
+        "Thu",
+        "Thursday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": 4,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": null,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": null,
+        "Thursday": 4,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "BAAA Preview": {
+      "days": [
+        "Wed",
+        "Wednesday"
+      ],
+      "min_max": {
+        "PM": {
+          "min": null,
+          "max": null
+        },
+        "APM": {
+          "min": null,
+          "max": null
+        },
+        "SB": {
+          "min": null,
+          "max": null
+        },
+        "B": {
+          "min": null,
+          "max": null
+        },
+        "VCA": {
+          "min": null,
+          "max": null
+        },
+        "BA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA": {
+          "min": null,
+          "max": null
+        },
+        "BAAA Preview": {
+          "min": 2,
+          "max": null
+        },
+        "MNJ": {
+          "min": null,
+          "max": null
+        },
+        "MPA": {
+          "min": null,
+          "max": null
+        }
+      },
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 2,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Open": {
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Mid": {
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Close": {
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    },
+    "Offsite": {
+      "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "daily_requirements": {
+        "Sunday": 0,
+        "Monday": 0,
+        "Tuesday": 0,
+        "Wednesday": 0,
+        "Thursday": 0,
+        "Friday": 0,
+        "Saturday": 0
+      }
+    }
+  },
+  "advanced_rules": {
+    "cbc": {
+      "dailyMax": 4,
+      "dayPriority": [
+        "Sat",
+        "Fri",
+        "Mon"
+      ],
+      "allowBAOverride": true
+    },
+    "apm": {
+      "saturdayClosingPenalty": 2,
+      "minClosingShifts": 1
+    },
+    "day_priority": {
+      "cbc": {
+        "Sun": 7,
+        "Mon": 3,
+        "Tue": 4,
+        "Wed": 6,
+        "Thu": 5,
+        "Fri": 2,
+        "Sat": 1
+      },
+      "lane": {
+        "Sun": 7,
+        "Mon": 3,
+        "Tue": 4,
+        "Wed": 6,
+        "Thu": 5,
+        "Fri": 2,
+        "Sat": 1
+      }
+    },
+    "vca_shift_priority": {
+      "10-7": 1,
+      "11-8": 4,
+      "12-9": 2,
+      "9-6": 3,
+      "8-5": 0
+    },
+    "default_shift_hours": {
+      "Offer": "10a-7p",
+      "Training": "9a-6p",
+      "BAAA": "7:45a-2p",
+      "BAAA Preview": "9a-5p",
+      "MNJ": "8a-2p",
+      "MPA": "7:15a-3p"
+    },
+    "fairness": {
+      "weights": {
+        "saturday": 2,
+        "fridayClose": 5,
+        "saturdayClose": 6,
+        "totalClose": 3,
+        "cbc": 2,
+        "secondCloser": 4,
+        "openingPenalty": 0,
+        "closingPenalty": 3,
+        "saturdayAnyPenalty": 2,
+        "fridayClosePenalty": 5,
+        "saturdayClosePenalty": 6,
+        "weeklySecondClose": 4,
+        "cbcPenalty": 2
+      }
+    }
+  },
+  "llm_constraints": {
+    "hard": [
+      "Every employee must be scheduled for exactly 5 shifts during the week, including their approved timeoff. ",
+      "No employee can be scheduled for more than one shift on any given day.",
+      "An employee can only be assigned a shift if they have the corresponding \"Eligible for Shift Type\" listed in their profile.",
+      "The employee apm role can be scheduled for a maximum of one closing shift per week.",
+      "For scheduling purposes, only \"Lane,\" \"Lane VCA,\" \"Training\" and \"Offer\" shifts count as providing hourly store coverage. All other shift types (CBC, MPA, MNJ, BAAA, BAAA Preview) are considered \"off-floor\" tasks and do not count toward the coverage goals below.",
+      "No employee, including apm role,  can work more than 3 Saturdays in a 4-week period.",
+      "If an employee is scheduled for MNJ, their previous shift must end no later than 5pm and it is a 7  hour shift.",
+      "minimum 3 CBC shifts should be assigned per day, up to the maximum number defined and should be a priority over the training shifts",
+      "All shifts must be assigned according to the following strict priority order. The scheduler must completely fill all required shifts of a higher-priority type across the entire week before moving on to assign shifts of the next type in the list.\n\nAssignment Order:\n\nLane VCA\n\nBAAA\n\nBAAA Preview\n\nMNJ\n\nMPA\n\nLane\n\nCBC\n\nOffer\n\nTraining",
+      "CBC shifts are 10-7 on weekdays and 9-6 on Saturdays."
+    ],
+    "soft": [
+      "Fairness: Distribute undesirable shifts (closings, Saturdays) as evenly as possible among eligible employees.",
+      "Lane VCA coverage must be provided from 9:00 AM until the store closes. To achieve this, schedule 'VCA'-only employees in staggered shifts (e.g., 9a-6p, 10a-7p, 12p-9p) that are rotated weekly to ensure fair distribution of opening, mid-day, and closing duties.",
+      "Take into consideration of previous 4 weeks generated and currently locked/saved shifts while considering overall fairness.",
+      "Balance APM Shifts: While the apm role has priority for opening shifts, this must be balanced with the goal of equalizing closing duties. The apm should be assigned at least one closing shift in a multi-week schedule unless doing so would create a more severe fairness violation for another employee (e.g., a 'clopen').",
+      "A \"clopen\" is strictly defined as working a 12p-9p shift, followed immediately the next day by an 8a-5p shift. This specific sequence should be avoided and carries a penalty. clopeningPenalty: 25. Any other combination of closing and opening shifts is not considered a clopen.",
+      "Undesirable Shifts: Over a multi-week period, strive to equalize the total count of closing shifts and Saturday shifts among all eligible employees. Additionally, strive to diversify the types of closing shifts (e.g., 'Lane Close' vs. 'Offer Close') assigned to each manager. Use the following penalties to enforce this:\n\nclosingPenalty: 3\n\nsaturdayPenalty: 5\n\nweeklySecondClose: 15\n\nconsecutiveClosePenalty: 20",
+      "Desirable Shifts: Strive to equalize the total count of CBC and Offer shifts among all eligible employees over a multi-week period. Avoid assigning one employee a significantly higher number of these shifts than their peers.",
+      "Days Off: Rotate the weekday off for employees over a multi-week schedule to prevent the same employee from having the same day off every week.",
+      "B role is prioritized over SB for offer roles ",
+      "As a last resort to complete a 5-shift week, remaining unassigned shifts for an SB role employee may be filled with Training shifts if they cannot be fairly assigned a needed on-floor or desirable shift.",
+      "Rotate VCA shift times weekly. Penalize scheduling a VCA employee for the same shift block (e.g., 9a-6p) for more than one consecutive week.",
+      "Diversify Closing Shift Types: Strive to rotate the types of closing shifts (e.g., 'Lane Close' vs. 'Offer Close') among all eligible managers. Avoid assigning the same type of closing shift to an employee multiple times in a week if another eligible manager can take that shift without creating a larger fairness violation.",
+      "Post-Assignment Fairness Swap: After creating a schedule that meets all hard constraints, review the final distribution of desirable shifts (CBC and Offer). If a significant imbalance exists (e.g., one employee has many more desirable shifts than an eligible peer), the scheduler should attempt to swap a desirable shift from the employee with a surplus for a standard on-floor shift (e.g., Lane) from the employee with a deficit. This swap is only permissible if it does not violate any hard constraints for either employee.",
+      "distribute shift types Lane, Offer, CBC, training one shift at a time reviewing fairness after each assignment so final schedule is fair and not based on the order of employees on the list.",
+      "The standard time for an 'Offer' shift is 10a-7p, and this time must be used first. If the daily requirement cannot be met, the system may convert an existing Lane shift (e.g., 8a-5p or 12p-9p) to an Offer shift. This conversion is only valid if the employee assigned to the original Lane shift is also explicitly eligible to work an 'Offer' shift."
+    ],
+    "coverage": [
+      "For \"Offer\" shifts, try to provide the best coverage throughout the day based on employee availability. If not enough available, an opening or closing B, SB can be turned to Offer shift.",
+      "MPA, MNJ, BAAA, BAAA Preview, Offer shifts should be always assigned to minimum requirements",
+      "Stagger Offer shifts to fill gaps in B/SB/APM coverage. If necessary to meet the full-day coverage goal, a Lane shift at the start or end of the day for a 'B' or 'SB' can be change to Offer shift",
+      "- CBC daily goal is to have minimum 3 maximum 4 employees",
+      "Avoid scheduling an employee to close one night and open the next morning (clopeningPenalty: 25)."
+    ]
+  }
+}
