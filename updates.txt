@@ -1,5 +1,6 @@
 --- Latest Updates ---
 
+[2025-11-13] - Added Stat VIN history for salvage sales, etc.
 [2025-09-27] - Updated Mitsubishi Window Sticker.
 [2025-09-18] - New Toyota Equipment Listing link and Backup GM Sticker.
 [2025-08-04] - Fixed Toyota Equipment Listing link.
