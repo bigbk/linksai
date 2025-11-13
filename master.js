@@ -637,6 +637,7 @@ function startCountdown() {
     window.chryslerlist2 = function () { openWindowWithVin2("http://www.chrysler.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); };
     window.chryslerlist3 = function () { openWindowWithVin2("http://www.dodge.com/webselfservice/BuildSheetServlet?vin=VIN_PLACEHOLDER"); };
     window.decoderz = function() { openWindowWithVin("https://www.vindecoderz.com/EN/check-lookup/VIN_PLACEHOLDER"); };
+    window.stat = function() { openWindowWithVin2("https://stat.vin/cars/VIN_PLACEHOLDER"); };
     window.siriusxm = function() { openWindowWithVin2("https://care.siriusxm.com/vinlookup_findVin.action?vin=VIN_PLACEHOLDER"); };
     window.bidhistory = function() { openWindowWithVin("https://en.bidhistory.org/search/?search=VIN_PLACEHOLDER"); };
     window.ford = function () { openWindowWithVin("https://www.etis.ford.com/selectedVehicleDetails.do#vin=VIN_PLACEHOLDER"); };
