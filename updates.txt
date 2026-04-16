@@ -1,6 +1,6 @@
 --- Latest Updates ---
 
-[2026-04-16] - Added OEM Navigations decoder. Toyota is now dealer vehicles only.
+[2026-04-16] - Added OEM Navigations decoder. Toyota is mostly dealer vehicles only.
 [2025-11-13] - Added Stat VIN history for salvage sales, etc.
 [2025-09-27] - Updated Mitsubishi Window Sticker.
 [2025-09-18] - New Toyota Equipment Listing link and Backup GM Sticker.
